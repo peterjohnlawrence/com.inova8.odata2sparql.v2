@@ -1,0 +1,257 @@
+########################Datatype Query
+  
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+ PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+ SELECT  ?datatype
+	WHERE { ?datatype a rdfs:Datatype . FILTER(!isBlank(?datatype))}
+
+
+########################Class Query
+	
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+SELECT  ?class ?classLabel (COALESCE(?bt, rdfs:Resource) as ?baseType)
+WHERE {
+  OPTIONAL{
+         ?class rdfs:subClassOf ?bt .   
+         FILTER( !isBlank(?bt))
+         OPTIONAL{
+               ?bt a ?type . 
+                FILTER(isIRI(?class) && ( ?type  != owl:Restriction)) 
+       }	
+  }
+  {   
+         ?class rdf:type owl:Class . OPTIONAL{ ?class rdfs:label ?classLabel. } 
+  }
+UNION
+  {   
+        ?class rdf:type rdfs:Class . OPTIONAL{ ?class rdfs:label ?classLabel. } 
+  }
+} 
+ORDER BY ?classLabel
+
+########################Property Query
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  
+PREFIX owl: <http://www.w3.org/2002/07/owl#>  
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+ 	SELECT  distinct ?property  ?propertyLabel  ?sdomain ?pdomain (COALESCE(?pdomain, ?sdomain) as ?domain) ?superDomainClass ?maxCardinality ?minCardinality  ?cardinality ( COALESCE(?r, rdfs:Literal) as ?range) 
+ 	WHERE {  
+ 	{  
+        ?property rdfs:subPropertyOf* ?sproperty . 
+        OPTIONAL { ?property rdfs:label ?propertyLabel . } . 
+        OPTIONAL{?property rdfs:domain ?pdomain .}
+ 	 	?sproperty rdfs:domain ?sdomain . 
+       OPTIONAL{?sdomain rdfs:subClassOf+ ?superDomainClass .    ?sproperty  rdfs:domain ?superDomainClass .  } FILTER( !Bound (?superDomainClass) )
+ 	 	?sproperty rdf:type ?propertyType . 
+ 	FILTER isIRI(?property) . 
+ 	FILTER isIRI(?sdomain) . 
+ 	FILTER ( ?propertyType != owl:ObjectProperty ) . 
+ 	?property rdfs:range ?r .
+FILTER(?r IN (rdfs:Literal, 
+xsd:string,
+xsd:boolean,
+xsd:float,
+xsd:double,
+xsd:decimal,
+xsd:duration,
+xsd:dateTime,
+xsd:time,
+xsd:date,
+xsd:gYearMonth,
+xsd:gYear,
+xsd:gMonthDay,
+xsd:gDay,
+xsd:gMonth,
+xsd:hexBinary,
+xsd:base64Binary,
+xsd:anyURI,
+xsd:QName,
+xsd:NOTATION,
+xsd:normalizedString,
+xsd:token,
+xsd:language,
+xsd:IDREFS,
+xsd:ENTITIES,
+xsd:NMTOKEN,
+xsd:NMTOKENS,
+xsd:Name,
+xsd:NCName,
+xsd:ID,
+xsd:IDREF,
+xsd:ENTITY,
+#xsd:integer,
+xsd:nonPositiveInteger,
+xsd:negativeInteger,
+xsd:long,
+xsd:int,
+xsd:short,
+xsd:byte,
+xsd:nonNegativeInteger,
+xsd:unsignedLong,
+xsd:unsignedInt,
+xsd:unsignedShort,
+xsd:unsignedByte,
+xsd:positiveInteger,
+xsd:yearMonthDuration,
+xsd:dayTimeDuration,
+xsd:dateTimeStamp))
+ 	 	}
+ 	UNION{
+        ?property rdfs:subPropertyOf* ?sproperty .
+ 	 	?sproperty rdfs:domain ?sdomain . 
+ 	 	?sproperty rdf:type ?propertyType . 
+         OPTIONAL{ ?property rdfs:label ?propertyLabel . } 
+        OPTIONAL{?sdomain rdfs:subClassOf+ ?superDomainClass .    ?sproperty  rdfs:domain ?superDomainClass .  } . FILTER( !Bound (?superDomainClass) )
+ 	 	FILTER isIRI(?property) . 
+ 	 	FILTER isIRI(?sdomain) . 
+ 	 	FILTER ( ?propertyType != owl:ObjectProperty ) . 
+ 	 	FILTER NOT EXISTS {?property rdfs:range ?r1 . 	} 
+ 	} 
+ 	OPTIONAL{?sdomain rdfs:subClassOf  ?minrestriction . 
+ 				?minrestriction a <http://www.w3.org/2002/07/owl#Restriction> . 
+ 				?minrestriction  owl:onProperty  ?property . 
+ 				?minrestriction owl:minCardinality ?minCardinality  
+ 				} 
+ 	OPTIONAL{?sdomain rdfs:subClassOf  ?maxrestriction . 
+ 				?maxrestriction a <http://www.w3.org/2002/07/owl#Restriction> . 
+ 				?maxrestriction  owl:onProperty  ?property . 
+ 				?maxrestriction owl:maxCardinality ?maxCardinality  
+ 				}
+ 	OPTIONAL{?sdomain rdfs:subClassOf  ?restriction .
+ 				?restriction a <http://www.w3.org/2002/07/owl#Restriction> .
+ 				?restriction  owl:onProperty  ?property .
+ 				?restriction owl:cardinality ?cardinality 
+ 				}
+} ORDER BY ?propertyLabel
+########################Association Query
+	
+	PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+ 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+ 	PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+ 	SELECT  distinct ?property  ?propertyLabel ?domain ?multipleDomain  ?range ?multipleRange ?maxDomainCardinality ?minDomainCardinality  ?domainCardinality  ?maxRangeCardinality ?minRangeCardinality ?rangeCardinality 
+ 	WHERE { 
+ 	{SELECT  ?property (count(?mdomain  ) as ?multipleDomain) WHERE {?property rdfs:domain ?mdomain . } group by ?property  }
+ 	{SELECT ?property (count(?mrange  ) as ?multipleRange) WHERE {?property rdfs:range ?mrange . } group by ?property  }
+ 	?property rdfs:domain ?domain .
+ 	?property rdfs:range ?range .
+ 	?property rdf:type ?propertyType .
+     OPTIONAL{ ?property rdfs:label ?propertyLabel . }
+OPTIONAL{?domain rdfs:subClassOf+ ?superDomainClass .    ?property  rdfs:domain ?superDomainClass .  } FILTER( !Bound (?superDomainClass) )
+OPTIONAL{?range rdfs:subClassOf+ ?superRangeClass .    ?property  rdfs:range ?superRangeClass .  } FILTER( !Bound (?superRangeClass) )
+     FILTER(isIRI(?property)&& isIRI(?domain) && isIRI(?range)&& !(?range = rdfs:Literal) )  
+ 	FILTER( (?propertyType = owl:ObjectProperty)||
+ 	(?range = rdfs:Resource) ||
+ 	(?range = rdfs:Class) ||
+ 	(?range = owl:Class) ||
+ 	(?range = owl:ObjectProperty) ||
+ 	(?range = rdf:Property) ||
+ 	(?range = rdf:List) ||
+ 	(?range = owl:Ontology) ||
+ 	(?range = owl:Thing)
+ 	)
+ OPTIONAL
+  { ?domain rdfs:subClassOf ?minrdomainestriction .
+ ?minrdomainestriction rdf:type owl:Restriction .
+ ?minrdomainestriction owl:onProperty ?property .
+ ?minrdomainestriction owl:minCardinality ?minDomainCardinality
+ }
+ OPTIONAL
+ { ?domain rdfs:subClassOf ?maxdomainrestriction .
+ ?maxdomainrestriction rdf:type owl:Restriction .
+ ?maxdomainrestriction owl:onProperty ?property .
+ ?maxdomainrestriction owl:maxCardinality ?maxDomainCardinality
+ }
+  OPTIONAL
+ { ?domain rdfs:subClassOf ?domainrestriction .
+ ?domainrestriction rdf:type owl:Restriction .
+ ?domainrestriction owl:onProperty ?property .
+ ?domainrestriction owl:cardinality ?domainCardinality
+  }
+  OPTIONAL
+ { ?range rdfs:subClassOf ?minrangerestriction .
+  ?minrangerestriction rdf:type owl:Restriction .
+ ?minrangerestriction owl:onProperty ?property .
+  ?minrangerestriction owl:minCardinality ?minRangeCardinality. FILTER(?range !=?domain)
+ }
+ OPTIONAL
+ { ?range rdfs:subClassOf ?maxrangerestriction .
+ ?maxrangerestriction rdf:type owl:Restriction .
+ ?maxrangerestriction owl:onProperty ?property .
+ ?maxrangerestriction owl:maxCardinality ?maxRangeCardinality. FILTER(?range !=?domain)
+ }
+ OPTIONAL
+ { ?range rdfs:subClassOf ?rangerestriction .
+ ?rangerestriction rdf:type owl:Restriction .
+ ?rangerestriction owl:onProperty ?property .
+ ?rangerestriction owl:cardinality ?rangeCardinality. FILTER(?range !=?domain)
+ }
+ 	}ORDER BY ?propertyLabel
+########################Inverse Association Query
+
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+ 	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+ 	PREFIX owl: <http://www.w3.org/2002/07/owl#> 
+ 	SELECT  distinct ?inverseProperty  ?inversePropertyLabel ?property   ?domain ?multipleDomain  ?range ?multipleRange ?maxDomainCardinality ?minDomainCardinality  ?domainCardinality  ?maxRangeCardinality ?minRangeCardinality ?rangeCardinality 
+ 	WHERE { { ?property owl:inverseOf ?inverseProperty .} UNION { ?inverseProperty owl:inverseOf ?property  } 
+ 	{SELECT  ?property (count(?mdomain  ) as ?multipleDomain) WHERE {?property rdfs:domain ?mdomain . } group by ?property  }
+ 	{SELECT ?property (count(?mrange  ) as ?multipleRange) WHERE {?property rdfs:range ?mrange . } group by ?property  }
+ 	?property rdfs:domain ?domain .
+ 	?property rdfs:range ?range .
+ 	?property rdf:type ?propertyType .
+     OPTIONAL{ ?inverseProperty rdfs:label ?inversePropertyLabel . }
+OPTIONAL{?domain rdfs:subClassOf+ ?superDomainClass .    ?property  rdfs:domain ?superDomainClass .  } FILTER( !Bound (?superDomainClass) )
+OPTIONAL{?range rdfs:subClassOf+ ?superRangeClass .    ?property  rdfs:range ?superRangeClass .  } FILTER( !Bound (?superRangeClass) )
+     FILTER(isIRI(?inverseProperty) && isIRI(?property) && isIRI(?domain) && isIRI(?range) && !(?range = rdfs:Literal) )  
+ 	FILTER( (?propertyType = owl:ObjectProperty)||
+ 	(?range = rdfs:Resource) ||
+ 	(?range = rdfs:Class) ||
+ 	(?range = owl:Class) ||
+ 	(?range = owl:ObjectProperty) ||
+ 	(?range = rdf:Property) ||
+ 	(?range = rdf:List) ||
+ 	(?range = owl:Ontology) ||
+ 	(?range = owl:Thing)
+ 	)
+ OPTIONAL
+  { ?domain rdfs:subClassOf ?minrdomainestriction .
+ ?minrdomainestriction rdf:type owl:Restriction .
+ ?minrdomainestriction owl:onProperty ?property .
+ ?minrdomainestriction owl:minCardinality ?minDomainCardinality
+ }
+ OPTIONAL
+ { ?domain rdfs:subClassOf ?maxdomainrestriction .
+ ?maxdomainrestriction rdf:type owl:Restriction .
+ ?maxdomainrestriction owl:onProperty ?property .
+ ?maxdomainrestriction owl:maxCardinality ?maxDomainCardinality
+ }
+  OPTIONAL
+ { ?domain rdfs:subClassOf ?domainrestriction .
+ ?domainrestriction rdf:type owl:Restriction .
+ ?domainrestriction owl:onProperty ?property .
+ ?domainrestriction owl:cardinality ?domainCardinality
+  }
+  OPTIONAL
+ { ?range rdfs:subClassOf ?minrangerestriction .
+  ?minrangerestriction rdf:type owl:Restriction .
+ ?minrangerestriction owl:onProperty ?property .
+  ?minrangerestriction owl:minCardinality ?minRangeCardinality. FILTER(?range !=?domain)
+ }
+ OPTIONAL
+ { ?range rdfs:subClassOf ?maxrangerestriction .
+ ?maxrangerestriction rdf:type owl:Restriction .
+ ?maxrangerestriction owl:onProperty ?property .
+ ?maxrangerestriction owl:maxCardinality ?maxRangeCardinality. FILTER(?range !=?domain)
+ }
+ OPTIONAL
+ { ?range rdfs:subClassOf ?rangerestriction .
+ ?rangerestriction rdf:type owl:Restriction .
+ ?rangerestriction owl:onProperty ?property .
+ ?rangerestriction owl:cardinality ?rangeCardinality. FILTER(?range !=?domain)
+ }
+ 	}ORDER BY ?propertyLabel
+
+	

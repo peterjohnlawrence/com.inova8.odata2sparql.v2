@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+	xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+	xml:base="http://localhost:8080/odata/sparql/2.0/NW/">
+	<id>http://localhost:8080/odata/sparql/2.0/NW/Customer(&#x27;northwind%3ACustomer-TEST1&#x27;)
+	</id>
+	<title type="text">Customer</title>
+	<updated>2014-08-30T08:20:42.349-04:00</updated>
+	<category term="northwind.Customer"
+		scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+	<content type="application/xml">
+		<m:properties>
+			<d:subject>northwind:Customer-TEST1</d:subject>
+			<d:label>TEST1</d:label>
+			<d:comment m:null="true" />
+			<d:fax>11.22.33.44</d:fax>
+			<d:postalCode>12345</d:postalCode>
+			<d:city>Rock</d:city>
+			<d:contactName>John Doe</d:contactName>
+			<d:address>Littletown</d:address>
+			<d:contactTitle>Sales</d:contactTitle>
+			<d:region m:null="true" />
+			<d:companyName>ACME</d:companyName>
+			<d:phone>11.22.33.55</d:phone>
+			<d:country>EU</d:country>
+		</m:properties>
+	</content>
+</entry>
