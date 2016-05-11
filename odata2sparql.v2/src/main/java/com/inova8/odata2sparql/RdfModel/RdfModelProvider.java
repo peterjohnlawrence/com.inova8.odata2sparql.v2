@@ -34,7 +34,7 @@ public class RdfModelProvider {
 	public RdfModelProvider(RdfRepository rdfRepository) {
 		super();
 		this.rdfMetamodelProvider = new RdfMetamodelProvider(rdfRepository);
-		model = new RdfModel();
+		model = new RdfModel(rdfRepository);
 	}	
 	
 	public RdfModel getRdfModel() throws Exception {
@@ -164,8 +164,8 @@ public class RdfModelProvider {
 							RdfEntityType baseType = model.getOrCreateEntityType(baseTypeNode);
 							if (!classNode.isBlank()) {
 								RdfEntityType entityType;
-								if (classNode.getURI().toString().equals(RdfConstants.RDFS_RESOURCE)
-								// make statement the same as all others|| classNode.getURI().toString().equals(RdfConstants.RDF_STATEMENT)
+								if (classNode.getIRI().toString().equals(RdfConstants.RDFS_RESOURCE)
+								// make statement the same as all others|| classNode.getIRI().toString().equals(RdfConstants.RDF_STATEMENT)
 								) {
 									//Special cases where we do not want to define basetypes so that OData aligns with RDF/RDFS/OWL
 									entityType=model.getOrCreateEntityType(classNode, classLabelNode);
@@ -182,7 +182,7 @@ public class RdfModelProvider {
 								model.getOrCreateEntityType(classNode, classLabelNode).setEntity(true);
 						}
 					} catch (Exception e) {
-						log.info("Failed to create class:" + classNode.getURI().toString() + " with exception "
+						log.info("Failed to create class:" + classNode.getIRI().toString() + " with exception "
 								+ e.getMessage());
 					}
 				}
@@ -207,7 +207,7 @@ public class RdfModelProvider {
 						@SuppressWarnings("unused")
 						RdfDatatype datatype = model.getOrCreateDatatype(datatypeNode);
 					} catch (Exception e) {
-						log.info("Failed to create datatype:" + datatypeNode.getURI().toString() + " with exception "
+						log.info("Failed to create datatype:" + datatypeNode.getIRI().toString() + " with exception "
 								+ e.getMessage());
 					}
 				}
@@ -260,7 +260,7 @@ public class RdfModelProvider {
 		//						RdfProperty datatypeProperty = model.getOrCreateProperty(propertyNode, equivalentPropertyNode,
 		//								propertyLabelNode, domainNode, rangeNode, cardinality);
 		//					} catch (Exception e) {
-		//						log.info("Failed to create property:" + propertyNode.getURI().toString() + " with exception "
+		//						log.info("Failed to create property:" + propertyNode.getIRI().toString() + " with exception "
 		//								+ e.getMessage());
 		//					}
 		//				}
@@ -294,16 +294,16 @@ public class RdfModelProvider {
 						if (soln.getRdfNode("description") != null) {
 							datatypeProperty.setDescription(soln.getRdfNode("description").getLiteralValue().getLabel());
 						}
-						HashSet<RdfEntityType> classes = propertyClasses.get(propertyNode.getURI().toString());
+						HashSet<RdfEntityType> classes = propertyClasses.get(propertyNode.getIRI().toString());
 						if (classes == null) {
 							classes = new HashSet<RdfEntityType>();
 							classes.add(datatypeProperty.ofClass);
-							propertyClasses.put(propertyNode.getURI().toString(), classes);
+							propertyClasses.put(propertyNode.getIRI().toString(), classes);
 						} else {
 							classes.add(datatypeProperty.ofClass);
 						}
 					} catch (Exception e) {
-						log.info("Failed to create property:" + propertyNode.getURI().toString() + " with exception "
+						log.info("Failed to create property:" + propertyNode.getIRI().toString() + " with exception "
 								+ e.getMessage());
 					}
 				}
@@ -323,14 +323,16 @@ public class RdfModelProvider {
 			try {
 				while (properties.hasNext()) {
 					RdfNode propertyNode = null;
+					RdfQuerySolution soln= null;
+					RdfNode rangeNode = null;
 					try {
-						RdfQuerySolution soln = properties.nextSolution();
+						soln = properties.nextSolution();
 						propertyNode = soln.getRdfNode("property");
-						RdfNode rangeNode = soln.getRdfNode("range");
-						HashSet<RdfEntityType> classes = propertyClasses.get(propertyNode.getURI().toString());
+						rangeNode = soln.getRdfNode("range");
+						HashSet<RdfEntityType> classes = propertyClasses.get(propertyNode.getIRI().toString());
 						model.setPropertyRange(propertyNode, classes, rangeNode);
 					} catch (Exception e) {
-						log.info("Failed to create property ranges:" + propertyNode.getURI().toString()
+						log.info("Failed to create property ranges:" + propertyNode.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 				}
@@ -367,11 +369,11 @@ public class RdfModelProvider {
 								|| (soln.getRdfNode("cardinality") != null)) {
 							Cardinality cardinality = interpretCardinality(maxCardinalityNode, minCardinalityNode,
 									cardinalityNode, RdfConstants.Cardinality.ZERO_TO_ONE);
-							HashSet<RdfEntityType> classes = propertyClasses.get(propertyNode.getURI().toString());
+							HashSet<RdfEntityType> classes = propertyClasses.get(propertyNode.getIRI().toString());
 							model.setPropertyCardinality(propertyNode, classes, cardinality);
 						}
 					} catch (Exception e) {
-						log.info("Failed to create property cardinality:" + propertyNode.getURI().toString()
+						log.info("Failed to create property cardinality:" + propertyNode.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 				}
@@ -450,7 +452,7 @@ public class RdfModelProvider {
 						}
 						
 					} catch (Exception e) {
-						log.info("Failed to create objectproperty:" + propertyNode.getURI().toString()
+						log.info("Failed to create objectproperty:" + propertyNode.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 
@@ -517,7 +519,7 @@ public class RdfModelProvider {
 						}
 						
 					} catch (Exception e) {
-						log.info("Failed to create inverseproperty:" + inversePropertyNode.getURI().toString()
+						log.info("Failed to create inverseproperty:" + inversePropertyNode.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 
@@ -546,7 +548,7 @@ public class RdfModelProvider {
 							operationEntityType.setDescription(soln.getRdfNode("description").getLiteralValue().getLabel());
 						}
 					} catch (Exception e) {
-						log.info("Failed to create operation:" + queryNode.getURI().toString() + " with exception "
+						log.info("Failed to create operation:" + queryNode.getIRI().toString() + " with exception "
 								+ e.getMessage());
 					}
 				}
@@ -582,7 +584,7 @@ public class RdfModelProvider {
 							operationAssociation.setDescription(soln.getRdfNode("description").getLiteralValue().getLabel());
 						}
 					} catch (Exception e) {
-						log.info("Failed to create operation association results:" + query.getURI().toString()
+						log.info("Failed to create operation association results:" + query.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 				}
@@ -618,7 +620,7 @@ public class RdfModelProvider {
 							operationProperty.setDescription(soln.getRdfNode("description").getLiteralValue().getLabel());
 						}
 					} catch (Exception e) {
-						log.info("Failed to create operation property results:" + query.getURI().toString()
+						log.info("Failed to create operation property results:" + query.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 				}
@@ -648,7 +650,7 @@ public class RdfModelProvider {
 							range = soln.getRdfNode("range");
 						model.getOrCreateOperationArguments(query, queryProperty, varName, range);
 					} catch (Exception e) {
-						log.info("Failed to create operation arguments:" + query.getURI().toString()
+						log.info("Failed to create operation arguments:" + query.getIRI().toString()
 								+ " with exception " + e.getMessage());
 					}
 				}
@@ -674,7 +676,7 @@ public class RdfModelProvider {
 					clazz.isOperation = clazz.isOperation;
 					//Need to define a primary key for an operation that should be the 
 					if (clazz.primaryKeys.isEmpty() && clazz.isOperation && clazz.baseType == null) {
-						log.info("Class removed as incomplete definition " + clazz.getURI());
+						log.info("Class removed as incomplete definition " + clazz.getIRI());
 						clazzIterator.remove();
 					}
 				}

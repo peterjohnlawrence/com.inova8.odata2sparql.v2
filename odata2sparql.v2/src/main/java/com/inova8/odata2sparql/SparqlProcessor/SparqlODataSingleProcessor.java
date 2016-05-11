@@ -100,26 +100,15 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 	private SparqlQueryBuilder sparqlBuilder;
 
 	SparqlODataSingleProcessor(RdfEdmProvider rdfEdmProvider) {
-		/*SparqlProcessor*/this.rdfEdmProvider = rdfEdmProvider;
-		/*SparqlProcessor*/this.sparqlUpdateInsertBuilder = new SparqlUpdateInsertBuilder(rdfEdmProvider);
+		this.rdfEdmProvider = rdfEdmProvider;
+		this.sparqlUpdateInsertBuilder = new SparqlUpdateInsertBuilder(rdfEdmProvider.getRdfModel());
 	}
-
-//	public SparqlODataSingleProcessor(String odataVersion,String rdfRepositoryID ) {
-//		
-//
-//		
-//		
-//		
-//		
-////		/*SparqlProcessor*/this.rdfEdmProvider = rdfEdmProvider;
-////		/*SparqlProcessor*/this.sparqlUpdateInsertBuilder = new SparqlUpdateInsertBuilder(rdfEdmProvider);
-//	}
 	@Override
 	public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo, final String contentType)
 			throws ODataException {
 		RdfEntityType rdfEntityType = null;
 		EdmEntitySet edmEntitySet = null;
-		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider,uriInfo);
+		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider.getRdfModel(),rdfEdmProvider.getEdmMetadata(), uriInfo);
 		
 		//prepareQuery
 		SparqlStatement sparqlStatement = null;
@@ -155,7 +144,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 
 		RdfEntityType rdfEntityType = null;
 		EdmEntitySet edmEntitySet = null;
-		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider,uriInfo);
+		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider.getRdfModel(),rdfEdmProvider.getEdmMetadata(),uriInfo);
 		
 		//prepareQuery
 		SparqlStatement sparqlStatement = null;
@@ -347,7 +336,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 	@Override
 	public ODataResponse countEntitySet(GetEntitySetCountUriInfo uriInfo, String contentType) throws ODataException {
 
-		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider,uriInfo);
+		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider.getRdfModel(),rdfEdmProvider.getEdmMetadata(),uriInfo);
 		final SparqlStatement sparqlStatement = this.sparqlBuilder.prepareCountEntitySetSparql();
 		try {
 			return executeCountQuery(sparqlStatement, contentType);
@@ -473,7 +462,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		
 		RdfEntityType rdfEntityType = null;
 		EdmEntitySet edmEntitySet = null;
-		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider,uriInfo);
+		this.sparqlBuilder = new SparqlQueryBuilder(rdfEdmProvider.getRdfModel(),rdfEdmProvider.getEdmMetadata(),uriInfo);
 		edmEntitySet = uriInfo.getStartEntitySet();
 		rdfEntityType = rdfEdmProvider.getRdfEntityTypefromEdmEntitySet(edmEntitySet);
 

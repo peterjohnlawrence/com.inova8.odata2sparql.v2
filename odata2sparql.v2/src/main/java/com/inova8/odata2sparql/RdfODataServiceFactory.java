@@ -42,16 +42,6 @@ public class RdfODataServiceFactory extends ODataServiceFactory {
 				throw new ODataException("Unsupported Odata version: " + odataVersion);
 			}
 			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
-
-/*			
- 			RdfEdmProvider rdfEdmProvider;
-			try {
-				rdfEdmProvider = rdfEdmProviders.getRdfEdmProvider(rdfRepositoryID,odataVersion);
-			} catch (OData2SparqlException e) {
-				throw new ODataException("Error getting RdfODataProvider: " + odataVersion);
-			}
-			return createODataSingleProcessorService(rdfEdmProvider, rdfEdmProvider.getSparqlODataSingleProcessor());
-*/
 			
 			SparqlODataSingleProcessor sparqlODataSingleProcessor;
 			try {

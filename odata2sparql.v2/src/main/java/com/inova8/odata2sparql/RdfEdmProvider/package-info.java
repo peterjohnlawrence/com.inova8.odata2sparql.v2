@@ -1,5 +1,5 @@
 /**
- * 
+ * Provides the EDM model for the OData provider. 
  */
 /**
  * @author Peter Lawrence

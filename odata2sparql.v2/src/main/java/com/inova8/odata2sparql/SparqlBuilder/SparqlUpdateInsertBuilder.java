@@ -12,8 +12,8 @@ import org.apache.olingo.odata2.api.exception.ODataApplicationException;
 import org.apache.olingo.odata2.api.uri.NavigationSegment;
 import org.apache.olingo.odata2.api.uri.expression.ExceptionVisitExpression;
 
-import com.inova8.odata2sparql.RdfEdmProvider.RdfEdmProvider;
 import com.inova8.odata2sparql.RdfModel.RdfEntity;
+import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfAssociation;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfEntityType;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfProperty;
@@ -22,11 +22,11 @@ import com.inova8.odata2sparql.SparqlStatement.SparqlStatement;
 public class SparqlUpdateInsertBuilder {
 	@SuppressWarnings("unused")
 	private final Log log = LogFactory.getLog(SparqlStatement.class);
-	private final RdfEdmProvider sparqlODataProvider;
+	private final RdfModel rdfModel;
 
-	public SparqlUpdateInsertBuilder(RdfEdmProvider sparqlODataProvider) {
+	public SparqlUpdateInsertBuilder(RdfModel rdfModel) {
 		super();
-		this.sparqlODataProvider = sparqlODataProvider;
+		this.rdfModel = rdfModel;
 	}
 
 	//private SPARQLProfile profile = RdfConnection.SPARQLProfile.DEFAULT;
@@ -58,10 +58,10 @@ public class SparqlUpdateInsertBuilder {
 				RdfProperty property = entityType.findProperty(prop.getKey());
 				if (property.getIsKey()) {
 					properties
-							.append("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + entityType.getURI() + ">");
+							.append("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + entityType.getIRI() + ">");
 					entityKey = prop.getValue().toString();
 				} else {
-					properties.append("<" + property.propertyNode.getURI() + "> ");
+					properties.append("<" + property.propertyNode.getIRI() + "> ");
 					properties.append("\"" + prop.getValue().toString() + "\"");
 				}
 			}
@@ -69,7 +69,7 @@ public class SparqlUpdateInsertBuilder {
 		properties.append(" .\n");
 		if (entityKey == null)
 			throw new ODataApplicationException("Key not found ", null);
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes().expandPrefix(entityKey);
+		String expandedKey =rdfModel.getRdfPrefixes().expandPrefix(entityKey);
 		if (urlValidator.isValid(expandedKey)) {
 			insertProperties.append("<" + expandedKey + ">");
 			insertProperties.append(properties);
@@ -85,7 +85,7 @@ public class SparqlUpdateInsertBuilder {
 		UrlValidator urlValidator = new UrlValidator();
 		String key = entityType.entityTypeName;
 		StringBuilder deleteQuery = new StringBuilder("DELETE {?" + key + "_s ?" + key + "_p ?" + key + "_o .}WHERE {");
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes().expandPrefix(entityKey);
+		String expandedKey = rdfModel.getRdfPrefixes().expandPrefix(entityKey);
 		if (urlValidator.isValid(expandedKey)) {
 			deleteQuery.append("{?" + key + "_s ?" + key + "_p ?" + key + "_o .{VALUES(?" + key + "_s ){(<"
 					+ expandedKey + ">)}}}");
@@ -106,7 +106,7 @@ public class SparqlUpdateInsertBuilder {
 		sparql.append(generateInsertProperties(entityType, entityKey, entry));
 
 		sparql.append("WHERE { ?" + key + "_s ?" + key + "_p ?" + key + "_o .");
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes()
+		String expandedKey = rdfModel.getRdfPrefixes()
 				.expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
 		if (urlValidator.isValid(expandedKey)) {
 			sparql.append("VALUES(?" + key + "_s ){(<" + expandedKey + ">)}");
@@ -121,11 +121,11 @@ public class SparqlUpdateInsertBuilder {
 			throws ODataApplicationException {
 		UrlValidator urlValidator = new UrlValidator();
 		StringBuilder sparql = new StringBuilder("SELECT ?VALUE WHERE {");
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes()
+		String expandedKey = rdfModel.getRdfPrefixes()
 				.expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
 		if (urlValidator.isValid(expandedKey)) {
 			sparql.append("<" + expandedKey + "> ");
-			String expandedProperty = entityType.findProperty(property).propertyNode.getURI().toString();
+			String expandedProperty = entityType.findProperty(property).propertyNode.getIRI().toString();
 			if (urlValidator.isValid(expandedProperty)) {
 				sparql.append("<" + expandedProperty + "> ?VALUE }");
 			} else {
@@ -143,11 +143,11 @@ public class SparqlUpdateInsertBuilder {
 		String key = entityType.entityTypeName;
 		StringBuilder sparql = new StringBuilder("DELETE {?" + key + "_s ?" + key + "_p ?" + key + "_o .}WHERE { ?"
 				+ key + "_s ?" + key + "_p ?" + key + "_o . VALUES(?" + key + "_s ?" + key + "_p){(");
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes()
+		String expandedKey = rdfModel.getRdfPrefixes()
 				.expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
 		if (urlValidator.isValid(expandedKey)) {
 			sparql.append("<" + expandedKey + "> ");
-			String expandedProperty = entityType.findProperty(property).propertyNode.getURI().toString();
+			String expandedProperty = entityType.findProperty(property).propertyNode.getIRI().toString();
 			if (urlValidator.isValid(expandedProperty)) {
 				sparql.append("<" + expandedProperty + ">)}}");
 			} else {
@@ -163,9 +163,9 @@ public class SparqlUpdateInsertBuilder {
 			String property, Object entry) throws ODataApplicationException {
 		UrlValidator urlValidator = new UrlValidator();
 		String key = entityType.entityTypeName;
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes()
+		String expandedKey = rdfModel.getRdfPrefixes()
 				.expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
-		String expandedProperty = entityType.findProperty(property).propertyNode.getURI().toString();
+		String expandedProperty = entityType.findProperty(property).propertyNode.getIRI().toString();
 		String value = entry.toString();
 		if (urlValidator.isValid(expandedKey)) {
 
@@ -194,7 +194,7 @@ public class SparqlUpdateInsertBuilder {
 		UrlValidator urlValidator = new UrlValidator();
 		String key = entityType.entityTypeName;
 
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes()
+		String expandedKey = rdfModel.getRdfPrefixes()
 				.expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
 		if (urlValidator.isValid(expandedKey)) {
 		} else {
@@ -202,7 +202,7 @@ public class SparqlUpdateInsertBuilder {
 		}
 		RdfAssociation rdfProperty = entityType.findNavigationProperty(navigationProperty.getNavigationProperty()
 				.getName());
-		String expandedProperty = rdfProperty.getAssociationURI();
+		String expandedProperty = rdfProperty.getAssociationIRI();
 		StringBuilder sparql = new StringBuilder("CONSTRUCT {?" + key + "_s <" + expandedProperty + "> ?" + key
 				+ "_o .}");
 		if (rdfProperty.IsInverse()) {
@@ -226,7 +226,7 @@ public class SparqlUpdateInsertBuilder {
 			ODataApplicationException {
 		UrlValidator urlValidator = new UrlValidator();
 		String key = entityType.entityTypeName;
-		String expandedKey = sparqlODataProvider.getRdfModel().getRdfPrefixes()
+		String expandedKey = rdfModel.getRdfPrefixes()
 				.expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
 		if (urlValidator.isValid(expandedKey)) {
 		} else {
@@ -234,7 +234,7 @@ public class SparqlUpdateInsertBuilder {
 		}
 		RdfAssociation rdfProperty = entityType.findNavigationProperty(navigationProperty.getNavigationProperty()
 				.getName());
-		String expandedProperty = rdfProperty.getAssociationURI();
+		String expandedProperty = rdfProperty.getAssociationIRI();
 		StringBuilder sparql = new StringBuilder("SELECT (count(*) as ?COUNT) ");
 		if (rdfProperty.IsInverse()) {
 			String expandedInverseProperty = rdfProperty.getInversePropertyOfURI().toString();

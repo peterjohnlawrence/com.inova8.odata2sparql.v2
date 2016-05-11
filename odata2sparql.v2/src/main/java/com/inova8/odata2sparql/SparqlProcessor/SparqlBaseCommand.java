@@ -43,12 +43,12 @@ class SparqlBaseCommand {
 				if ((expand == null || expand.isEmpty()) && (select == null || select.isEmpty())) {
 					rdfSubjectEntity.setEntityType(rdfEntityType); 
 				}
-				if (objectNode.isURI() || objectNode.isBlank()) {// Must be a navigation property pointing to an expanded entity
-					if (propertyNode.getURI().toString().equals(RdfConstants.RDF_TYPE)) {
+				if (objectNode.isIRI() || objectNode.isBlank()) {// Must be a navigation property pointing to an expanded entity
+					if (propertyNode.getIRI().toString().equals(RdfConstants.RDF_TYPE)) {
 						rdfSubjectEntity.setEntityType(sparqlEdmProvider.getRdfModel()
 								.getOrCreateEntityType(objectNode));
 					}
-					RdfAssociation rdfAssociation = navPropertiesMap.get(propertyNode.getURI().toString());
+					RdfAssociation rdfAssociation = navPropertiesMap.get(propertyNode.getIRI().toString());
 					if (rdfAssociation != null) {
 						// Locate which of the $expand this is related to
 						RdfEntity rdfObjectEntity = findOrCreateEntity(sparqlEdmProvider, rdfEntitiesMap, objectNode,
@@ -64,7 +64,7 @@ class SparqlBaseCommand {
 									rdfSubjectEntity.getEntityType()
 											.findNavigationProperty(propertyNode.getLocalName()).getRelatedKey(), RdfEntity
 											//.URLEncodeEntityKey(objectNode.toQName(sparqlEdmProvider.getRdfModel().getRdfPrefixes())));
-											.URLEncodeEntityKey(sparqlEdmProvider.getRdfModel()	.getRdfPrefixes().toQName(objectNode)));						}
+											.URLEncodeEntityKey(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(objectNode)));						}
 					}
 				} else if (objectNode.isBlank()) {
 					//Must be a navigation property pointing to an expanded entity, but they should really be eliminated from the query in the first place
@@ -95,9 +95,9 @@ class SparqlBaseCommand {
 
 			RdfEntity rdfSubjectEntity = findOrCreateEntity(edmProvider, entitiesMap, subjectNode, entityType);
 
-			if (objectNode.isURI()) {// Must be a navigation property pointing to an expanded entity
+			if (objectNode.isIRI()) {// Must be a navigation property pointing to an expanded entity
 
-				RdfAssociation rdfAssociation = navPropertiesMap.get(propertyNode.getURI().toString());
+				RdfAssociation rdfAssociation = navPropertiesMap.get(propertyNode.getIRI().toString());
 
 				// Locate which of the $expand this is related to
 				RdfEntity rdfObjectEntity = findOrCreateEntity(edmProvider, entitiesMap, objectNode, null);
@@ -128,7 +128,7 @@ class SparqlBaseCommand {
 				RdfAssociation rdfAssociation = edmProvider.getMappedNavigationProperty(new FullQualifiedName(
 						navigationPropertySegment.getNavigationProperty().getRelationship().getNamespace(),
 						navigationPropertySegment.getNavigationProperty().getRelationship().getName()));
-				navPropertiesMap.put(rdfAssociation.getAssociationNodeURI(), rdfAssociation);
+				navPropertiesMap.put(rdfAssociation.getAssociationNodeIRI(), rdfAssociation);
 			}
 		}
 
@@ -138,7 +138,7 @@ class SparqlBaseCommand {
 					RdfAssociation rdfAssociation = edmProvider.getMappedNavigationProperty(new FullQualifiedName(
 							navigationPropertySegment.getNavigationProperty().getRelationship().getNamespace(),
 							navigationPropertySegment.getNavigationProperty().getRelationship().getName()));
-					navPropertiesMap.put(rdfAssociation.getAssociationNodeURI(), rdfAssociation);
+					navPropertiesMap.put(rdfAssociation.getAssociationNodeIRI(), rdfAssociation);
 				}
 			}
 		}
@@ -156,7 +156,7 @@ class SparqlBaseCommand {
 				RdfAssociation rdfAssociation = edmProvider.getMappedNavigationProperty(new FullQualifiedName(
 						navigationSegment.getNavigationProperty().getRelationship().getNamespace(), navigationSegment
 								.getNavigationProperty().getRelationship().getName()));
-				navPropertiesMap.put(rdfAssociation.getAssociationNodeURI(), rdfAssociation);
+				navPropertiesMap.put(rdfAssociation.getAssociationNodeIRI(), rdfAssociation);
 			}
 
 		}

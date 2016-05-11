@@ -30,18 +30,9 @@ import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 public class RdfEdmProvider extends EdmProvider {
 	private final Log log = LogFactory.getLog(RdfEdmProvider.class);
 	private final RdfEdmModelProvider rdfEdmModelProvider;
-//	private final SparqlODataSingleProcessor sparqlODataSingleProcessor;
-
-//	private final UrlValidator defaultValidator = new UrlValidator();
-
 	RdfEdmProvider( String odataVersion,RdfRepository rdfRepository) throws OData2SparqlException {
 		this.rdfEdmModelProvider = new RdfEdmModelProvider(rdfRepository, odataVersion);
-//		this.sparqlODataSingleProcessor = new SparqlODataSingleProcessor(this);
 	}
-
-//	public SparqlODataSingleProcessor getSparqlODataSingleProcessor() {
-//		return sparqlODataSingleProcessor;
-//	}
 
 	public RdfEntityType getMappedEntityType(FullQualifiedName fullQualifiedName) {
 		return this.rdfEdmModelProvider.getEdmMetadata().getMappedEntityType(fullQualifiedName);

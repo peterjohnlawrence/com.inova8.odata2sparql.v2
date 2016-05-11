@@ -18,6 +18,7 @@ import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNode;
 import com.inova8.odata2sparql.RdfConstants.RdfConstants;
 import com.inova8.odata2sparql.RdfConstants.RdfConstants.Cardinality;
+import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 
 public class RdfModel {
 	private final Log log = LogFactory.getLog(RdfModel.class);
@@ -28,15 +29,15 @@ public class RdfModel {
 	public final List<RdfModel.RdfSchema> graphs = new ArrayList<RdfModel.RdfSchema>();
 
 	private final RdfPrefixes rdfPrefixes = new RdfPrefixes();
-
-	public RdfModel() {
+	private final RdfRepository rdfRepository;
+	public RdfModel(RdfRepository rdfRepository) {
 
 		rdfPrefixes.setStandardNsPrefixes();
+		this.rdfRepository = rdfRepository;
 	}
-
-	/**
-	 * @return the rdfPrefixes
-	 */
+	public RdfRepository getRdfRepository() {
+		return rdfRepository;
+	}
 	public RdfPrefixes getRdfPrefixes() {
 		return rdfPrefixes;
 	}
@@ -307,14 +308,9 @@ public class RdfModel {
 
 		public String queryText;
 
-		public String getURI() {
-			return entityTypeNode.getURI().toString();
+		public String getIRI() {
+			return entityTypeNode.getIRI().toString();
 		}
-
-//		public FullQualifiedName getFullQualifiedName() {
-//			return new FullQualifiedName(schema.schemaPrefix, entityTypeName);
-//
-//		}
 
 		private final HashMap<String, RdfModel.RdfProperty> properties = new HashMap<String, RdfModel.RdfProperty>();
 		private final HashMap<String, RdfModel.RdfAssociation> navigationProperties = new HashMap<String, RdfModel.RdfAssociation>();
@@ -369,7 +365,7 @@ public class RdfModel {
 		private String name;
 		private String type;
 		private boolean nullable;
-		public FunctionImportParameter(String name, String type, boolean nullable) {
+		private FunctionImportParameter(String name, String type, boolean nullable) {
 			super();
 			this.name = name;
 			this.type = type;
@@ -415,12 +411,12 @@ public class RdfModel {
 	}
 
 	static class RdfDatatype {
-		public RdfDatatype(String datatypeName) {
+		private RdfDatatype(String datatypeName) {
 			super();
 			this.datatypeName = datatypeName;
 		}
 
-		private String datatypeName;
+		private final String datatypeName;
 	}
 
 	public static class RdfProperty {
@@ -480,7 +476,7 @@ public class RdfModel {
 		}
 
 		public String getPropertyURI() {
-			return propertyNode.getURI().toString();
+			return propertyNode.getIRI().toString();
 		}
 
 		public String getPropertyTypeName() {
@@ -504,7 +500,8 @@ public class RdfModel {
 		private String relatedKey;
 		private RdfNode domainNode;
 		private String domainName;
-		RdfNode rangeNode;
+		@SuppressWarnings("unused")
+		private RdfNode rangeNode;
 		private String rangeName;
 		private RdfNode associationNode;
 		private Boolean isInverse = false;
@@ -517,8 +514,8 @@ public class RdfModel {
 		public RdfNode getAssociationNode() {
 			return associationNode;
 		}
-		public String getAssociationNodeURI() {
-			return associationNode.getURI().toString();
+		public String getAssociationNodeIRI() {
+			return associationNode.getIRI().toString();
 		}
 		public void setAssociationNode(RdfNode associationNode) {
 			this.associationNode = associationNode;
@@ -564,7 +561,7 @@ public class RdfModel {
 			return inversePropertyOf;
 		}
 		public String getInversePropertyOfURI() {
-			return inversePropertyOf.getURI().toString();
+			return inversePropertyOf.getIRI().toString();
 		}
 //		private @Deprecated
 //		Association edmAssociation;
@@ -587,7 +584,7 @@ public class RdfModel {
 //		}
 
 		public String getDomainNodeURI() {
-			return this.domainNode.getURI().toString();
+			return this.domainNode.getIRI().toString();
 		}
 		public void setDomainNode(RdfNode domainNode) {
 			this.domainNode = domainNode;
@@ -609,8 +606,8 @@ public class RdfModel {
 			this.toCardinality = toCardinality;
 		}
 
-		public String getAssociationURI() {
-			return associationNode.getURI().toString();
+		public String getAssociationIRI() {
+			return associationNode.getIRI().toString();
 		}
 
 //		public FullQualifiedName getFullQualifiedName() {
@@ -769,7 +766,7 @@ public class RdfModel {
 		if (operationEntityType.isOperation()) {
 			operationEntityType.setFunctionImport(true);
 //			List<AnnotationAttribute> nullableAnnotations = new ArrayList<AnnotationAttribute>();
-			String propertyTypeName = rangeNode.getURI().toString();
+			String propertyTypeName = rangeNode.getIRI().toString();
 //			nullableAnnotations.add((new AnnotationAttribute()).setName(RdfConstants.NULLABLE).setText(
 //					RdfConstants.FALSE));
 //			FunctionImportParameter functionImportParameter = new FunctionImportParameter();
@@ -796,7 +793,7 @@ public class RdfModel {
 		RdfURI propertyURI = new RdfURI(propertyNode);
 		//RdfURI rangeURI = new RdfURI(rangeNode);
 
-		String propertyTypeName = rangeNode.getURI().toString();
+		String propertyTypeName = rangeNode.getIRI().toString();
 
 		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode, null, null);
 		if (!operationEntityType.isEntity()) {
@@ -878,7 +875,7 @@ public class RdfModel {
 
 		RdfURI propertyURI = new RdfURI(propertyNode);
 
-		String propertyTypeName = rangeNode.getURI().toString();
+		String propertyTypeName = rangeNode.getIRI().toString();
 
 		RdfEntityType clazz = this.getOrCreateEntityType(domainNode);
 
@@ -887,7 +884,7 @@ public class RdfModel {
 		if (property == null) {
 			property = new RdfProperty();
 			if (equivalentPropertyNode != null) {
-				property.equivalentProperty = equivalentPropertyNode.getURI().toString();
+				property.equivalentProperty = equivalentPropertyNode.getIRI().toString();
 			}
 			property.propertyName = rdfToOdata(propertyURI.localName);
 			if (propertyLabelNode == null) {
@@ -939,7 +936,7 @@ public class RdfModel {
 		for (RdfEntityType clazz : classes) {
 			RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(
 					propertyNameEquals(propertyURI.localName));
-			String propertyTypeName = rangeNode.getURI().toString();
+			String propertyTypeName = rangeNode.getIRI().toString();
 			property.propertyTypeName = propertyTypeName;
 			//property.propertyType = SIMPLE_TYPE_MAPPING.get(propertyTypeName);
 			// Workaround for non XMLSchema or XMLSchema2 property types.

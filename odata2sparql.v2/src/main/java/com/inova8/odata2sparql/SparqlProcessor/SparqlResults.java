@@ -109,7 +109,7 @@ class SparqlResults {
 					RdfProperty rdfProperty = null;
 					if (rdfSubjectEntityType.isOperation()) {
 						//test to make sure a objectproperty first?
-						if (!propertyNode.getURI().toString().equals(RdfConstants.RDF_TYPE)) {
+						if (!propertyNode.getIRI().toString().equals(RdfConstants.RDF_TYPE)) {
 							RdfAssociation rdfNavigationProperty = rdfSubjectEntityType.findNavigationProperty(RdfModel
 									.rdfToOdata(propertyNode.getLocalName()));
 							if (rdfNavigationProperty != null) {

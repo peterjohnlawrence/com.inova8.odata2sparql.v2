@@ -6,6 +6,9 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
+        <dependent-module archiveName="odata2sparql.common-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/odata2sparql.common/odata2sparql.common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
     <property name="java-output-path" value="/target/classes"/>
         <property name="context-root" value="odata2sparql.v2"/>
   </wb-module>

@@ -34,11 +34,12 @@ import org.apache.olingo.odata2.api.uri.expression.UnaryExpression;
 import org.apache.olingo.odata2.api.uri.expression.UnaryOperator;
 
 import com.inova8.odata2sparql.RdfConstants.RdfConstants;
-import com.inova8.odata2sparql.RdfEdmProvider.RdfEdmProvider;
 import com.inova8.odata2sparql.RdfModel.RdfEntity;
+import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfAssociation;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfEntityType;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfProperty;
+import com.inova8.odata2sparql.RdfModelToMetadata.RdfModelToMetadata;
 
 public class SparqlExpressionVisitor implements ExpressionVisitor {
 	private final String SUBJECT_POSTFIX = "_s";
@@ -52,10 +53,18 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 	private final HashMap<String, NavPropertyPropertyFilter> navPropertyPropertyFilters = new HashMap<String, NavPropertyPropertyFilter>();
 
 	private final UrlValidator urlValidator = new UrlValidator();
-	private final RdfEdmProvider edmProvider;
+	//private final RdfEdmProvider rdfEdmProvider;
+	private final RdfModel rdfModel;
+	private final RdfModelToMetadata rdfModelToMetadata;
 	private final RdfEntityType entityType;
 	private String conditionString = "";
 	private final Boolean allStatus = false;
+	public SparqlExpressionVisitor(RdfModel rdfModel,RdfModelToMetadata rdfModelToMetadata, RdfEntityType entityType) {
+		super();
+		this.rdfModel = rdfModel;
+		this.rdfModelToMetadata = rdfModelToMetadata;
+		this.entityType = entityType;
+	}
 	public boolean isAllStatus() {
 		//TODO
 		return allStatus;
@@ -139,11 +148,7 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 		return "";
 	}
 
-	public SparqlExpressionVisitor(RdfEdmProvider edmProvider, RdfEntityType entityType) {
-		super();
-		this.edmProvider = edmProvider;
-		this.entityType = entityType;
-	}
+
 
 	@Override
 	public Object visitFilterExpression(FilterExpression filterExpression, String expressionString, Object expression) {
@@ -207,7 +212,7 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 	@Override
 	public Object visitLiteral(LiteralExpression literal, EdmLiteral edmLiteral) {
 
-		String expandedKey = this.edmProvider.getRdfModel().getRdfPrefixes().expandPrefix(RdfEntity.URLDecodeEntityKey(edmLiteral.getLiteral()));
+		String expandedKey = this.rdfModel.getRdfPrefixes().expandPrefix(RdfEntity.URLDecodeEntityKey(edmLiteral.getLiteral()));
 
 		if (urlValidator.isValid(expandedKey)) {
 			return "<" + expandedKey + ">";
@@ -352,7 +357,7 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 				} else {
 					//TODO will a property really be unique throughout namespace
 					if (!sPath.isEmpty()) {
-						rdfProperty = edmProvider.getMappedProperty(new FullQualifiedName(currentNavigationProperty
+						rdfProperty = this.rdfModelToMetadata.getMappedProperty(new FullQualifiedName(currentNavigationProperty
 								.getRelationship().getNamespace(), edmProperty.getName()));
 						if (navigationProperties.containsKey(sPath)) {
 							navigationProperties.get(sPath).add(rdfProperty);

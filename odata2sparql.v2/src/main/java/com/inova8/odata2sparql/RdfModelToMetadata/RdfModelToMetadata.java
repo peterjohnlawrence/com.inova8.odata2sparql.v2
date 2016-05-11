@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.inova8.odata2sparql.RdfConstants.ODataServiceVersion;
 
+import org.apache.olingo.odata2.api.edm.EdmEntitySet;
+import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmMultiplicity;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
@@ -122,18 +124,18 @@ public class RdfModelToMetadata {
 
 			for (RdfEntityType rdfClass : rdfGraph.classes) {
 				String entityTypeName = rdfClass.getEDMEntityTypeName();
-				EntityType entityType = globalEntityTypes.get(rdfClass.getURI());
+				EntityType entityType = globalEntityTypes.get(rdfClass.getIRI());
 				if (entityType == null) {
 					entityType = new EntityType().setName(entityTypeName);
 					// TODO .setNamespace(modelNamespace)
-					globalEntityTypes.put(rdfClass.getURI(), entityType);
+					globalEntityTypes.put(rdfClass.getIRI(), entityType);
 				}
 				if (rdfClass.getBaseType() != null) {
 					String baseTypeName = rdfClass.getBaseType().getEDMEntityTypeName();
-					EntityType baseType = globalEntityTypes.get(rdfClass.getBaseType().getURI());
+					EntityType baseType = globalEntityTypes.get(rdfClass.getBaseType().getIRI());
 					if (baseType == null) {
 						baseType = new EntityType().setName(baseTypeName);
-						globalEntityTypes.put(rdfClass.getBaseType().getURI(), baseType);
+						globalEntityTypes.put(rdfClass.getBaseType().getIRI(), baseType);
 					}
 					//entityType.setBaseType(rdfClass.getBaseType().getFullQualifiedName());
 					entityType.setBaseType(RdfFullQualifiedName.getFullQualifiedName(rdfClass.getBaseType()));
@@ -143,7 +145,7 @@ public class RdfModelToMetadata {
 
 					if (withRdfAnnotations) entityTypeAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
 							.setPrefix(RdfConstants.RDFS).setName(RdfConstants.RDFS_CLASS_LABEL)
-							.setText(rdfClass.getURI()));
+							.setText(rdfClass.getIRI()));
 					if (withSapAnnotations) entityTypeAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
 							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
 							.setText(rdfClass.getEntityTypeLabel()));
@@ -162,7 +164,7 @@ public class RdfModelToMetadata {
 
 			for (RdfEntityType rdfClass : rdfGraph.classes) {
 				String entityTypeName = rdfClass.getEDMEntityTypeName();
-				EntityType entityType = globalEntityTypes.get(rdfClass.getURI());
+				EntityType entityType = globalEntityTypes.get(rdfClass.getIRI());
 				entityTypes.put(entityTypeName, entityType);
 				entityType.setAbstract(false);
 				// TODO entityType.setNamespace(modelNamespace);
@@ -365,7 +367,7 @@ public class RdfModelToMetadata {
 						navigationPropertyAnnotations.add(new AnnotationAttribute()
 								.setNamespace(RdfConstants.RDF_SCHEMA).setPrefix(RdfConstants.RDF)
 								.setName(RdfConstants.PROPERTY)
-								.setText(rdfAssociation.getAssociationURI().toString()));
+								.setText(rdfAssociation.getAssociationIRI().toString()));
 					
 					if (withSapAnnotations) navigationPropertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
 							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
@@ -502,7 +504,10 @@ public class RdfModelToMetadata {
 	public RdfEntityType getMappedEntityType(FullQualifiedName fqnEntityType) {
 		return entitySetMapping.get(fqnEntityType);
 	}
-
+	public RdfEntityType getRdfEntityTypefromEdmEntitySet(EdmEntitySet edmEntitySet) throws EdmException {
+		return this.getMappedEntityType(new FullQualifiedName(edmEntitySet.getEntityType().getNamespace(), edmEntitySet
+				.getEntityType().getName()));
+	}
 	public RdfProperty getMappedProperty(FullQualifiedName fqnProperty) {
 		return propertyMapping.get(fqnProperty);
 	}

@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.inova8.odata2sparql</groupId>
 	<artifactId>odata2sparql.v2</artifactId>
@@ -81,7 +80,6 @@
 			<groupId>com.inova8.odata2sparql</groupId>
 			<artifactId>odata2sparql.common</artifactId>
 			<version>0.0.1</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -110,7 +108,7 @@
 		</plugins>
 	</build>
 	<properties>
-		<sesame.version>2.8.9</sesame.version>
+		<sesame.version>4.1.2</sesame.version>
 		<olingo.version>2.0.6</olingo.version>
 	</properties>
 	<organization>
@@ -118,7 +116,10 @@
 		<name>inova8 llc</name>
 	</organization>
 	<scm>
-		<url>https://github.com/peterjohnlawrence/com.inova8.odata2sparql.v2</url>
-		<developerConnection>Peter Lawrence</developerConnection>
+	  <tag>odata2sparql.v2-0.0.1</tag>
+	  <connection>scm:git:file:\\localhost\Users\Peter\git\com.inova8.odata2sparql.v2</connection>
+	  <developerConnection>scm:git:file:\\localhost\Users\Peter\git\com.inova8.odata2sparql.v2</developerConnection>
+	  <url>scm:git:file:\\localhost\Users\Peter\git\com.inova8.odata2sparql.v2</url>
 	</scm>
+	<url>http://www.inova8.com</url>
 </project>

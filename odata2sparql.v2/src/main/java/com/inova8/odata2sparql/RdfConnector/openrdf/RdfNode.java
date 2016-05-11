@@ -6,7 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
+import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 
 import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
@@ -39,19 +39,19 @@ public class RdfNode {
 		return node;
 	}
 
-	public boolean isURI() {
-		return node instanceof URI;
+	public boolean isIRI() {
+		return node instanceof IRI;
 	}
 
 	public boolean isBlank() {
 		return node instanceof BNode;
 	}
 
-	public Object getURI() {
+	public Object getIRI() {
 		if (this.isBlank()) {
 			return ((BNode) node).toString();
 		} else {
-			return ((URI) node).toString();
+			return ((IRI) node).toString();
 		}
 	}
 
@@ -70,7 +70,7 @@ public class RdfNode {
 //		return qname;
 //	}
 
-	public URI getLiteralDatatype() {
+	public IRI getLiteralDatatype() {
 		return ((Literal) node).getDatatype();
 	}
 
@@ -192,11 +192,11 @@ public class RdfNode {
 	}
 
 	public String getLocalName() {
-		return ((URI) node).getLocalName();
+		return ((IRI) node).getLocalName();
 	}
 
 	public String getNamespace() {
-		return ((URI) node).getNamespace();
+		return ((IRI) node).getNamespace();
 	}
 
 	public RdfLiteral getLiteral() {

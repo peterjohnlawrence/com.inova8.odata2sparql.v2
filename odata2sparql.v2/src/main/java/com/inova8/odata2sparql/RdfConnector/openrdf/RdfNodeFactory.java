@@ -1,13 +1,13 @@
 package com.inova8.odata2sparql.RdfConnector.openrdf;
 
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.impl.SimpleValueFactory;
 
 
 public class RdfNodeFactory {
-	private final static ValueFactory valueFactory = new ValueFactoryImpl();
+	private final static ValueFactory valueFactory =  SimpleValueFactory.getInstance();
 	public static RdfNode createURI(String uri) {
-		RdfNode rdfNode = new RdfNode(valueFactory.createURI( uri));
+		RdfNode rdfNode = new RdfNode(valueFactory.createIRI( uri));
 		return rdfNode;
 	}
 
