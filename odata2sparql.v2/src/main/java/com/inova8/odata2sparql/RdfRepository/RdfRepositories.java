@@ -34,7 +34,6 @@ import org.openrdf.repository.sail.config.SailRepositoryConfig;
 import org.openrdf.repository.sparql.config.SPARQLRepositoryConfig;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.config.SailImplConfig;
-import org.openrdf.sail.inferencer.fc.config.ForwardChainingRDFSInferencerConfig;
 import org.openrdf.sail.memory.config.MemoryStoreConfig;
 
 import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
