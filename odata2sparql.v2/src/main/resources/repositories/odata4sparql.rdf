@@ -11,219 +11,219 @@
     xmlns:rep="http://www.openrdf.org/config/repository#"
   xml:base="http://inova8.com/odata4sparql">
   <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
+    <owl:imports rdf:resource="http://www.openrdf.org/config/sail"/>
     <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Created with TopBraid Composer</owl:versionInfo>
-    <owl:imports rdf:resource="http://www.openrdf.org/config/sail"/>
-    <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
   </owl:Ontology>
   <owl:Class rdf:ID="Dataset">
+    <rdfs:subClassOf rdf:resource="http://rdfs.org/ns/void#Dataset"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >OData4Sparql Dataset</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://rdfs.org/ns/void#Dataset"/>
   </owl:Class>
   <owl:Class rdf:ID="Operation">
+    <rdfs:subClassOf rdf:resource="http://spinrdf.org/sp#Select"/>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Operation</rdfs:label>
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-    <rdfs:subClassOf rdf:resource="http://spinrdf.org/sp#Select"/>
   </owl:Class>
   <owl:Class rdf:ID="Profile">
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Profile</rdfs:label>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
   </owl:Class>
   <owl:Class rdf:ID="Prefix">
-    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >A prefix that conatins both a URL and a prefix used to create QNames within models</rdfs:comment>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Prefix</rdfs:label>
-  </owl:Class>
-  <owl:Class rdf:ID="Metadata">
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >Metadata</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >A prefix that conatins both a URL and a prefix used to create QNames within models</rdfs:comment>
     <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
   </owl:Class>
+  <owl:Class rdf:ID="Metadata">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Metadata</rdfs:label>
+  </owl:Class>
   <owl:ObjectProperty rdf:ID="defaultPrefix">
+    <rdfs:range rdf:resource="#Prefix"/>
+    <rdfs:domain rdf:resource="http://rdfs.org/ns/void#Dataset"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >default prefix</rdfs:label>
-    <rdfs:domain rdf:resource="http://rdfs.org/ns/void#Dataset"/>
-    <rdfs:range rdf:resource="#Prefix"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="sparqlProfile">
+    <rdfs:domain rdf:resource="http://www.openrdf.org/config/repository#RepositoryImpl"/>
+    <rdfs:range rdf:resource="#Profile"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >Profile of the SPAQL supported by this implementation. Does not belong with the dataset, as the data and vocabulary (ABox, TBox can be via separate implementations)</rdfs:label>
-    <rdfs:range rdf:resource="#Profile"/>
-    <rdfs:domain rdf:resource="http://www.openrdf.org/config/repository#RepositoryImpl"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="datasetPrefix">
-    <rdfs:range rdf:resource="#Prefix"/>
-    <rdfs:domain rdf:resource="http://rdfs.org/ns/void#Dataset"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >dataset prefix</rdfs:label>
+    <rdfs:domain rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <rdfs:range rdf:resource="#Prefix"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="vocabularyRepository">
-    <rdfs:range rdf:resource="http://www.openrdf.org/config/repository#Repository"/>
-    <rdfs:domain rdf:resource="#Dataset"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >vocabulary repository</rdfs:label>
+    <rdfs:domain rdf:resource="#Dataset"/>
+    <rdfs:range rdf:resource="http://www.openrdf.org/config/repository#Repository"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="dataRepository">
-    <rdfs:range rdf:resource="http://www.openrdf.org/config/repository#Repository"/>
-    <rdfs:domain rdf:resource="#Dataset"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >data repository</rdfs:label>
+    <rdfs:domain rdf:resource="#Dataset"/>
+    <rdfs:range rdf:resource="http://www.openrdf.org/config/repository#Repository"/>
   </owl:ObjectProperty>
   <owl:ObjectProperty rdf:ID="metadataQuery">
-    <rdfs:domain rdf:resource="#Metadata"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >metadata query</rdfs:label>
+    <rdfs:domain rdf:resource="#Metadata"/>
   </owl:ObjectProperty>
   <rdf:Property rdf:about="http://spinrdf.org/sp#resultVariable">
-    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#variable"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >result variable</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#variable"/>
   </rdf:Property>
   <rdf:Property rdf:about="http://spinrdf.org/sp#inputVariable">
-    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#variable"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >input variable</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://spinrdf.org/sp#variable"/>
   </rdf:Property>
   <owl:DatatypeProperty rdf:ID="propertyQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >property query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="withRdfAnnotations">
-    <rdfs:domain rdf:resource="#Dataset"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >with RDF annotations</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="#Dataset"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="prefix">
-    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >prefix</rdfs:comment>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:domain rdf:resource="#Prefix"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >prefix</rdfs:label>
+    <rdfs:domain rdf:resource="#Prefix"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >prefix</rdfs:comment>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="operationAssociationResultQuery">
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >operation association result query</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="graphQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >graph query</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="propertyQuery_Cardinality">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#propertyQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >property cardinality query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#propertyQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="namespace">
+    <rdfs:domain rdf:resource="#Prefix"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >namespace</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
-    <rdfs:domain rdf:resource="#Prefix"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="repositoryQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >repository query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="withSapAnnotations">
-    <rdfs:domain rdf:resource="#Dataset"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >with SAP annotations</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="#Dataset"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="datatypeQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >datatype query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="inverseAssociationQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >inverse association query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="operationArgumentQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >operation argument query</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="propertyQuery_Ranges">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#propertyQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >property range query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#propertyQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="defaultQueryLimit">
-    <rdfs:domain rdf:resource="http://www.openrdf.org/config/repository#RepositoryImpl"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >default query limit</rdfs:label>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+    <rdfs:domain rdf:resource="http://www.openrdf.org/config/repository#RepositoryImpl"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="operationPropertyResultQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >operation property result query</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="propertyQuery_Domains">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#propertyQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >property domain query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#propertyQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="datasetQuery">
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >dataset query</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="operationQuery">
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >operation query</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="associationQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >association query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="classQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >class query</rdfs:label>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <owl:DatatypeProperty rdf:ID="prefixQuery">
-    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >prefix query</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="#metadataQuery"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
   </owl:DatatypeProperty>
   <odata4sparql:Prefix rdf:ID="DC">
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://purl.org/dc/elements/1.1/</odata4sparql:namespace>
-    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >dc</odata4sparql:prefix>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >DC</rdfs:label>
+    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >dc</odata4sparql:prefix>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://purl.org/dc/elements/1.1/</odata4sparql:namespace>
   </odata4sparql:Prefix>
   <odata4sparql:Profile rdf:ID="SPARQL11">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -313,6 +313,42 @@ VALUES(?propertyType){(owl:DatatypeProperty)(owl:AnnotationProperty)(rdf:Propert
  				}&#xD;
     FILTER(BOUND(?maxCardinality)||BOUND(?minCardinality)||BOUND(?cardinality))&#xD;
 }  </odata4sparql:propertyQuery_Cardinality>
+    <odata4sparql:propertyQuery_Domains rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; &#xD;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;  &#xD;
+PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;  &#xD;
+PREFIX xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt;&#xD;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;&#xD;
+SELECT  distinct ?property   (COALESCE(?prefLabel, ?pLabel,"" ) as ?propertyLabel )         (COALESCE(?sdomain, ?pdomain,rdfs:Resource) as ?domain)    (COALESCE(?definition, ?comment,"") as ?description )  ?v&#xD;
+WHERE {  &#xD;
+VALUES(?propertyType){(owl:DatatypeProperty)(owl:AnnotationProperty)(rdf:Property)}  &#xD;
+{  &#xD;
+ {  &#xD;
+	# detect those properties without defined domains but superproperties that do define a domain&#xD;
+	{    ?property a ?propertyType .  &#xD;
+         ?property rdfs:subPropertyOf+ ?sproperty . ?sproperty rdfs:domain ?sdomain . &#xD;
+         OPTIONAL{?property rdfs:domain ?pdomain . } FILTER( !Bound (?pdomain )) FILTER( Bound (?sproperty ))&#xD;
+    } BIND("10" as ?v)&#xD;
+}UNION{&#xD;
+	# detect those properties without defined domains but superproperties that do not define a domain&#xD;
+	{   ?property a ?propertyType .  &#xD;
+        OPTIONAL{ ?property rdfs:subPropertyOf+ ?sproperty .  ?sproperty rdfs:domain ?sdomain .  } FILTER( !Bound (?sdomain )) &#xD;
+        OPTIONAL{?property rdfs:domain ?pdomain . } FILTER( !Bound (?pdomain )) &#xD;
+   } BIND("20" as ?v)&#xD;
+}UNION{ &#xD;
+	# detect those properties with superclasses with same property (duplicated)&#xD;
+        {  ?property a ?propertyType  .&#xD;
+	  OPTIONAL{     ?property rdfs:subPropertyOf* ?sproperty . ?sproperty rdfs:domain ?sdomain .  ?property rdfs:domain ?pdomain . ?pdomain rdfs:subClassOf+ ?sdomain } FILTER( Bound (?sdomain ) )&#xD;
+     } BIND("30" as ?v)&#xD;
+}UNION{  &#xD;
+    # detect those properties without superclasses or subproperties of something&#xD;
+	?property a ?propertyType .  ?property rdfs:domain ?pdomain . &#xD;
+	# FILTER NOT EXISTS {?property rdfs:subPropertyOf+ ?sproperty } &#xD;
+	FILTER NOT EXISTS{?property rdfs:subPropertyOf* ?sproperty . ?sproperty rdfs:domain ?sdomain .  ?property rdfs:domain ?pdomain . ?pdomain rdfs:subClassOf+ ?sdomain }   &#xD;
+   BIND("40" as ?v)&#xD;
+} &#xD;
+}  OPTIONAL { ?property rdfs:label ?pLabel }   OPTIONAL { ?property skos:prefLabel ?prefLabel }  . OPTIONAL{ ?property rdfs:comment ?comment. } OPTIONAL{ ?property skos:definition ?definition . } .&#xD;
+}  ORDER BY ?propertyLabel</odata4sparql:propertyQuery_Domains>
     <odata4sparql:operationPropertyResultQuery rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     > PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; &#xD;
  PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt; &#xD;
@@ -589,42 +625,6 @@ OPTIONAL{?range rdfs:subClassOf+ ?superRangeClass .    ?property  rdfs:range ?su
  ?rangerestriction owl:cardinality ?rangeCardinality. FILTER(?range !=?domain)&#xD;
  }&#xD;
  	}ORDER BY ?propertyLabel</odata4sparql:associationQuery>
-    <odata4sparql:propertyQuery_Domains rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; &#xD;
-PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;  &#xD;
-PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;  &#xD;
-PREFIX xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt;&#xD;
-PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;&#xD;
-SELECT  distinct ?property   (COALESCE(?prefLabel, ?pLabel,"" ) as ?propertyLabel )         (COALESCE(?sdomain, ?pdomain,rdfs:Resource) as ?domain)    (COALESCE(?definition, ?comment,"") as ?description )  #?v&#xD;
-WHERE {  &#xD;
-VALUES(?propertyType){(owl:DatatypeProperty)(owl:AnnotationProperty)(rdf:Property)}  {  &#xD;
- {  &#xD;
-	# detect those properties without defined domains but superproperties do&#xD;
-	{    ?property a ?propertyType .  OPTIONAL { ?property rdfs:label ?pLabel }   OPTIONAL { ?property skos:prefLabel ?prefLabel }  . OPTIONAL{ ?property rdfs:comment ?comment. } OPTIONAL{ ?property skos:definition ?definition . } . &#xD;
-         ?property rdfs:subPropertyOf+ ?sproperty . ?sproperty rdfs:domain ?sdomain . &#xD;
-         OPTIONAL{?property rdfs:domain ?pdomain . } FILTER( !Bound (?pdomain )) FILTER( Bound (?sproperty ))&#xD;
-    } #BIND("1" as ?v)&#xD;
-}UNION{&#xD;
-	# detect those properties without defined domains but superproperties do not&#xD;
-	{   ?property a ?propertyType .  OPTIONAL { ?property rdfs:label ?pLabel }   OPTIONAL { ?property skos:prefLabel ?prefLabel }  . OPTIONAL{ ?property rdfs:comment ?comment. } OPTIONAL{ ?property skos:definition ?definition . } . &#xD;
-        OPTIONAL{ ?property rdfs:subPropertyOf+ ?sproperty .  ?sproperty rdfs:domain ?sdomain .  } FILTER( !Bound (?sdomain )) &#xD;
-        OPTIONAL{?property rdfs:domain ?pdomain . } FILTER( !Bound (?pdomain )) &#xD;
-   } #BIND("2" as ?v)&#xD;
-}UNION{ &#xD;
-	# detect those properties with superclasses with same property&#xD;
-	  OPTIONAL{     ?property a ?propertyType  . ?property rdfs:subPropertyOf* ?sproperty . ?sproperty rdfs:domain ?sdomain .  ?property rdfs:domain ?pdomain . ?pdomain rdfs:subClassOf+ ?sdomain } FILTER( Bound (?sdomain ) )&#xD;
-      OPTIONAL { ?property rdfs:label ?pLabel }   OPTIONAL { ?property skos:prefLabel ?prefLabel }  . OPTIONAL{ ?property rdfs:comment ?comment. } OPTIONAL{ ?property skos:definition ?definition . } . &#xD;
-     # BIND("3" as ?v)&#xD;
-}UNION{  &#xD;
-    # detect those properties without superclasses or subproperties of something&#xD;
-	?property a ?propertyType .  ?property rdfs:domain ?pdomain . &#xD;
-	# FILTER NOT EXISTS {?property rdfs:subPropertyOf+ ?sproperty } &#xD;
-	FILTER NOT EXISTS{?property rdfs:subPropertyOf* ?sproperty . ?sproperty rdfs:domain ?sdomain .  ?property rdfs:domain ?pdomain . ?pdomain rdfs:subClassOf+ ?sdomain }   &#xD;
-   OPTIONAL { ?property rdfs:label ?pLabel }   OPTIONAL { ?property skos:prefLabel ?prefLabel }  . OPTIONAL{ ?property rdfs:comment ?comment. } OPTIONAL{ ?property skos:definition ?definition . } . &#xD;
-   # BIND("4" as ?v)&#xD;
-} &#xD;
-}&#xD;
-}  ORDER BY ?propertyLabel</odata4sparql:propertyQuery_Domains>
     <odata4sparql:datasetQuery rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >PREFIX odata4sparql: &lt;http://inova8.com/odata4sparql#&gt;&#xD;
 PREFIX void: &lt;http://rdfs.org/ns/void#&gt;&#xD;
@@ -707,12 +707,12 @@ FILTER(!isblank(?query))&#xD;
  } </odata4sparql:operationQuery>
   </odata4sparql:Metadata>
   <odata4sparql:Prefix rdf:ID="DCT">
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >DCT</rdfs:label>
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://purl.org/dc/terms/</odata4sparql:namespace>
     <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >dct</odata4sparql:prefix>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://purl.org/dc/terms/</odata4sparql:namespace>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >DCT</rdfs:label>
   </odata4sparql:Prefix>
   <odata4sparql:Profile rdf:ID="SPARQL10">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -723,20 +723,20 @@ FILTER(!isblank(?query))&#xD;
     >TOPQUADRANT</rdfs:label>
   </odata4sparql:Profile>
   <odata4sparql:Prefix rdf:ID="GEO">
-    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >geo</odata4sparql:prefix>
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://www.opengis.net/ont/geosparql#</odata4sparql:namespace>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >GEO</rdfs:label>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://www.opengis.net/ont/geosparql#</odata4sparql:namespace>
+    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >geo</odata4sparql:prefix>
   </odata4sparql:Prefix>
   <odata4sparql:Prefix rdf:ID="TIME">
-    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >time</odata4sparql:prefix>
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://www.w3.org/2006/time#</odata4sparql:namespace>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >TIME</rdfs:label>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://www.w3.org/2006/time#</odata4sparql:namespace>
+    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >time</odata4sparql:prefix>
   </odata4sparql:Prefix>
   <odata4sparql:Profile rdf:ID="JENA">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
@@ -747,213 +747,213 @@ FILTER(!isblank(?query))&#xD;
     >DEFAULT</rdfs:label>
   </odata4sparql:Profile>
   <odata4sparql:Prefix rdf:ID="GEONAMES">
-    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >geonames</odata4sparql:prefix>
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://www.geonames.org/ontology#</odata4sparql:namespace>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >GEONAMES</rdfs:label>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://www.geonames.org/ontology#</odata4sparql:namespace>
+    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >geonames</odata4sparql:prefix>
   </odata4sparql:Prefix>
   <odata4sparql:Prefix rdf:ID="SPATIAL">
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://geovocab.org/spatial#</odata4sparql:namespace>
-    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >spatial</odata4sparql:prefix>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >SPATIAL</rdfs:label>
+    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >spatial</odata4sparql:prefix>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://geovocab.org/spatial#</odata4sparql:namespace>
   </odata4sparql:Prefix>
   <odata4sparql:Profile rdf:ID="VIRTUOSO">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >VIRTUOSO</rdfs:label>
   </odata4sparql:Profile>
   <odata4sparql:Prefix rdf:ID="REPOSITORY">
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >REPOSITORY</rdfs:label>
-    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-    >http://inova8.com/odata4sparql/repository</odata4sparql:namespace>
     <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >repository</odata4sparql:prefix>
+    <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+    >http://inova8.com/odata4sparql/repository</odata4sparql:namespace>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >REPOSITORY</rdfs:label>
   </odata4sparql:Prefix>
   <odata4sparql:Profile rdf:ID="ALLEGROGRAPH">
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >ALLEGROGRAPH</rdfs:label>
   </odata4sparql:Profile>
   <odata4sparql:Prefix rdf:ID="PROV">
-    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >prov</odata4sparql:prefix>
-    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-    >PROV</rdfs:label>
     <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
     >http://www.w3.org/ns/prov#</odata4sparql:namespace>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >PROV</rdfs:label>
+    <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >prov</odata4sparql:prefix>
   </odata4sparql:Prefix>
   <odata4sparql:Dataset rdf:ID="ODATA2SPARQL">
     <rep:repositoryID rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >ODATA2SPARQL</rep:repositoryID>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="OPENRDF_HTTP">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/repository/http#</odata4sparql:namespace>
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >http</odata4sparql:prefix>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >OPENRDF_HTTP</rdfs:label>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >http</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/repository/http#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="OPENRDF">
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >OPENRDF</rdfs:label>
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >openrdf</odata4sparql:prefix>
         <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
         >http://www.openrdf.org#</odata4sparql:namespace>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >openrdf</odata4sparql:prefix>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >OPENRDF</rdfs:label>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="SKOS">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.w3.org/2004/02/skos/core#</odata4sparql:namespace>
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >skos</odata4sparql:prefix>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >SKOS</rdfs:label>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >skos</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.w3.org/2004/02/skos/core#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="SAIL">
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >SAIL</rdfs:label>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/sail#</odata4sparql:namespace>
         <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >sail</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/sail#</odata4sparql:namespace>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >SAIL</rdfs:label>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <rep:repositoryType rdf:resource="http://www.openrdf.org#SailRepository"/>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="SAIL_CUST">
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >sail_cust</odata4sparql:prefix>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/sail/customGraphQueryInferencer#</odata4sparql:namespace>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >SAIL_CUST</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/sail/customGraphQueryInferencer#</odata4sparql:namespace>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >sail_cust</odata4sparql:prefix>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="RDFS">
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >rdfs</odata4sparql:prefix>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.w3.org/2000/01/rdf-schema#</odata4sparql:namespace>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >RDFS</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.w3.org/2000/01/rdf-schema#</odata4sparql:namespace>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >rdfs</odata4sparql:prefix>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
-    <rep:repositoryImpl rdf:resource="#ODATA2SPARQL"/>
     <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >ODATA2SPARQL</rdfs:label>
+    <rep:repositoryImpl rdf:resource="#ODATA2SPARQL"/>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="MODEL">
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >MODEL</rdfs:label>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://inova8.com/odata4sparql/models#</odata4sparql:namespace>
         <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >model</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://inova8.com/odata4sparql/models#</odata4sparql:namespace>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >MODEL</rdfs:label>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="SP">
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >sp</odata4sparql:prefix>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://spinrdf.org/sp#</odata4sparql:namespace>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >SP</rdfs:label>
-      </odata4sparql:Prefix>
-    </odata4sparql:datasetPrefix>
-    <odata4sparql:datasetPrefix>
-      <odata4sparql:Prefix rdf:ID="SAIL_FED">
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >SAIL_FED</rdfs:label>
         <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/sail/federation#</odata4sparql:namespace>
+        >http://spinrdf.org/sp#</odata4sparql:namespace>
         <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >sail_fed</odata4sparql:prefix>
+        >sp</odata4sparql:prefix>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:defaultPrefix>
       <odata4sparql:Prefix rdf:ID="ODATA4SPARQL">
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >odata4sparql</odata4sparql:prefix>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://inova8.com/odata4sparql#</odata4sparql:namespace>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >ODATA4SPARQL</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://inova8.com/odata4sparql#</odata4sparql:namespace>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >odata4sparql</odata4sparql:prefix>
       </odata4sparql:Prefix>
     </odata4sparql:defaultPrefix>
+    <odata4sparql:datasetPrefix>
+      <odata4sparql:Prefix rdf:ID="SAIL_FED">
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >sail_fed</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/sail/federation#</odata4sparql:namespace>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >SAIL_FED</rdfs:label>
+      </odata4sparql:Prefix>
+    </odata4sparql:datasetPrefix>
     <odata4sparql:namespace rdf:resource="http://inova8.com/"/>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="SAIL_NATIVE">
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >sail_native</odata4sparql:prefix>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/sail/native#</odata4sparql:namespace>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >SAIL_NATIVE</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/sail/native#</odata4sparql:namespace>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >sail_native</odata4sparql:prefix>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="OPENRDF_REPOSITORY">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/repository#</odata4sparql:namespace>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >OPENRDF_REPOSITORY</rdfs:label>
         <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >rep</odata4sparql:prefix>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >OPENRDF_REPOSITORY</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/repository#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="VOID">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://rdfs.org/ns/void#</odata4sparql:namespace>
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >void</odata4sparql:prefix>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >VOID</rdfs:label>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >void</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://rdfs.org/ns/void#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
     >odata4sparql:ODATA4SPARQL</odata4sparql:prefix>
     <odata4sparql:datasetPrefix>
-      <odata4sparql:Prefix rdf:ID="RDF">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.w3.org/1999/02/22-rdf-syntax-ns#</odata4sparql:namespace>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >RDF</rdfs:label>
+      <odata4sparql:Prefix rdf:ID="FOAF">
         <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >rdf</odata4sparql:prefix>
+        >foaf</odata4sparql:prefix>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >FOAF</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://xmlns.com/foaf/0.1/</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
-      <odata4sparql:Prefix rdf:ID="FOAF">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://xmlns.com/foaf/0.1/</odata4sparql:namespace>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >FOAF</rdfs:label>
+      <odata4sparql:Prefix rdf:ID="RDF">
         <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >foaf</odata4sparql:prefix>
+        >rdf</odata4sparql:prefix>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >RDF</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.w3.org/1999/02/22-rdf-syntax-ns#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="SAIL_MEM">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/sail/memory#</odata4sparql:namespace>
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >sail_mem</odata4sparql:prefix>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >SAIL_MEM</rdfs:label>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >sail_mem</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/sail/memory#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <rdf:type rdf:resource="http://www.openrdf.org/config/repository#Repository"/>
@@ -961,26 +961,26 @@ FILTER(!isblank(?query))&#xD;
     >true</odata4sparql:withSapAnnotations>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="OWL">
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.w3.org/2002/07/owl#</odata4sparql:namespace>
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >owl</odata4sparql:prefix>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >OWL</rdfs:label>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >owl</odata4sparql:prefix>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.w3.org/2002/07/owl#</odata4sparql:namespace>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
     <odata4sparql:datasetPrefix rdf:resource="#ODATA4SPARQL"/>
+    <odata4sparql:dataRepository rdf:resource="#ODATA2SPARQL"/>
     <odata4sparql:datasetPrefix>
       <odata4sparql:Prefix rdf:ID="OPENRDF_SPARQL">
-        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
-        >sparql</odata4sparql:prefix>
-        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
-        >http://www.openrdf.org/config/repository/sparql#</odata4sparql:namespace>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
         >OPENRDF_SPARQL</rdfs:label>
+        <odata4sparql:namespace rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI"
+        >http://www.openrdf.org/config/repository/sparql#</odata4sparql:namespace>
+        <odata4sparql:prefix rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+        >sparql</odata4sparql:prefix>
       </odata4sparql:Prefix>
     </odata4sparql:datasetPrefix>
-    <odata4sparql:dataRepository rdf:resource="#ODATA2SPARQL"/>
     <rdf:type rdf:resource="http://www.openrdf.org#SailRepository"/>
     <odata4sparql:withRdfAnnotations rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean"
     >false</odata4sparql:withRdfAnnotations>
