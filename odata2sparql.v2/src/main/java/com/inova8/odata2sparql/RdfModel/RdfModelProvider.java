@@ -190,6 +190,7 @@ public class RdfModelProvider {
 				classes.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Class query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("Classes query exception", e);
 		}
 	}
@@ -215,6 +216,7 @@ public class RdfModelProvider {
 				datatypes.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Datatypes query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("Datatypes query exception ", e);
 		}
 	}
@@ -225,52 +227,6 @@ public class RdfModelProvider {
 		getDataTypeProperties_Ranges(propertyClasses);
 		getDataTypeProperties_Cardinality(propertyClasses);
 		removeIncompleteProperties(propertyClasses);
-
-		//		try {
-		//			RdfResultSet properties = rdfMetamodelProvider.getProperties();
-		//			try {
-		//				while (properties.hasNext()) {
-		//					RdfNode propertyNode = null;
-		//					try {
-		//						RdfQuerySolution soln = properties.nextSolution();
-		//						propertyNode = soln.getRdfNode("property");
-		//						RdfNode propertyLabelNode = null;
-		//						if (soln.getRdfNode("propertyLabel") != null) {
-		//							propertyLabelNode = soln.getRdfNode("propertyLabel");
-		//						}
-		//						RdfNode equivalentPropertyNode = null;
-		//						if (soln.getRdfNode("equivalentProperty") != null) {
-		//							equivalentPropertyNode = soln.getRdfNode("equivalentProperty");
-		//						}
-		//						RdfNode domainNode = soln.getRdfNode("domain");
-		//						RdfNode rangeNode = soln.getRdfNode("range");
-		//						RdfNode maxCardinalityNode = null;
-		//						RdfNode minCardinalityNode = null;
-		//						RdfNode cardinalityNode = null;
-		//						if (soln.getRdfNode("maxCardinality") != null)
-		//							maxCardinalityNode = soln.getRdfNode("maxCardinality");
-		//						if (soln.getRdfNode("minCardinality") != null)
-		//							minCardinalityNode = soln.getRdfNode("minCardinality");
-		//						if (soln.getRdfNode("cardinality") != null)
-		//							cardinalityNode = soln.getRdfNode("cardinality");
-		//						Cardinality cardinality = interpretCardinality(maxCardinalityNode, minCardinalityNode,
-		//								cardinalityNode, RdfConstants.Cardinality.ZERO_TO_ONE);
-		//
-		//						@SuppressWarnings("unused")
-		//						RdfProperty datatypeProperty = model.getOrCreateProperty(propertyNode, equivalentPropertyNode,
-		//								propertyLabelNode, domainNode, rangeNode, cardinality);
-		//					} catch (Exception e) {
-		//						log.info("Failed to create property:" + propertyNode.getIRI().toString() + " with exception "
-		//								+ e.getMessage());
-		//					}
-		//				}
-		//			} finally {
-		//				properties.close();
-		//			}
-		//		} catch (Olingo2SparqlException e) {
-		//			throw new Olingo2SparqlException("DataTypeProperties query exception ", e);
-		//		}
-
 	}
 
 	private void getDataTypeProperties_Domains(HashMap<String, HashSet<RdfEntityType>> propertyClasses)
@@ -311,6 +267,7 @@ public class RdfModelProvider {
 				properties.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Datatype property query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("DataTypeProperties_Domains query exception ", e);
 		}
 	}
@@ -340,6 +297,7 @@ public class RdfModelProvider {
 				properties.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Datatype property ranges query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("DataTypeProperties_Ranges query exception ", e);
 		}
 	}
@@ -381,6 +339,7 @@ public class RdfModelProvider {
 				properties.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Datatype property cardinality query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("DataTypeProperties_Cardinality query exception ", e);
 		}
 	}
@@ -461,6 +420,7 @@ public class RdfModelProvider {
 				associations.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute associations query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("ObjectProperties query exception ", e);
 		}
 	}
@@ -528,6 +488,7 @@ public class RdfModelProvider {
 				inverseAssociations.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Inverse Associations query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("InverseProperties query exception ", e);
 		}
 	}
@@ -556,6 +517,7 @@ public class RdfModelProvider {
 				operations.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Operations query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("Operations query exception ", e);
 		}
 	}
@@ -592,6 +554,7 @@ public class RdfModelProvider {
 				operationAssociationResults.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Operation Associations query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("OperationsAssociations query exception ", e);
 		}
 	}
@@ -628,6 +591,7 @@ public class RdfModelProvider {
 				operationPropertyResults.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Operation results query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("OperationsAssociations query exception ", e);
 		}
 	}
@@ -658,8 +622,8 @@ public class RdfModelProvider {
 				operationArguments.close();
 			}
 		} catch (OData2SparqlException e) {
+			log.error("Failed to execute Operation arguments query. Check availability of triple store. Exception "+ e.getMessage());
 			throw new OData2SparqlException("OperationsAssociations query exception ", e);
-
 		}
 	}
 

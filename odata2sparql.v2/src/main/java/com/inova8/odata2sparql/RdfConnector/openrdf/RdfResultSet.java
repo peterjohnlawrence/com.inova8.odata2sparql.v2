@@ -87,7 +87,7 @@ public class RdfResultSet {
 			resultSet.close();
 			connection.close();
 		} catch (QueryEvaluationException | RepositoryException e) {
-			log.warn("failed to close RdfResultSet");
+			log.warn("Failed to close RdfResultSet");
 		}
 	}
 	protected void finalize() throws Throwable {

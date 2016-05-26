@@ -23,7 +23,7 @@ public class RdfConstructQuery extends RdfQuery{
 			rdfTripleSet = new RdfTripleSet(connection, graphQuery.evaluate());
 			log.info( super.query);
 		} catch (Exception e) {		
-			log.error( e.getMessage());
+			log.error( " RdfTripleSet execConstruct() failure with exception" + e.getMessage());
 			throw new OData2SparqlException(" RdfTripleSet execConstruct() failure",e);
 		}
 		return  rdfTripleSet;

@@ -47,9 +47,8 @@ public class RdfODataServiceFactory extends ODataServiceFactory {
 			try {
 				sparqlODataSingleProcessor = sparqlODataSingleProcessors.getSparqlODataSingleProcessor(odataVersion,rdfRepositoryID );
 			} catch (OData2SparqlException e) {
-				throw new ODataException("cannot create SparqlODataSingleProcessor for odataVersion:" + odataVersion+" rdfRepositoryId:"+rdfRepositoryID);
-			}
-			
+				throw new ODataException("Cannot create SparqlODataSingleProcessor for odataVersion:" + odataVersion+" rdfRepositoryId:"+rdfRepositoryID);
+			}	
 			return createODataSingleProcessorService(sparqlODataSingleProcessor.getRdfEdmProvider(), sparqlODataSingleProcessor);
 		}
 	}
