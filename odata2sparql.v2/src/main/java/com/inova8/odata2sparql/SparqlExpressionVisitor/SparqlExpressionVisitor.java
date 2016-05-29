@@ -17,7 +17,6 @@ import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmLiteral;
 import org.apache.olingo.odata2.api.edm.EdmNavigationProperty;
 import org.apache.olingo.odata2.api.edm.EdmTyped;
-import org.apache.olingo.odata2.api.edm.FullQualifiedName;
 import org.apache.olingo.odata2.api.uri.expression.BinaryExpression;
 import org.apache.olingo.odata2.api.uri.expression.BinaryOperator;
 import org.apache.olingo.odata2.api.uri.expression.ExpressionVisitor;
@@ -33,7 +32,7 @@ import org.apache.olingo.odata2.api.uri.expression.SortOrder;
 import org.apache.olingo.odata2.api.uri.expression.UnaryExpression;
 import org.apache.olingo.odata2.api.uri.expression.UnaryOperator;
 
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
+import com.inova8.odata2sparql.Constants.RdfConstants;
 import com.inova8.odata2sparql.RdfModel.RdfEntity;
 import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfAssociation;
@@ -357,8 +356,9 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 				} else {
 					//TODO will a property really be unique throughout namespace
 					if (!sPath.isEmpty()) {
-						rdfProperty = this.rdfModelToMetadata.getMappedProperty(new FullQualifiedName(currentNavigationProperty
-								.getRelationship().getNamespace(), edmProperty.getName()));
+//						rdfProperty = this.rdfModelToMetadata.getMappedProperty(new FullQualifiedName(currentNavigationProperty
+//								.getRelationship().getNamespace(), edmProperty.getName()));
+						rdfProperty = this.rdfModelToMetadata.getMappedProperty(currentNavigationProperty.getRelationship(), edmProperty);
 						if (navigationProperties.containsKey(sPath)) {
 							navigationProperties.get(sPath).add(rdfProperty);
 						} else {

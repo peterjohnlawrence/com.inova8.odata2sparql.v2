@@ -7,7 +7,8 @@ import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
+
 
 public class RdfTripleSet {
 	private final Log log = LogFactory.getLog(RdfTripleSet.class);

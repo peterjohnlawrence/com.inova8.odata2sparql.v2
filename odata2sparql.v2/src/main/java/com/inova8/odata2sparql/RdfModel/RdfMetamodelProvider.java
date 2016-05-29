@@ -4,10 +4,10 @@ package com.inova8.odata2sparql.RdfModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Constants.RdfConstants;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfResultSet;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfSelectQuery;
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
 import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 
 

@@ -15,7 +15,8 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.repository.RepositoryConnection;
 import org.openrdf.repository.RepositoryException;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
+
 
 /**
  * The Class RdfResultSet. Acts as a wrapper class for the results of a SPARQL query

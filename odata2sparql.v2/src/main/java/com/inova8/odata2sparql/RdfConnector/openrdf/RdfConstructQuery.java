@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openrdf.query.GraphQuery;
 import org.openrdf.query.QueryLanguage;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfRepository.RdfRoleRepository;
 
 public class RdfConstructQuery extends RdfQuery{

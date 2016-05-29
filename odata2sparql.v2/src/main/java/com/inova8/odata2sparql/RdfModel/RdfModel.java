@@ -14,10 +14,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.util.XMLChar;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Constants.RdfConstants;
+import com.inova8.odata2sparql.Constants.RdfConstants.Cardinality;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNode;
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
-import com.inova8.odata2sparql.RdfConstants.RdfConstants.Cardinality;
 import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 
 public class RdfModel {

@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.inova8.odata2sparql.RdfConstants.ODataServiceVersion;
+import com.inova8.odata2sparql.Constants.ODataServiceVersion;
+import com.inova8.odata2sparql.Constants.RdfConstants;
 
+import org.apache.olingo.odata2.api.edm.EdmAssociation;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmMultiplicity;
+import org.apache.olingo.odata2.api.edm.EdmProperty;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
+import org.apache.olingo.odata2.api.edm.EdmTyped;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
 import org.apache.olingo.odata2.api.edm.provider.AnnotationAttribute;
 import org.apache.olingo.odata2.api.edm.provider.Association;
@@ -35,7 +39,6 @@ import org.apache.olingo.odata2.api.edm.provider.Schema;
 import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
 import org.apache.olingo.odata2.api.exception.ODataException;
 
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
 import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfAssociation;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfEntityType;
@@ -511,8 +514,15 @@ public class RdfModelToMetadata {
 	public RdfProperty getMappedProperty(FullQualifiedName fqnProperty) {
 		return propertyMapping.get(fqnProperty);
 	}
-
+	public RdfProperty getMappedProperty(EdmAssociation edmAssociation, EdmTyped edmTyped) throws EdmException {
+		FullQualifiedName fqnProperty = new FullQualifiedName(edmAssociation.getNamespace(), edmTyped.getName());
+		return propertyMapping.get(fqnProperty);
+	}
 	public RdfAssociation getMappedNavigationProperty(FullQualifiedName edmNavigationProperty) {
+		return navigationPropertyMapping.get(edmNavigationProperty);
+	}
+	public RdfAssociation getMappedNavigationProperty(EdmAssociation edmAssociation) throws EdmException {
+		FullQualifiedName edmNavigationProperty = new FullQualifiedName(edmAssociation.getNamespace(), edmAssociation.getName());
 		return navigationPropertyMapping.get(edmNavigationProperty);
 	}
 }

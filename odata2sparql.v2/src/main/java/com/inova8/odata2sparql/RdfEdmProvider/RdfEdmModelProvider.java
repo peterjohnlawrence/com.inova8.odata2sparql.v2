@@ -7,7 +7,7 @@
  */
 package com.inova8.odata2sparql.RdfEdmProvider;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModelProvider;
 import com.inova8.odata2sparql.RdfModelToMetadata.RdfModelToMetadata;

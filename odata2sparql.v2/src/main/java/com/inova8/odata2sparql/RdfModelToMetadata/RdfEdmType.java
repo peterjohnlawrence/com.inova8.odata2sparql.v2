@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
+import com.inova8.odata2sparql.Constants.RdfConstants;
 
 public class RdfEdmType {
 	private static final Map<String, EdmSimpleTypeKind> SIMPLE_TYPE_MAPPING = new HashMap<String, EdmSimpleTypeKind>();

@@ -36,8 +36,9 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.sail.config.SailImplConfig;
 import org.openrdf.sail.memory.config.MemoryStoreConfig;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
-import com.inova8.odata2sparql.RdfConstants.*;
+import com.inova8.odata2sparql.Constants.*;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
+
 
 public class RdfRepositories {
 	private final Log log = LogFactory.getLog(RdfRepositories.class);

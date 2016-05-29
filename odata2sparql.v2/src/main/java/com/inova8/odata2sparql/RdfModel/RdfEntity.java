@@ -3,8 +3,8 @@ package com.inova8.odata2sparql.RdfModel;
 
 import java.util.HashMap;
 
+import com.inova8.odata2sparql.Constants.RdfConstants;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNode;
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfEntityType;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfPrefixes;
 

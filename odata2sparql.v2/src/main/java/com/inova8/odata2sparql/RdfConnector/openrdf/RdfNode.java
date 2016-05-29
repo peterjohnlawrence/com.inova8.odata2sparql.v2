@@ -9,7 +9,8 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.IRI;
 import org.openrdf.model.Value;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
+
 
 public class RdfNode {
 	private final Log log = LogFactory.getLog(RdfNode.class);

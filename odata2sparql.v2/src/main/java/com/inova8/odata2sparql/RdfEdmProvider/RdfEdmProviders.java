@@ -5,8 +5,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
-import com.inova8.odata2sparql.RdfConstants.ODataServiceVersion;
+
+import com.inova8.odata2sparql.Constants.ODataServiceVersion;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfRepository.RdfRepositories;
 import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 

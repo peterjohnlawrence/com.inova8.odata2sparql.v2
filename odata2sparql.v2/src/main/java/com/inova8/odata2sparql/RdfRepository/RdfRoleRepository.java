@@ -2,7 +2,7 @@ package com.inova8.odata2sparql.RdfRepository;
 
 import org.openrdf.repository.Repository;
 
-import com.inova8.odata2sparql.RdfConstants.SPARQLProfile;
+import com.inova8.odata2sparql.Constants.SPARQLProfile;
 
 public /*static*/ class RdfRoleRepository{
 	  

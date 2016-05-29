@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmNavigationProperty;
-import org.apache.olingo.odata2.api.edm.FullQualifiedName;
 import org.apache.olingo.odata2.api.exception.ODataApplicationException;
 import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
@@ -28,8 +27,8 @@ import org.apache.olingo.odata2.api.uri.info.GetEntitySetCountUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
+import com.inova8.odata2sparql.Constants.RdfConstants;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfModel.RdfEntity;
 import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfAssociation;
@@ -43,245 +42,219 @@ import com.inova8.odata2sparql.SparqlExpressionVisitor.SparqlExpressionVisitor;
 import com.inova8.odata2sparql.SparqlStatement.SparqlStatement;
 import com.inova8.odata2sparql.uri.UriType;
 
-//Query Pseudocode
-//================
-//
-//ResourcePath
-//------------
-//
-//Defined by 
-//	entitySetUriInfo.getNavigationSegments() and entitySetUriInfo.getTargetEntitySet()
-//or
-//	entitySetUriInfo.getStartEntitySet()
+//	Query Pseudocode
+//	================
 //	
+//	ResourcePath
+//	------------
 //	
-///entitySet()
-//
-//	?resource a [rdfs:subClassOf* :entitySet]
-//
-///entitySet(:id)
-//
-//	VALUES(?resource){(:id0)}
-//
-///entitySet(:id)/navProp1
-//
-//	?id :navProp1  ?resource
+//	Defined by 
+//		entitySetUriInfo.getNavigationSegments() and entitySetUriInfo.getTargetEntitySet()
+//	or
+//		entitySetUriInfo.getStartEntitySet()
+//		
+//		
+//	/entitySet()
 //	
-///entitySet(:id)/navProp1(:id1)
-//
-//	?id :navProp1  :id1 .
+//		?resource a [rdfs:subClassOf* :entitySet]
 //	
-///entitySet(:id){/navPropN(:idN)}*/{navProp}?
-//
+//	/entitySet(:id)
 //	
-//	CONSTRUCT{
-//      ?resource a ?resourceType
-//		?resource ?resource_p ?resource_o
-//		...#select constructs
-//		...#expand constructs
-//	} 
-//	WHERE {
-//		OPTIONAL{ #select=*
-//			?resource ?resource_p ?resource_o .
-//		}
-//		{
-//			SELECT #select=*
-//				?resource
-//
-//			/entitySet()
-//			?resource a [rdfs:subClassOf* :entitySet]
-//			
-//			/entitySet(:id)/navProp1
-//			?id :navProp1  ?resource	
-//			
-//			/entitySet(:id)
-//			VALUES(?resource){(:id)}
-//
-//			/entitySet(:id)/navProp1(:id1)
-//			?id :navProp1  :id1 . #validate relationship
-//			VALUES(?resource){(:id1)}
-//			
-//			/entitySet(:id){/navPropN(:idN)}*/navProp
-//			?id :navProp1  :id1 . #validate relationships
-//			:id1 :navProp2  :id2 .
-//			:id2 :navProp3  :id3 . 
-//			...
-//			:idN :navProp  ?resource
-//			
-//		}
-//	}
+//		VALUES(?resource){(:id0)}
 //	
+//	/entitySet(:id)/navProp1
 //	
-//Expand
-//------
-//
-//$expand=np1/np2/np3/, np4...
-//	CONSTRUCT{
-//		...#type construct
-//		...#path constructs
-//		...#select constructs
-//		?resource	:np1	?resource_np1 .
-//		?resource_np1 :np2 ?resource_np1_np2 .
-//		?resource_np1_np2 :np3 ?resource_np1_np2_np3 .
-//		?resource	:np4	?resource_np4 .
-//		...
-//	} 
-//	WHERE {
-//		...#select clauses
-//		SELECT ?resource ?resource_np1 ?resource_np1_np2 ?resource_np1_np2_np3 ?resource_np4 
-//		{
-//			...
-//			OPTIONAL{
-//				?resource	:np1	?resource_np1 .
-//				OPTIONAL{
-//					?resource_np1 :np2 ?resource_np1_np2 .
-//					OPTIONAL{
-//						?resource_np1_np2 :np3 ?resource_np1_np2_np3 .
-//						...
-//					}
-//				}
-//			}
-//			OPTIONAL{
-//				?resource	:np4	?resource_np4 .
-//			}	
-//			SELECT ?resource
-//			{
-//			...#path clauses
-//			}
-//		}
-//	}
+//		?id :navProp1  ?resource
+//		
+//	/entitySet(:id)/navProp1(:id1)
 //	
-//Note
-//	If no filter conditions on properties within path then path is optional, otherwise not
-//	An inverse property swotches subject and object position:
+//		?id :navProp1  :id1 .
+//		
+//	/entitySet(:id){/navPropN(:idN)}*/{navProp}?
 //	
-//	$expand=np1/ip2/np3/...
-//
+//		
 //		CONSTRUCT{
-//			...
+//	      ?resource a ?resourceType
+//			?resource ?resource_p ?resource_o
+//			...#select constructs
+//			...#expand constructs
+//		} 
+//		WHERE {
+//			OPTIONAL{ #select=*
+//				?resource ?resource_p ?resource_o .
+//			}
+//			{
+//				SELECT #select=*
+//					?resource
+//	
+//				/entitySet()
+//				?resource a [rdfs:subClassOf* :entitySet]
+//				
+//				/entitySet(:id)/navProp1
+//				?id :navProp1  ?resource	
+//				
+//				/entitySet(:id)
+//				VALUES(?resource){(:id)}
+//	
+//				/entitySet(:id)/navProp1(:id1)
+//				?id :navProp1  :id1 . #validate relationship
+//				VALUES(?resource){(:id1)}
+//				
+//				/entitySet(:id){/navPropN(:idN)}*/navProp
+//				?id :navProp1  :id1 . #validate relationships
+//				:id1 :navProp2  :id2 .
+//				:id2 :navProp3  :id3 . 
+//				...
+//				:idN :navProp  ?resource
+//				
+//			}
+//		}
+//		
+//		
+//	Expand
+//	------
+//	
+//	$expand=np1/np2/np3/, np4...
+//		CONSTRUCT{
+//			...#type construct
 //			...#path constructs
 //			...#select constructs
 //			?resource	:np1	?resource_np1 .
-//			?resource_np1_ip2 :ip2 ?resource_np1 .
-//			?resource_np1_ip2 :np3 ?resource_np1_ip2_np3 
+//			?resource_np1 :np2 ?resource_np1_np2 .
+//			?resource_np1_np2 :np3 ?resource_np1_np2_np3 .
+//			?resource	:np4	?resource_np4 .
 //			...
 //		} 
 //		WHERE {
 //			...#select clauses
-//			SELECT ?resource ?resource_np1 ?resource_np1_ip2 ?resource_np1_ip2_np3 
+//			SELECT ?resource ?resource_np1 ?resource_np1_np2 ?resource_np1_np2_np3 ?resource_np4 
 //			{
 //				...
-//				...#path clauses
-//				...
-//				OPTIONAL{	#/np1/
+//				OPTIONAL{
 //					?resource	:np1	?resource_np1 .
-//					OPTIONAL{	#/np1/np2/
-//						?resource_np1_ip2 :ip2 ?resource_np1 .
-//						OPTIONAL{	#/np1/ip2/np3/
-//							?resource_np1_ip2 :np3 ?resource_np1_ip2_np3 .
+//					OPTIONAL{
+//						?resource_np1 :np2 ?resource_np1_np2 .
+//						OPTIONAL{
+//							?resource_np1_np2 :np3 ?resource_np1_np2_np3 .
 //							...
 //						}
 //					}
 //				}
+//				OPTIONAL{
+//					?resource	:np4	?resource_np4 .
+//				}	
 //				SELECT ?resource
 //				{
 //				...#path clauses
-//				}		
-//			}
-//		}
-//	
-//Select
-//------
-//Note
-//	Selected values must already appear in path
-//	
-//$select=dpa, np1/dpb, np1/np2/dpc, ...
-//
-//	CONSTRUCT{
-//		...
-//		...#expand constructs
-//		?resource	?resource_p   ?resource_o .
-//		?resource_np1	?resource_np1_p ?resource_np1_o  .
-//		?resource_np1_np2 ?resource_np1_np2_p ?resource_np1_np2_o .	
-//		...
-//	} 
-//	WHERE {	#/
-//		OPTIONAL {
-//			?resource ?resource_p ?resource_o .
-//			VALUES(?resource_p){(:dpa)}
-//		}	
-//		OPTIONAL { ?resource :np1 ?resource_np1 . 
-//		|| based on if path has filter associated
-//		{	#/np1/
-//			OPTIONAL {
-//				?resource_np1 ?resource_np1_p ?resource_np1_o .
-//				VALUES(?resource_np1_p){(:dpb)}
-//			}
-//			OPTIONAL { ?resource_np1 :np2 ?resource_np1_np2 . 
-//			|| based on if path has filter associated
-//			{	#/np1/np2/
-//				OPTIONAL {
-//					?resource_np1_np2 ?resource_np1_np2_p ?resource_np1_np2_o .
-//					VALUES(?resource_np1_np2_p){(:dpc)}
 //				}
-//				...
 //			}
 //		}
-//		{
-//			SELECT ?resource ?resource_np1 ?resource_np1_np2  
-//			...#path clauses
-//			...#expand clauses
-//		}
-//	}
-//
-//Filter
-//------
-//Note
-//	Filtered values must already appear in path
+//		
+//	Note
+//		If no filter conditions on properties within path then path is optional, otherwise not
+//		An inverse property swotches subject and object position:
+//		
+//		$expand=np1/ip2/np3/...
 //	
-//$filter=condition({npN/}*dpN)
-//	
-//	CONSTRUCT{
-//		...
-//		...#expand constructs
-//		...#select constructs
-//		...
-//	} WHERE 
-//	{
-//		...
-//		...#select clauses
-//		...
-//		{	SELECT ?resource ?resource_np1 ?resource_np1_ip2 ?resource_np1_ip2_np3 
+//			CONSTRUCT{
+//				...
+//				...#path constructs
+//				...#select constructs
+//				?resource	:np1	?resource_np1 .
+//				?resource_np1_ip2 :ip2 ?resource_np1 .
+//				?resource_np1_ip2 :np3 ?resource_np1_ip2_np3 
+//				...
+//			} 
 //			WHERE {
-//				...
-//				...#path clauses
-//				...
-//				{	#filter=condition(dp)
-//					?resource :dp ?resource_dp_o .
-//					FILTER(condition(?resource_sp_o))			
-//				}
-//				{	#/np1/
-//					?resource	:np1	?resource_np1 .
-//					{	#filter=condition(np1/dp1)
-//						?resource_np1 :dp1 ?resource_dp1_o .
-//						FILTER(condition(?resource_dp1_o))					
-//					}
-//					{	#/np1/np2/
-//						?resource_np1 :np2 ?resource_np1_np2  .
-//						{	#filter=condition(np1/np2/dp2)
-//							?resource_np1_np2 :dp2 ?resource_np1_np2_dp2_o.
-//							FILTER(condition(?resource_np1_np2_dp2_o))					
-//						}
-//						{	#/np1/ip2/np3/
-//							?resource_np1_ip2 :np3 ?resource_np1_ip2_np3 .
-//							...
-//						}
-//					}
-//				}
-//				SELECT DISTINCT
-//					?resource
-//				WHERE {
+//				...#select clauses
+//				SELECT ?resource ?resource_np1 ?resource_np1_ip2 ?resource_np1_ip2_np3 
+//				{
+//					...
 //					...#path clauses
+//					...
+//					OPTIONAL{	#/np1/
+//						?resource	:np1	?resource_np1 .
+//						OPTIONAL{	#/np1/np2/
+//							?resource_np1_ip2 :ip2 ?resource_np1 .
+//							OPTIONAL{	#/np1/ip2/np3/
+//								?resource_np1_ip2 :np3 ?resource_np1_ip2_np3 .
+//								...
+//							}
+//						}
+//					}
+//					SELECT ?resource
+//					{
+//					...#path clauses
+//					}		
+//				}
+//			}
+//		
+//	Select
+//	------
+//	Note
+//		Selected values must already appear in path
+//		
+//	$select=dpa, np1/dpb, np1/np2/dpc, ...
+//	
+//		CONSTRUCT{
+//			...
+//			...#expand constructs
+//			?resource	?resource_p   ?resource_o .
+//			?resource_np1	?resource_np1_p ?resource_np1_o  .
+//			?resource_np1_np2 ?resource_np1_np2_p ?resource_np1_np2_o .	
+//			...
+//		} 
+//		WHERE {	#/
+//			OPTIONAL {
+//				?resource ?resource_p ?resource_o .
+//				VALUES(?resource_p){(:dpa)}
+//			}	
+//			OPTIONAL { ?resource :np1 ?resource_np1 . 
+//			|| based on if path has filter associated
+//			{	#/np1/
+//				OPTIONAL {
+//					?resource_np1 ?resource_np1_p ?resource_np1_o .
+//					VALUES(?resource_np1_p){(:dpb)}
+//				}
+//				OPTIONAL { ?resource_np1 :np2 ?resource_np1_np2 . 
+//				|| based on if path has filter associated
+//				{	#/np1/np2/
+//					OPTIONAL {
+//						?resource_np1_np2 ?resource_np1_np2_p ?resource_np1_np2_o .
+//						VALUES(?resource_np1_np2_p){(:dpc)}
+//					}
+//					...
+//				}
+//			}
+//			{
+//				SELECT ?resource ?resource_np1 ?resource_np1_np2  
+//				...#path clauses
+//				...#expand clauses
+//			}
+//		}
+//	
+//	Filter
+//	------
+//	Note
+//		Filtered values must already appear in path
+//		
+//	$filter=condition({npN/}*dpN)
+//		
+//		CONSTRUCT{
+//			...
+//			...#expand constructs
+//			...#select constructs
+//			...
+//		} WHERE 
+//		{
+//			...
+//			...#select clauses
+//			...
+//			{	SELECT ?resource ?resource_np1 ?resource_np1_ip2 ?resource_np1_ip2_np3 
+//				WHERE {
+//					...
+//					...#path clauses
+//					...
 //					{	#filter=condition(dp)
 //						?resource :dp ?resource_dp_o .
 //						FILTER(condition(?resource_sp_o))			
@@ -303,11 +276,37 @@ import com.inova8.odata2sparql.uri.UriType;
 //								...
 //							}
 //						}
-//					}				
-//				}	GROUP BY ?resource LIMIT $top		
+//					}
+//					SELECT DISTINCT
+//						?resource
+//					WHERE {
+//						...#path clauses
+//						{	#filter=condition(dp)
+//							?resource :dp ?resource_dp_o .
+//							FILTER(condition(?resource_sp_o))			
+//						}
+//						{	#/np1/
+//							?resource	:np1	?resource_np1 .
+//							{	#filter=condition(np1/dp1)
+//								?resource_np1 :dp1 ?resource_dp1_o .
+//								FILTER(condition(?resource_dp1_o))					
+//							}
+//							{	#/np1/np2/
+//								?resource_np1 :np2 ?resource_np1_np2  .
+//								{	#filter=condition(np1/np2/dp2)
+//									?resource_np1_np2 :dp2 ?resource_np1_np2_dp2_o.
+//									FILTER(condition(?resource_np1_np2_dp2_o))					
+//								}
+//								{	#/np1/ip2/np3/
+//									?resource_np1_ip2 :np3 ?resource_np1_ip2_np3 .
+//									...
+//								}
+//							}
+//						}				
+//					}	GROUP BY ?resource LIMIT $top		
+//				}
 //			}
 //		}
-//	}
 
 public class SparqlQueryBuilder {
 	private final Log log = LogFactory.getLog(SparqlQueryBuilder.class);
@@ -871,9 +870,11 @@ public class SparqlQueryBuilder {
 		for (NavigationSegment navigationSegment : navigationSegments) {
 			index++;
 			EdmNavigationProperty predicate = navigationSegment.getNavigationProperty();
-			RdfAssociation navProperty = rdfModelToMetadata.getMappedNavigationProperty(new FullQualifiedName(
-					navigationSegment.getNavigationProperty().getRelationship().getNamespace(), navigationSegment
-							.getNavigationProperty().getRelationship().getName()));
+//			RdfAssociation navProperty = rdfModelToMetadata.getMappedNavigationProperty(new FullQualifiedName(
+//					navigationSegment.getNavigationProperty().getRelationship().getNamespace(), navigationSegment
+//							.getNavigationProperty().getRelationship().getName()));
+			RdfAssociation navProperty = rdfModelToMetadata.getMappedNavigationProperty(
+					navigationSegment.getNavigationProperty().getRelationship());
 			if (isFirstSegment) {
 				// Not possible to have more than one key field is it?
 				for (KeyPredicate entityKey : entityKeys) {
@@ -953,18 +954,20 @@ public class SparqlQueryBuilder {
 			for (NavigationPropertySegment navigationPropertySegment : selectItem.getNavigationPropertySegments()) {
 				expandSelectNavPropertyMap.put(
 						navigationPropertySegment.getNavigationProperty().getName(),
-						rdfModelToMetadata.getMappedNavigationProperty(new FullQualifiedName(navigationPropertySegment
-								.getNavigationProperty().getRelationship().getNamespace(), navigationPropertySegment
-								.getNavigationProperty().getRelationship().getName())));
-			}
+//						rdfModelToMetadata.getMappedNavigationProperty(new FullQualifiedName(navigationPropertySegment
+//								.getNavigationProperty().getRelationship().getNamespace(), navigationPropertySegment
+//								.getNavigationProperty().getRelationship().getName())));
+				rdfModelToMetadata.getMappedNavigationProperty(navigationPropertySegment.getNavigationProperty().getRelationship()));
+				}
 		}
 		for (ArrayList<NavigationPropertySegment> navigationPropertySegments : expand) {
 			for (NavigationPropertySegment navigationPropertySegment : navigationPropertySegments) {
 				expandSelectNavPropertyMap.put(
 						navigationPropertySegment.getNavigationProperty().getName(),
-						rdfModelToMetadata.getMappedNavigationProperty(new FullQualifiedName(navigationPropertySegment
-								.getNavigationProperty().getRelationship().getNamespace(), navigationPropertySegment
-								.getNavigationProperty().getRelationship().getName())));
+//						rdfModelToMetadata.getMappedNavigationProperty(new FullQualifiedName(navigationPropertySegment
+//								.getNavigationProperty().getRelationship().getNamespace(), navigationPropertySegment
+//								.getNavigationProperty().getRelationship().getName())));
+				rdfModelToMetadata.getMappedNavigationProperty(navigationPropertySegment.getNavigationProperty().getRelationship()));
 			}
 		}
 		return expandSelectNavPropertyMap;

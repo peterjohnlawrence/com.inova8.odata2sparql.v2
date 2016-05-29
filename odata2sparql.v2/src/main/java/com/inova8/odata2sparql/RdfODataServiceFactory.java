@@ -8,9 +8,9 @@ import org.apache.olingo.odata2.api.ODataServiceFactory;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 
-import com.inova8.odata2sparql.OData2SparqlException.OData2SparqlException;
-import com.inova8.odata2sparql.RdfConstants.RdfConstants;
-import com.inova8.odata2sparql.RdfConstants.ODataServiceVersion;
+import com.inova8.odata2sparql.Constants.ODataServiceVersion;
+import com.inova8.odata2sparql.Constants.RdfConstants;
+import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.SparqlProcessor.SparqlODataSingleProcessor;
 import com.inova8.odata2sparql.SparqlProcessor.SparqlODataSingleProcessors;
 
