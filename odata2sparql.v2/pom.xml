@@ -1,8 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.inova8.odata2sparql</groupId>
 	<artifactId>odata2sparql.v2</artifactId>
-	<version>0.0.3-SNAPHOT</version>
 	<packaging>war</packaging>
 	<name>odata2sparql.v2</name>
 	<dependencies>
@@ -110,17 +108,19 @@
 	<properties>
 		<sesame.version>4.1.2</sesame.version>
 		<olingo.version>2.0.6</olingo.version>
-		<odata2sparql.version>0.0.1</odata2sparql.version>
+		<odata2sparql.version>${project.version}</odata2sparql.version>
 	</properties>
 	<organization>
 		<url>http://www.inova8.com</url>
 		<name>inova8 llc</name>
 	</organization>
 	<scm>
-	  <tag>odata2sparql.v2-0.0.2</tag>
+	  <tag>odata2sparql.v2-${project.version}</tag>
 	  <connection>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</connection>
 	  <developerConnection>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</developerConnection>
 	  <url>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</url>
 	</scm>
 	<url>http://www.inova8.com</url>
+	<version>0.1.1-SNAPSHOT</version>
+	<groupId>com.inova8.odata2sparql</groupId>
 </project>
