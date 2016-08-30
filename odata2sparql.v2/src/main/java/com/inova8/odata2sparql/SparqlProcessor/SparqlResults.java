@@ -152,11 +152,9 @@ class SparqlResults {
 			}
 		}
 		entitySetResults = new ArrayList<Map<String, Object>>();
-		//TODO this assumes only single level expand, need to accommodate nested expand
 		for (Map.Entry<String, RdfEntity> rdfEntityEntry : entitySetResultsMap.entrySet()) {
-			// String key = rdfEntityEntry.getKey();
 			RdfEntity rdfEntity = rdfEntityEntry.getValue();
-			if (!rdfEntity.isExpandedEntity()) {
+			if (!rdfEntity.isExpandedEntity()||rdfEntity.isTargetEntity()) {
 				entitySetResults.add((Map<String, Object>) rdfEntity);
 			}
 		}
@@ -256,7 +254,7 @@ class SparqlResults {
 		navPropertyObjectValues.add(rdfObjectEntity);
 		navProperties.put(associationName, navPropertyObjectValues);
 		navPropertyResults.put(subject, navProperties);
-		//Mark as an expanded entity that should not be returned as part of the entitySet results
+		//Mark as an expanded entity that should not be returned as part of the entitySet results unless it is also a targetEntity
 		rdfObjectEntity.setExpandedEntity(true);
 	}
 

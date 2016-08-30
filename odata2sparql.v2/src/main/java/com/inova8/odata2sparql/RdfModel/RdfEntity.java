@@ -15,6 +15,7 @@ public class RdfEntity extends HashMap<String, Object>{
 	private final RdfPrefixes rdfPrefixes;
 	private RdfEntityType rdfEntityType;
 	private boolean isExpandedEntity =false;
+	private boolean isTargetEntity =false;
 
 	public RdfEntity(RdfNode subjectNode, RdfPrefixes rdfPrefixes) {
 		super();
@@ -62,5 +63,11 @@ public class RdfEntity extends HashMap<String, Object>{
 		this.isExpandedEntity = isExpandedEntity;
 	}
 
-	
+	public boolean isTargetEntity() {
+		return isTargetEntity;
+	}
+
+	public void setTargetEntity(boolean isTargetEntity) {
+		this.isTargetEntity = isTargetEntity;
+	}	
 }

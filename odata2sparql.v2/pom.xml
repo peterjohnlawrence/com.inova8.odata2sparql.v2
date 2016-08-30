@@ -107,7 +107,7 @@
 	</build>
 	<properties>
 		<sesame.version>4.1.2</sesame.version>
-		<olingo.version>2.0.6</olingo.version>
+		<olingo.version>2.0.7</olingo.version>
 		<odata2sparql.version>${project.version}</odata2sparql.version>
 	</properties>
 	<organization>

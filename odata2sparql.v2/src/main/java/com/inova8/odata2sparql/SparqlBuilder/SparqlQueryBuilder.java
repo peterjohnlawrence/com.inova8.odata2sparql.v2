@@ -510,6 +510,7 @@ public class SparqlQueryBuilder {
 
 	private StringBuilder construct() throws EdmException {
 		StringBuilder construct = new StringBuilder("CONSTRUCT {\n");
+		construct.append(targetEntityIdentifier( edmTargetEntitySet.getEntityType().getName(), "\t"));
 		if (this.rdfTargetEntityType.isOperation()) {
 			construct.append(constructOperation(rdfTargetEntityType, ""));
 		} else {
@@ -520,7 +521,15 @@ public class SparqlQueryBuilder {
 		construct.append("}\n");
 		return construct;
 	}
-
+	private StringBuilder targetEntityIdentifier(String key, String indent) throws EdmException {
+		StringBuilder targetEntityIdentifier = new StringBuilder();
+		if (DEBUG)
+			targetEntityIdentifier.append(indent).append("#targetEntityIdentifier\n");
+		String type = rdfEntityType.getIRI();
+		targetEntityIdentifier.append(indent).append("?" + key + "_s <" + RdfConstants.TARGETENTITY +"> true .\n");
+		return targetEntityIdentifier;
+	}
+	
 	private StringBuilder constructType(RdfEntityType rdfEntityType, String key, String indent) throws EdmException {
 		StringBuilder constructType = new StringBuilder();
 		if (DEBUG)

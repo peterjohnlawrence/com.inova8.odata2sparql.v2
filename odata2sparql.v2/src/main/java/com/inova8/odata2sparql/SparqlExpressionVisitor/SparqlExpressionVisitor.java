@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmLiteral;
 import org.apache.olingo.odata2.api.edm.EdmNavigationProperty;
 import org.apache.olingo.odata2.api.edm.EdmTyped;
+import org.apache.olingo.odata2.api.edm.FullQualifiedName;
 import org.apache.olingo.odata2.api.uri.expression.BinaryExpression;
 import org.apache.olingo.odata2.api.uri.expression.BinaryOperator;
 import org.apache.olingo.odata2.api.uri.expression.ExpressionVisitor;
@@ -354,11 +356,15 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 						return "?" + entityType.entityTypeName + SUBJECT_POSTFIX;
 					}
 				} else {
-					//TODO will a property really be unique throughout namespace
+
 					if (!sPath.isEmpty()) {
-//						rdfProperty = this.rdfModelToMetadata.getMappedProperty(new FullQualifiedName(currentNavigationProperty
-//								.getRelationship().getNamespace(), edmProperty.getName()));
-						rdfProperty = this.rdfModelToMetadata.getMappedProperty(currentNavigationProperty.getRelationship(), edmProperty);
+//						rdfProperty = this.rdfModelToMetadata.getMappedProperty(new FullQualifiedName(currentNavigationProperty.getRelationship().getNamespace(), edmProperty.getName()));   					
+//						rdfProperty = this.rdfModelToMetadata.getMappedProperty(currentNavigationProperty.getRelationship(), edmProperty);
+						
+						EdmEntityType endEntityType = currentNavigationProperty.getRelationship().getEnd2().getEntityType();
+						FullQualifiedName endEntityTypeFQN = new FullQualifiedName(endEntityType.getNamespace(),endEntityType.getName());
+						RdfEntityType endRdfEntityType =this.rdfModelToMetadata.getMappedEntityType(endEntityTypeFQN);
+						rdfProperty =   endRdfEntityType.findProperty(edmProperty.getName());
 						if (navigationProperties.containsKey(sPath)) {
 							navigationProperties.get(sPath).add(rdfProperty);
 						} else {

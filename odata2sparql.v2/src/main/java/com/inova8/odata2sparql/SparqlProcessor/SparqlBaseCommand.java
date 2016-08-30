@@ -26,7 +26,7 @@ class SparqlBaseCommand {
 			RdfTripleSet results, List<ArrayList<NavigationPropertySegment>> expand, List<SelectItem> select)
 			throws EdmException {
 
-		SparqlResults sparqlResults = new SparqlResults();
+		SparqlResults sparqlResults = new SparqlResults( );
 		Map<String, RdfEntity> rdfEntitiesMap = sparqlResults.getEntitySetResultsMap();
 
 		HashMap<String, RdfAssociation> navPropertiesMap = buildNavPropertiesMap(sparqlEdmProvider, expand, select);
@@ -68,14 +68,17 @@ class SparqlBaseCommand {
 					}
 				} else if (objectNode.isBlank()) {
 					//Must be a navigation property pointing to an expanded entity, but they should really be eliminated from the query in the first place
-				} else {// Must be a property with a value, so put it into a hashmap for processing the second time round when we know the property
+				} else if(propertyNode.getIRI().toString().equals(RdfConstants.TARGETENTITY )){
+					//Mark any targetEntity so that recursive queries can be executed
+					rdfSubjectEntity.setTargetEntity(true);
+				}
+				else {// Must be a property with a value, so put it into a hashmap for processing the second time round when we know the property
 					rdfSubjectEntity.getDatatypeProperties().put(propertyNode, objectNode.getLiteralObject());
 				}
 			}
 		} catch (OData2SparqlException e) {
 			e.printStackTrace();
 		}
-
 		return sparqlResults.build();
 	}
 
