@@ -772,7 +772,16 @@ public class SparqlQueryBuilder {
 		}
 		return clausesPath;
 	}
-
+	
+	private StringBuilder valuesSubClassOf(RdfEntityType rdfEntityType) {
+		StringBuilder valuesSubClassOf = new StringBuilder();
+		valuesSubClassOf.append("VALUES(?class){").append(
+				"(<" + rdfEntityType.getIRI() + ">)");
+		for (RdfEntityType subType : rdfEntityType.getAllSubTypes()) {
+			valuesSubClassOf.append("(<" + subType.getIRI() + ">)");
+		}
+		return valuesSubClassOf;
+	}
 	private StringBuilder clausesPath_URI1(String indent) throws EdmException {
 		StringBuilder clausesPath = new StringBuilder();
 		if (uriInfo.getNavigationSegments().size() > 0) {
@@ -782,13 +791,10 @@ public class SparqlQueryBuilder {
 			clausesPath.append(indent).append(
 					"?" + rdfEntityType.entityTypeName
 							+ "_s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?class .\n");
-			clausesPath.append(indent).append(
-					"?class (<http://www.w3.org/2000/01/rdf-schema#subClassOf>)* <" + rdfEntityType.getIRI() + "> .\n");
+//			clausesPath.append(indent).append(
+//					"?class (<http://www.w3.org/2000/01/rdf-schema#subClassOf>)* <" + rdfEntityType.getIRI() + "> .\n");
 
-			// Workaround for Virtuoso that sometimes misinterprets subClassOf*
-			//			clausesPath.append(indent).append(
-			//					"?" + rdfEntityType.entityTypeName + "_s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <"
-			//							+ rdfEntityType.getURI() + "> .\n");
+			clausesPath.append(indent).append( valuesSubClassOf(rdfEntityType)).append("}\n");
 		}
 		return clausesPath;
 	}
@@ -808,7 +814,7 @@ public class SparqlQueryBuilder {
 		StringBuilder clausesPath_KeyPredicateValues = new StringBuilder();
 		String key = "";
 		if (rdfEntityType.isOperation()) {
-			if (uriInfo.getNavigationSegments().isEmpty()) {
+			if (uriInfo.getNavigationSegments().size() == 0) {
 				for (RdfPrimaryKey primaryKey : rdfEntityType.getPrimaryKeys()) {
 					key = key + "?" + primaryKey.getPrimaryKeyName() + " ";
 				}

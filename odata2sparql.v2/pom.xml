@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>odata2sparql.v2</artifactId>
 	<packaging>war</packaging>
@@ -82,8 +83,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>7</source>
-					<target>7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<sourceExcludes>
 						<sourceExclude>/olingo2sparql/src/main/java/com/inova8/olingo2sparql/RdfConnector/jena/*.*</sourceExclude>
 					</sourceExcludes>
@@ -93,7 +94,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
-								<configuration>
+				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
@@ -110,10 +111,10 @@
 		<name>inova8 llc</name>
 	</organization>
 	<scm>
-	  <tag>odata2sparql.v2-${project.version}</tag>
-	  <connection>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</connection>
-	  <developerConnection>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</developerConnection>
-	  <url>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</url>
+		<tag>odata2sparql.v2-${project.version}</tag>
+		<connection>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</connection>
+		<developerConnection>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</developerConnection>
+		<url>scm:git:file://localhost/c:/Users/Peter/git/com.inova8.odata2sparql.v2</url>
 	</scm>
 	<url>http://www.inova8.com</url>
 	<version>0.1.1-SNAPSHOT</version>
