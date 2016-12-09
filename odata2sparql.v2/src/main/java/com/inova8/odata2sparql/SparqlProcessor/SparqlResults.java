@@ -221,7 +221,11 @@ class SparqlResults {
 					return (Float) value;
 				}
 			case "String":
-				return (String) value;
+				if (value instanceof java.math.BigDecimal) {
+					return ((BigDecimal) value).toString();
+				} else {
+					return (String) value;
+				}
 			case "Time":
 				return DatatypeConverter.parseTime(value.toString());
 			default:
