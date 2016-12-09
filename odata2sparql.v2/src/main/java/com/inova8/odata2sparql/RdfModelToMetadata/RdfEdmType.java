@@ -12,6 +12,7 @@ public class RdfEdmType {
 
 	static {
 		SIMPLE_TYPE_MAPPING.put(RdfConstants.RDF_PLAIN_LITERAL, EdmSimpleTypeKind.String);
+		SIMPLE_TYPE_MAPPING.put(RdfConstants.RDF_LITERAL, EdmSimpleTypeKind.String);
 		SIMPLE_TYPE_MAPPING.put("http://www.w3.org/2000/01/rdf-schema#Literal", EdmSimpleTypeKind.String);
 		SIMPLE_TYPE_MAPPING.put("http://www.w3.org/2001/XMLSchema#decimal", EdmSimpleTypeKind.Decimal);
 		SIMPLE_TYPE_MAPPING.put("http://www.w3.org/2001/XMLSchema#Literal", EdmSimpleTypeKind.String);
