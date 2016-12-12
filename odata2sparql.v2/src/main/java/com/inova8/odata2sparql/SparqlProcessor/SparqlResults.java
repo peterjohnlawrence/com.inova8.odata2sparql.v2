@@ -235,7 +235,7 @@ class SparqlResults {
 				return null;
 			}
 		} catch (Exception e) {
-			log.error(value + " cannot be cast to " + propertyTypeName.toString());
+			log.error(value + " of type " +value.getClass().toString() + " cannot be cast to " + propertyTypeName.toString());
 		}
 		return null;
 	}
