@@ -12,11 +12,13 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.exception.ODataException;
+import org.openrdf.model.Value;
 
 import com.inova8.odata2sparql.Constants.RdfConstants;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNode;
@@ -228,8 +230,8 @@ class SparqlResults {
 					return ((BigInteger) value).toString();
 				}else if (value instanceof Integer) {
 					return ((Integer) value).toString();
-//				}else if (value instanceof org.apache.xerces.jaxp.datatype.XMLGregorianCalendar) {
-//					return ((Integer) value).toString();
+				}else if (value instanceof  javax.xml.datatype.XMLGregorianCalendar) {
+					return ((XMLGregorianCalendar) value).toString();
 				}else {
 					return (String) value;
 				}
