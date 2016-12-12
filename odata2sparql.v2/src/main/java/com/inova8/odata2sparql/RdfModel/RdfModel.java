@@ -87,6 +87,16 @@ public class RdfModel {
 			}
 		}
 
+		public String convertToUri(String decodedEntityKey) {
+
+			int colon = decodedEntityKey.indexOf(':');
+			if (colon < 0)
+				return null;
+			else {
+				String uri = get(decodedEntityKey.substring(0, colon));
+				return uri == null ? null : "<"+uri + decodedEntityKey.substring(colon + 1)+">";
+			}
+		}
 		private void checkLegal(String prefix) throws OData2SparqlException {
 			if (prefix.length() > 0 && !XMLChar.isValidNCName(prefix))
 				throw new OData2SparqlException("RdfPrefixes checkLegal failure");

@@ -7,10 +7,12 @@
  */
 package com.inova8.odata2sparql.SparqlExpressionVisitor;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
@@ -212,11 +214,10 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 
 	@Override
 	public Object visitLiteral(LiteralExpression literal, EdmLiteral edmLiteral) {
-
-		String expandedKey = this.rdfModel.getRdfPrefixes().expandPrefix(RdfEntity.URLDecodeEntityKey(edmLiteral.getLiteral()));
-
-		if (urlValidator.isValid(expandedKey)) {
-			return "<" + expandedKey + ">";
+		String expandedKey = RdfEntity.URLDecodeEntityKey(edmLiteral.getLiteral());
+		String expandedUri = this.rdfModel.getRdfPrefixes().convertToUri(expandedKey);
+		if (expandedUri!=null) {
+			return expandedUri;
 		} else {
 			switch (edmLiteral.getType().toString()) {
 			case "Null":
