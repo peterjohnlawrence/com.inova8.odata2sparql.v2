@@ -226,6 +226,10 @@ class SparqlResults {
 					return ((BigDecimal) value).toString();
 				} else if (value instanceof java.math.BigInteger) {
 					return ((BigInteger) value).toString();
+				}else if (value instanceof Integer) {
+					return ((Integer) value).toString();
+//				}else if (value instanceof org.apache.xerces.jaxp.datatype.XMLGregorianCalendar) {
+//					return ((Integer) value).toString();
 				}else {
 					return (String) value;
 				}
