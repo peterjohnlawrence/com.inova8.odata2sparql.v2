@@ -1,6 +1,7 @@
 package com.inova8.odata2sparql.SparqlProcessor;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -223,7 +224,9 @@ class SparqlResults {
 			case "String":
 				if (value instanceof java.math.BigDecimal) {
 					return ((BigDecimal) value).toString();
-				} else {
+				} else if (value instanceof java.math.BigInteger) {
+					return ((BigInteger) value).toString();
+				}else {
 					return (String) value;
 				}
 			case "Time":
