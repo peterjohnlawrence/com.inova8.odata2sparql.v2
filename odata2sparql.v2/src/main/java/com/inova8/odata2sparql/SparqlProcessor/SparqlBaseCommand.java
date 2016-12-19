@@ -10,6 +10,8 @@ import org.apache.olingo.odata2.api.edm.FullQualifiedName;
 import org.apache.olingo.odata2.api.uri.NavigationPropertySegment;
 import org.apache.olingo.odata2.api.uri.NavigationSegment;
 import org.apache.olingo.odata2.api.uri.SelectItem;
+import org.openrdf.model.impl.LiteralImpl;
+import org.openrdf.model.impl.SimpleLiteral;
 
 import com.inova8.odata2sparql.Constants.RdfConstants;
 import com.inova8.odata2sparql.Exception.OData2SparqlException;
@@ -56,6 +58,9 @@ class SparqlBaseCommand {
 						rdfObjectEntity.setEntityType(rdfAssociation.getRangeClass());
 						sparqlResults.addNavPropertyObjectValues(rdfSubjectEntity.getSubject(),
 								rdfAssociation.getEDMAssociationName(), rdfObjectEntity);					
+					}else{
+						//fixes #11  could be a datatypeProperty with a object (xrd:anyURI) as its value
+						rdfSubjectEntity.getDatatypeProperties().put(propertyNode, objectNode.getIRI());
 					}
 					if (rdfSubjectEntity.getEntityType().isOperation()) {
 						// An operation so need to use these as the primary key of the record.
