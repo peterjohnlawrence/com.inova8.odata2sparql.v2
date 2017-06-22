@@ -390,10 +390,14 @@ public class RdfModelToMetadata {
 
 					}
 					navigationProperty.setAnnotationAttributes(navigationPropertyAnnotations);
-					//TODO should not add duplicates to the same entity, even though Olingo accepts them							
-					globalEntityTypes.get(rdfAssociation.getDomainNodeURI()).getNavigationProperties()
-							.add(navigationProperty);
-
+					//TODO should not add duplicates to the same entity, even though Olingo accepts them	
+					EntityType globalEntityType = globalEntityTypes.get(rdfAssociation.getDomainNodeURI());
+					if(globalEntityType!=null){
+						globalEntityType.getNavigationProperties().add(navigationProperty);
+					}else{
+						
+					}
+					
 					navigationPropertyLookup.put(navigationProperty.getName(), rdfAssociation);
 					navigationPropertyMapping.put(navigationProperty.getRelationship(), rdfAssociation);
 					//rdfAssociation.setEdmAssociation(association);
