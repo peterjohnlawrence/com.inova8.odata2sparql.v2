@@ -48,7 +48,6 @@ import com.inova8.odata2sparql.RdfModel.RdfModel.RdfSchema;
 
 public class RdfModelToMetadata {
 
-
 	private class PrefixedNamespace {
 
 		private final String uri;
@@ -76,7 +75,8 @@ public class RdfModelToMetadata {
 	private final Map<FullQualifiedName, RdfAssociation> navigationPropertyMapping = new HashMap<FullQualifiedName, RdfAssociation>();
 
 	public RdfModelToMetadata(RdfModel rdfModel, String oDataVersion, boolean withRdfAnnotations,
-			boolean withSapAnnotations) {
+			boolean withSapAnnotations,
+			boolean useBaseType) {
 		Map<String, EntityType> globalEntityTypes = new HashMap<String, EntityType>();
 
 		Map<String, RdfAssociation> navigationPropertyLookup = new HashMap<String, RdfAssociation>();
@@ -90,19 +90,17 @@ public class RdfModelToMetadata {
 		nameSpaces.add(new PrefixedNamespace(RdfConstants.XSD_SCHEMA, RdfConstants.XSD));
 
 		String entityContainerName = RdfConstants.ENTITYCONTAINER;
-		EntityContainer entityContainer = new EntityContainer().setName(entityContainerName).setDefaultEntityContainer(
-				true);
+		EntityContainer entityContainer = new EntityContainer().setName(entityContainerName)
+				.setDefaultEntityContainer(true);
 
-		//TODO .setLazyLoadingEnabled(false);
 		List<EntityContainer> entityContainers = new ArrayList<EntityContainer>();
 		entityContainers.add(entityContainer);
-		Schema instanceSchema = new Schema().setNamespace(RdfConstants.ENTITYCONTAINERNAMESPACE).setEntityContainers(
-				entityContainers);
+		Schema instanceSchema = new Schema().setNamespace(RdfConstants.ENTITYCONTAINERNAMESPACE)
+				.setEntityContainers(entityContainers);
 		rdfEdm.add(instanceSchema);
 
-		//TODO List<EntitySet> entitySets = new ArrayList<EntitySet>();
-		HashMap<String, EntitySet> entitySets = new HashMap<String, EntitySet>();		
-		
+		HashMap<String, EntitySet> entitySets = new HashMap<String, EntitySet>();
+
 		HashMap<String, AssociationSet> associationSets = new HashMap<String, AssociationSet>();
 
 		//Custom types
@@ -113,12 +111,10 @@ public class RdfModelToMetadata {
 		ArrayList<Property> langStringAnnotationsProperties = new ArrayList<Property>();
 		langStringAnnotationsProperties.add(new SimpleProperty().setName(RdfConstants.LANG)
 				.setType(EdmSimpleTypeKind.String).setAnnotationAttributes(langStringAnnotations)
-		// TODO .setNullable(true)
-				);
+		);
 		langStringAnnotationsProperties.add(new SimpleProperty().setName(RdfConstants.VALUE)
 				.setType(EdmSimpleTypeKind.String).setAnnotationAttributes(langStringAnnotations));
 		ComplexType langLiteralType = new ComplexType().setName(RdfConstants.LANGSTRING);
-		// TODO .setNamespace(RdfConstants.RDF)
 
 		if (withRdfAnnotations)
 			langLiteralType.setProperties(langStringAnnotationsProperties);
@@ -142,20 +138,21 @@ public class RdfModelToMetadata {
 					}
 					//entityType.setBaseType(rdfClass.getBaseType().getFullQualifiedName());
 					entityType.setBaseType(RdfFullQualifiedName.getFullQualifiedName(rdfClass.getBaseType()));
-					}
-			
-					List<AnnotationAttribute> entityTypeAnnotations = new ArrayList<AnnotationAttribute>();
+				}
 
-					if (withRdfAnnotations) entityTypeAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
+				List<AnnotationAttribute> entityTypeAnnotations = new ArrayList<AnnotationAttribute>();
+
+				if (withRdfAnnotations)
+					entityTypeAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
 							.setPrefix(RdfConstants.RDFS).setName(RdfConstants.RDFS_CLASS_LABEL)
 							.setText(rdfClass.getIRI()));
-					if (withSapAnnotations) entityTypeAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+				if (withSapAnnotations)
+					entityTypeAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
 							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
 							.setText(rdfClass.getEntityTypeLabel()));
-					entityType.setAnnotationAttributes(entityTypeAnnotations);			
+				entityType.setAnnotationAttributes(entityTypeAnnotations);
 			}
 		}
-		;
 
 		for (RdfSchema rdfGraph : rdfModel.graphs) {
 			// Second pass to add properties, navigation properties, and entitysets, and create the schema
@@ -172,126 +169,151 @@ public class RdfModelToMetadata {
 				entityType.setAbstract(false);
 				// TODO entityType.setNamespace(modelNamespace);
 				entityTypeMapping.put(entityTypeName, entityType);
-				HashMap<String, NavigationProperty> navigationProperties = new HashMap<String, NavigationProperty>();	
-				HashMap<String, Property> entityTypeProperties = new HashMap<String, Property>();	
-				
-				ArrayList<PropertyRef> keys = new ArrayList<PropertyRef>();
-				for (RdfPrimaryKey primaryKey : rdfClass.getPrimaryKeys()) {
-					String propertyName = primaryKey.getEDMPropertyName();
-					keys.add(new PropertyRef().setName(propertyName));
-					entityType.setKey(new Key().setKeys(keys));
-				}
+				HashMap<String, NavigationProperty> navigationProperties = new HashMap<String, NavigationProperty>();
+				HashMap<String, Property> entityTypeProperties = new HashMap<String, Property>();
 
-				for (RdfProperty rdfProperty : rdfClass.getProperties()) {
-					String propertyName = rdfProperty.getEDMPropertyName();
-					EdmSimpleTypeKind propertyType = RdfEdmType.getEdmType(rdfProperty.propertyTypeName);  //rdfProperty.propertyType;
+				//Iterate through baseType if flattened metadata required
+				RdfEntityType currentRdfClass =rdfClass;
+				do {
 
-					Facets notNullableFacets = new Facets();
-					notNullableFacets.setNullable(false);
-					Facets nullableFacets = new Facets();
-					nullableFacets.setNullable(true);
+					ArrayList<PropertyRef> keys = new ArrayList<PropertyRef>();
+					for (RdfPrimaryKey primaryKey : currentRdfClass.getPrimaryKeys(useBaseType)) {
+						String propertyName = primaryKey.getEDMPropertyName();
+						keys.add(new PropertyRef().setName(propertyName));
+						entityType.setKey(new Key().setKeys(keys));
+					}
 
-					//TODO langString
-					//					if (propertyType.equals(EdmSimpleTypeKind.String)
-					//							&& !rdfProperty.propertyName
-					//									.equals(RdfConstants.ID))
-					//						propertyType = langLiteralType;
-					Property property = new SimpleProperty().setName(propertyName).setType(propertyType);
+					for (RdfProperty rdfProperty : currentRdfClass.getProperties()) {
+						String propertyName = rdfProperty.getEDMPropertyName();
+						EdmSimpleTypeKind propertyType = RdfEdmType.getEdmType(rdfProperty.propertyTypeName); //rdfProperty.propertyType;
 
-					List<AnnotationAttribute> propertyAnnotations = new ArrayList<AnnotationAttribute>();
-					if (!rdfProperty.propertyName.equals(RdfConstants.SUBJECT)) {
+						Facets notNullableFacets = new Facets();
+						notNullableFacets.setNullable(false);
+						Facets nullableFacets = new Facets();
+						nullableFacets.setNullable(true);
 
-						if (withRdfAnnotations)
-							propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDF_SCHEMA)
-									.setPrefix(RdfConstants.RDF).setName(RdfConstants.PROPERTY)
-									.setText(rdfProperty.getPropertyURI().toString()));
+						//TODO langString
+						//					if (propertyType.equals(EdmSimpleTypeKind.String)
+						//							&& !rdfProperty.propertyName
+						//									.equals(RdfConstants.ID))
+						//						propertyType = langLiteralType;
+						Property property = new SimpleProperty().setName(propertyName).setType(propertyType);
 
-						if (withRdfAnnotations)
-							propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
-									.setPrefix(RdfConstants.RDFS).setName(RdfConstants.DATATYPE)
-									.setText(rdfProperty.propertyTypeName));
-						if (rdfProperty.getEquivalentProperty() != null) {
+						List<AnnotationAttribute> propertyAnnotations = new ArrayList<AnnotationAttribute>();
+						if (!rdfProperty.propertyName.equals(RdfConstants.SUBJECT)) {
+
 							if (withRdfAnnotations)
-								propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.OWL_SCHEMA)
-										.setPrefix(RdfConstants.OWL).setName(RdfConstants.OWL_EQUIVALENTPROPERTY_LABEL)
-										.setText(rdfProperty.getEquivalentProperty()));
-						}
-						if (withSapAnnotations) propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-								.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
-								.setText(rdfProperty.getPropertyLabel()));
-						if (withSapAnnotations) propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-								.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_HEADING)
-								.setText(rdfProperty.getPropertyLabel()));
-						if (withSapAnnotations) propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-								.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_QUICKINFO)
-								.setText(rdfProperty.getDescription()));
-						property.setAnnotationAttributes(propertyAnnotations);
+								propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDF_SCHEMA)
+										.setPrefix(RdfConstants.RDF).setName(RdfConstants.PROPERTY)
+										.setText(rdfProperty.getPropertyURI().toString()));
 
-						if (rdfProperty.getIsKey()) {
-							property.setFacets(notNullableFacets);
-						} else if (rdfProperty.getCardinality() == RdfConstants.Cardinality.ZERO_TO_ONE
-								|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY) {
-							if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
-								property.setFacets(nullableFacets);
+							if (withRdfAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
+										.setPrefix(RdfConstants.RDFS).setName(RdfConstants.DATATYPE)
+										.setText(rdfProperty.propertyTypeName));
+							if (rdfProperty.getEquivalentProperty() != null) {
+								if (withRdfAnnotations)
+									propertyAnnotations.add(new AnnotationAttribute()
+											.setNamespace(RdfConstants.OWL_SCHEMA).setPrefix(RdfConstants.OWL)
+											.setName(RdfConstants.OWL_EQUIVALENTPROPERTY_LABEL)
+											.setText(rdfProperty.getEquivalentProperty()));
+							}
+							if (withSapAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute()
+										.setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
+										.setText(rdfProperty.getPropertyLabel()));
+							if (withSapAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute()
+										.setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_HEADING)
+										.setText(rdfProperty.getPropertyLabel()));
+							if (withSapAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute()
+										.setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_QUICKINFO)
+										.setText(rdfProperty.getDescription()));
+							property.setAnnotationAttributes(propertyAnnotations);
+
+							if (rdfProperty.getIsKey()) {
+								property.setFacets(notNullableFacets);
+							} else if (rdfProperty.getCardinality() == RdfConstants.Cardinality.ZERO_TO_ONE
+									|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY) {
+								if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
+									property.setFacets(nullableFacets);
+								} else {
+									property.setFacets(nullableFacets);
+								}
 							} else {
+								//TODO need to handle case when data violates nullablility, in the meantime allow all to be nullable
+								//property.setFacets(notNullableFacets);
 								property.setFacets(nullableFacets);
+							}
+							if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
+								if (rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY
+										|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MULTIPLE) {
+									//TODO property.setCollectionKind(CollectionKind.List);
+								} else {
+									//TODO property.setCollectionKind(CollectionKind.NONE);
+								}
 							}
 						} else {
-							//TODO need to handle case when data violates nullablility, in the meantime allow all to be nullable
-							//property.setFacets(notNullableFacets);
-							property.setFacets(nullableFacets);
-						}
-						if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
-							if (rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY
-									|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MULTIPLE) {
-								//TODO property.setCollectionKind(CollectionKind.List);
-							} else {
-								//TODO property.setCollectionKind(CollectionKind.NONE);
-							}
-						}
-					} else {
 
-						property.setFacets(notNullableFacets);
-						if (withRdfAnnotations)
-							propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
-									.setPrefix(RdfConstants.RDFS).setName(RdfConstants.DATATYPE)
-									.setText(RdfConstants.RDFS_RESOURCE));
-						if (withSapAnnotations) propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-								.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
-								.setText(rdfProperty.getPropertyLabel()));
-						if (withSapAnnotations) propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-								.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_HEADING)
-								.setText(rdfProperty.getPropertyLabel()));
-						if (withSapAnnotations) propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-								.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_QUICKINFO)
-								.setText(rdfProperty.getDescription()));
-						property.setAnnotationAttributes(propertyAnnotations);
+							property.setFacets(notNullableFacets);
+							if (withRdfAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.RDFS_SCHEMA)
+										.setPrefix(RdfConstants.RDFS).setName(RdfConstants.DATATYPE)
+										.setText(RdfConstants.RDFS_RESOURCE));
+							if (withSapAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute()
+										.setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
+										.setText(rdfProperty.getPropertyLabel()));
+							if (withSapAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute()
+										.setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_HEADING)
+										.setText(rdfProperty.getPropertyLabel()));
+							if (withSapAnnotations)
+								propertyAnnotations.add(new AnnotationAttribute()
+										.setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_QUICKINFO)
+										.setText(rdfProperty.getDescription()));
+							property.setAnnotationAttributes(propertyAnnotations);
 
+						}
+						//TODO what if duplicates?
+						entityTypeProperties.put(property.getName(), property);
+						propertyMapping.put(
+								new FullQualifiedName(currentRdfClass.getSchema().getSchemaPrefix(), property.getName()),
+								rdfProperty);
 					}
-					//TODO what if duplicates?
-					entityTypeProperties.put( property.getName(), property); 
-					propertyMapping.put(new FullQualifiedName(rdfClass.getSchema().getSchemaPrefix(), property.getName()),
-							rdfProperty);
-
-				}
+					if (useBaseType)
+						currentRdfClass=currentRdfClass.getBaseType();
+					else
+						currentRdfClass=null;
+				} while( currentRdfClass!=null);
+				
 				entityType.setProperties(new ArrayList<Property>(entityTypeProperties.values()));
-			    entityType.setNavigationProperties(new ArrayList<NavigationProperty>(navigationProperties.values()));
+				entityType.setNavigationProperties(new ArrayList<NavigationProperty>(navigationProperties.values()));
 
 				String entitySetName = rdfClass.getEDMEntitySetName();
 
-				EntitySet entitySet = new EntitySet().setName(entitySetName).setEntityType(
-						new FullQualifiedName(rdfClass.getSchema().getSchemaPrefix(), entityTypeName));//entityType);
+				EntitySet entitySet = new EntitySet().setName(entitySetName)
+						.setEntityType(new FullQualifiedName(rdfClass.getSchema().getSchemaPrefix(), entityTypeName));//entityType);
 
 				List<AnnotationAttribute> entitySetAnnotations = new ArrayList<AnnotationAttribute>();
-				if (withSapAnnotations) entitySetAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-						.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
-						.setText(rdfClass.getEntityTypeLabel()));
+				if (withSapAnnotations)
+					entitySetAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
+							.setText(rdfClass.getEntityTypeLabel()));
 				entitySet.setAnnotationAttributes(entitySetAnnotations);
 
 				entitySets.put(entitySet.getName(), entitySet);//.add(entitySet);
 
 				entitySetMapping.put(entitySet.getEntityType(), rdfClass);
 				entitySetsMapping.put(entitySetName, entitySet);
+
 			}
 
 			for (RdfAssociation rdfAssociation : rdfGraph.associations) {
@@ -302,13 +324,13 @@ public class RdfModelToMetadata {
 					if (rdfAssociation.getDomainName().equals(rdfAssociation.getRangeName()))
 						duplicate = RdfConstants.DUPLICATEROLE;
 
-					AssociationEnd fromRole = new AssociationEnd().setRole(
-							rdfAssociation.getDomainName() + RdfConstants.FROMROLE).setType(
-									RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.domainClass));
+					AssociationEnd fromRole = new AssociationEnd()
+							.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE)
+							.setType(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.domainClass));
 
-					AssociationEnd toRole = new AssociationEnd().setRole(
-							rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate).setType(
-									RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.getRangeClass()));
+					AssociationEnd toRole = new AssociationEnd()
+							.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate)
+							.setType(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.getRangeClass()));
 					switch (rdfAssociation.getFromCardinality()) {
 					case ZERO_TO_ONE:
 						fromRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
@@ -346,22 +368,24 @@ public class RdfModelToMetadata {
 						ReferentialConstraintRole dependentConstraintRole = new ReferentialConstraintRole();
 						principalConstraintRole.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE);
 						//TODO principalConstraintRole.setPropertyRefs(RdfConstants.ID);
-						dependentConstraintRole.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate);
+						dependentConstraintRole
+								.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate);
 						//TODO dependentConstraintRole.setPropertyRefs(RdfConstants.ID);						
 
-						ReferentialConstraint referentialConstraint = new ReferentialConstraint().setPrincipal(
-								principalConstraintRole).setDependent(dependentConstraintRole);
+						ReferentialConstraint referentialConstraint = new ReferentialConstraint()
+								.setPrincipal(principalConstraintRole).setDependent(dependentConstraintRole);
 						association.setReferentialConstraint(referentialConstraint);
 					}
 
 					associations.put(association.getName(), association);
 
 					//TODO if (!rdfAssociation.isInverse)
-						associationLookup.put(association.getName(), rdfAssociation);
-					
+					associationLookup.put(association.getName(), rdfAssociation);
+
 					//TODO Do we need a new navigation property or extend an existing one?
 					NavigationProperty navigationProperty = new NavigationProperty().setName(associationName)
-							.setRelationship(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation)).setFromRole(fromRole.getRole())
+							.setRelationship(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation))
+							.setFromRole(fromRole.getRole())
 							//.setRelationship(rdfAssociation.getFullQualifiedName()).setFromRole(fromRole.getRole())
 							.setToRole(toRole.getRole());
 
@@ -369,35 +393,37 @@ public class RdfModelToMetadata {
 					if (withRdfAnnotations)
 						navigationPropertyAnnotations.add(new AnnotationAttribute()
 								.setNamespace(RdfConstants.RDF_SCHEMA).setPrefix(RdfConstants.RDF)
-								.setName(RdfConstants.PROPERTY)
-								.setText(rdfAssociation.getAssociationIRI().toString()));
-					
-					if (withSapAnnotations) navigationPropertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
-							.setText(rdfAssociation.getAssociationLabel()));
-					if (withSapAnnotations) navigationPropertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_HEADING)
-							.setText(rdfAssociation.getAssociationLabel()));
-					if (withSapAnnotations) navigationPropertyAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
-							.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_QUICKINFO)
-							.setText(rdfAssociation.getDescription()));					
+								.setName(RdfConstants.PROPERTY).setText(rdfAssociation.getAssociationIRI().toString()));
+
+					if (withSapAnnotations)
+						navigationPropertyAnnotations
+								.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_LABEL)
+										.setText(rdfAssociation.getAssociationLabel()));
+					if (withSapAnnotations)
+						navigationPropertyAnnotations
+								.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_HEADING)
+										.setText(rdfAssociation.getAssociationLabel()));
+					if (withSapAnnotations)
+						navigationPropertyAnnotations
+								.add(new AnnotationAttribute().setNamespace(RdfConstants.SAP_ANNOTATION_SCHEMA)
+										.setPrefix(RdfConstants.SAP_ANNOTATION_NS).setName(RdfConstants.SAP_QUICKINFO)
+										.setText(rdfAssociation.getDescription()));
 					if (rdfAssociation.IsInverse()) {
 						if (withRdfAnnotations)
-							navigationPropertyAnnotations.add(new AnnotationAttribute()
-									.setNamespace(RdfConstants.OWL_SCHEMA).setPrefix(RdfConstants.OWL)
-									.setName(RdfConstants.INVERSEOF)
-									.setText(rdfAssociation.getInversePropertyOfURI().toString()));
+							navigationPropertyAnnotations
+									.add(new AnnotationAttribute().setNamespace(RdfConstants.OWL_SCHEMA)
+											.setPrefix(RdfConstants.OWL).setName(RdfConstants.INVERSEOF)
+											.setText(rdfAssociation.getInversePropertyOfURI().toString()));
 
 					}
 					navigationProperty.setAnnotationAttributes(navigationPropertyAnnotations);
 					//TODO should not add duplicates to the same entity, even though Olingo accepts them	
 					EntityType globalEntityType = globalEntityTypes.get(rdfAssociation.getDomainNodeURI());
-					if(globalEntityType!=null){
+					if (globalEntityType != null) {
 						globalEntityType.getNavigationProperties().add(navigationProperty);
-					}else{
-						
 					}
-					
 					navigationPropertyLookup.put(navigationProperty.getName(), rdfAssociation);
 					navigationPropertyMapping.put(navigationProperty.getRelationship(), rdfAssociation);
 					//rdfAssociation.setEdmAssociation(association);
@@ -408,7 +434,7 @@ public class RdfModelToMetadata {
 
 			List<AnnotationAttribute> schemaAnnotations = new ArrayList<AnnotationAttribute>();
 			schemaAnnotations.add(new AnnotationAttribute().setNamespace(RdfConstants.OWL_SCHEMA)
-						.setPrefix(RdfConstants.OWL).setName(RdfConstants.ONTOLOGY).setText(rdfGraph.getSchemaName()));
+					.setPrefix(RdfConstants.OWL).setName(RdfConstants.ONTOLOGY).setText(rdfGraph.getSchemaName()));
 
 			//TODO Create empty container to satisfy Olingo		
 			List<EntitySet> modelSchemaEntitySets = new ArrayList<EntitySet>();
@@ -446,20 +472,21 @@ public class RdfModelToMetadata {
 						duplicate = RdfConstants.DUPLICATEROLE;
 
 					String associationSetName = rdfAssociation.getEDMAssociationSetName();
-					AssociationSetEnd fromSet = new AssociationSetEnd().setRole(
-							rdfAssociation.getDomainName() + RdfConstants.PLURAL)
-					//.setRole(rdfAssociation.edmAssociation.getEnd1())
+					AssociationSetEnd fromSet = new AssociationSetEnd()
+							.setRole(rdfAssociation.getDomainName() + RdfConstants.PLURAL)
+							//.setRole(rdfAssociation.edmAssociation.getEnd1())
 							.setEntitySet(
 									entitySetsMapping.get(rdfAssociation.domainClass.getEDMEntitySetName()).getName());
-					AssociationSetEnd toSet = new AssociationSetEnd().setRole(
-							rdfAssociation.getRangeName() + RdfConstants.PLURAL + duplicate)
-					//.setRole(rdfAssociation.edmAssociation.getEnd2())
-							.setEntitySet(
-									entitySetsMapping.get(rdfAssociation.getRangeClass().getEDMEntitySetName()).getName());
+					AssociationSetEnd toSet = new AssociationSetEnd()
+							.setRole(rdfAssociation.getRangeName() + RdfConstants.PLURAL + duplicate)
+							//.setRole(rdfAssociation.edmAssociation.getEnd2())
+							.setEntitySet(entitySetsMapping.get(rdfAssociation.getRangeClass().getEDMEntitySetName())
+									.getName());
 
 					AssociationSet associationSet = new AssociationSet().setName(associationSetName)
-							.setAssociation(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation)).setEnd1(fromSet).setEnd2(toSet);
-							//.setAssociation(rdfAssociation.getFullQualifiedName()).setEnd1(fromSet).setEnd2(toSet);
+							.setAssociation(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation)).setEnd1(fromSet)
+							.setEnd2(toSet);
+					//.setAssociation(rdfAssociation.getFullQualifiedName()).setEnd1(fromSet).setEnd2(toSet);
 
 					List<AnnotationAttribute> associationSetAnnotations = new ArrayList<AnnotationAttribute>();
 					//TODO we should rely on the metadata queries to determine which properties even of Resource that should be included
@@ -477,56 +504,67 @@ public class RdfModelToMetadata {
 			}
 		}
 
-		List<FunctionImport> functionImports = new ArrayList<FunctionImport>();		
+		List<FunctionImport> functionImports = new ArrayList<FunctionImport>();
 		for (RdfSchema rdfGraph : rdfModel.graphs) {
 			// Final pass to add any functionImports
 			for (RdfEntityType rdfEntityType : rdfGraph.classes) {
-				if(rdfEntityType.isFunctionImport()){	
+				if (rdfEntityType.isFunctionImport()) {
 					FunctionImport functionImport = new FunctionImport();
-					List<FunctionImportParameter> functionImportParameters =new ArrayList<FunctionImportParameter>(0);
-					for( com.inova8.odata2sparql.RdfModel.RdfModel.FunctionImportParameter functionImportParameter : rdfEntityType.getFunctionImportParameters().values()){
+					List<FunctionImportParameter> functionImportParameters = new ArrayList<FunctionImportParameter>(0);
+					for (com.inova8.odata2sparql.RdfModel.RdfModel.FunctionImportParameter functionImportParameter : rdfEntityType
+							.getFunctionImportParameters().values()) {
 						List<AnnotationAttribute> nullableAnnotations = new ArrayList<AnnotationAttribute>();
-						nullableAnnotations.add((new AnnotationAttribute()).setName(RdfConstants.NULLABLE).setText(	RdfConstants.FALSE));
+						nullableAnnotations.add(
+								(new AnnotationAttribute()).setName(RdfConstants.NULLABLE).setText(RdfConstants.FALSE));
 						FunctionImportParameter edmFunctionImportParameter = new FunctionImportParameter();
 						edmFunctionImportParameter.setName(functionImportParameter.getName())
-						.setType(RdfEdmType.getEdmType(functionImportParameter.getType()))
-						.setAnnotationAttributes(nullableAnnotations);						
+								.setType(RdfEdmType.getEdmType(functionImportParameter.getType()))
+								.setAnnotationAttributes(nullableAnnotations);
 						functionImportParameters.add(edmFunctionImportParameter);
 					}
-					ReturnType functionImportReturnType = (new ReturnType()).setTypeName(RdfFullQualifiedName.getFullQualifiedName(rdfEntityType)).setMultiplicity(EdmMultiplicity.MANY);
+					ReturnType functionImportReturnType = (new ReturnType())
+							.setTypeName(RdfFullQualifiedName.getFullQualifiedName(rdfEntityType))
+							.setMultiplicity(EdmMultiplicity.MANY);
 					List<AnnotationAttribute> functionImportAnnotations = new ArrayList<AnnotationAttribute>();
 					functionImportAnnotations.add(new AnnotationAttribute().setName("IsBindable").setText("true"));
-					functionImport.setName(rdfEntityType.getEDMEntityTypeName()).setParameters(functionImportParameters).setEntitySet(rdfEntityType.getEDMEntityTypeName())
-					.setReturnType(functionImportReturnType).setAnnotationAttributes(functionImportAnnotations)
-					.setHttpMethod("GET");				
-					functionImports.add(functionImport);				
-				}			
+					functionImport.setName(rdfEntityType.getEDMEntityTypeName()).setParameters(functionImportParameters)
+							.setEntitySet(rdfEntityType.getEDMEntityTypeName()).setReturnType(functionImportReturnType)
+							.setAnnotationAttributes(functionImportAnnotations).setHttpMethod("GET");
+					functionImports.add(functionImport);
+				}
 			}
-		}		
+		}
 		entityContainer.setFunctionImports(functionImports);
-		entityContainer.setEntitySets(new ArrayList<EntitySet>(entitySets.values())).setAssociationSets(
-				new ArrayList<AssociationSet>(associationSets.values()));
+		entityContainer.setEntitySets(new ArrayList<EntitySet>(entitySets.values()))
+				.setAssociationSets(new ArrayList<AssociationSet>(associationSets.values()));
 		//addCoreFunctionImports(entityContainer, globalEntityTypes, entitySetsMapping);
 	}
+
 	public RdfEntityType getMappedEntityType(FullQualifiedName fqnEntityType) {
 		return entitySetMapping.get(fqnEntityType);
 	}
+
 	public RdfEntityType getRdfEntityTypefromEdmEntitySet(EdmEntitySet edmEntitySet) throws EdmException {
-		return this.getMappedEntityType(new FullQualifiedName(edmEntitySet.getEntityType().getNamespace(), edmEntitySet
-				.getEntityType().getName()));
+		return this.getMappedEntityType(new FullQualifiedName(edmEntitySet.getEntityType().getNamespace(),
+				edmEntitySet.getEntityType().getName()));
 	}
+
 	public RdfProperty getMappedProperty(FullQualifiedName fqnProperty) {
 		return propertyMapping.get(fqnProperty);
 	}
+
 	public RdfProperty getMappedProperty(EdmAssociation edmAssociation, EdmTyped edmTyped) throws EdmException {
 		FullQualifiedName fqnProperty = new FullQualifiedName(edmAssociation.getNamespace(), edmTyped.getName());
 		return propertyMapping.get(fqnProperty);
 	}
+
 	public RdfAssociation getMappedNavigationProperty(FullQualifiedName edmNavigationProperty) {
 		return navigationPropertyMapping.get(edmNavigationProperty);
 	}
+
 	public RdfAssociation getMappedNavigationProperty(EdmAssociation edmAssociation) throws EdmException {
-		FullQualifiedName edmNavigationProperty = new FullQualifiedName(edmAssociation.getNamespace(), edmAssociation.getName());
+		FullQualifiedName edmNavigationProperty = new FullQualifiedName(edmAssociation.getNamespace(),
+				edmAssociation.getName());
 		return navigationPropertyMapping.get(edmNavigationProperty);
 	}
 }

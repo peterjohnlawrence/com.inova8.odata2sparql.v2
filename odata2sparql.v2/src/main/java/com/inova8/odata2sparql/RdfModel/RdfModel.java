@@ -373,9 +373,18 @@ public class RdfModel {
 				return this.schema.schemaPrefix + RdfConstants.CLASS_SEPARATOR + this.entityTypeName;
 			}
 		}
-
 		public Collection<RdfPrimaryKey> getPrimaryKeys() {
-			return primaryKeys.values();
+			return getPrimaryKeys(true);
+		}
+		public Collection<RdfPrimaryKey> getPrimaryKeys(boolean withBaseType) {
+			Collection<RdfPrimaryKey> primaryKeyValues = new ArrayList<RdfPrimaryKey>();;
+			RdfEntityType currentEntityType = this;
+			do{
+				primaryKeyValues.addAll(currentEntityType.primaryKeys.values());
+				currentEntityType=currentEntityType.getBaseType();
+				if(withBaseType ) currentEntityType=null;
+			}while(currentEntityType!=null);
+			return primaryKeyValues;
 		}
 
 		public void setFunctionImport(boolean b) {
