@@ -398,6 +398,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		try {
 			entry = EntityProvider.readEntry(requestContentType, uriInfo.getStartEntitySet(), content,
 					properties);
+			log.info("Content: " + entry.getProperties().toString()); 
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			throw new ODataException(e.getMessage());
@@ -519,6 +520,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 
 		ODataEntry entry = EntityProvider.readEntry(requestContentType, uriInfo.getStartEntitySet(), content,
 				properties);
+		log.info("Content: " + entry.getProperties().toString()); 
 		//if something goes wrong in deserialization this is managed via the ExceptionMapper
 		//no need for an application to do exception handling here an convert the exceptions in HTTP exceptions
 
@@ -767,7 +769,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 				.getEntityType().getNamespace(), entitySet.getEntityType().getName()));
 		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
 		String property = uriInfo.getPropertyPath().get(0).getName();
-
+		log.info("Content: " + entry.toString()); 
 		try {
 			sparqlStatement = prepareUpdateEntitySimplePropertyValueQuery(entitySet, entityType, entityKey, property,
 					entry);

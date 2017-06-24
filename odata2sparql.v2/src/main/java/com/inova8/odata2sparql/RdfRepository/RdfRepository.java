@@ -150,8 +150,7 @@ public class RdfRepository  {
 	public Boolean getUseBaseType() {
 		return useBaseType;
 	}
-	public void setUseBaseType(boolean parseBoolean) {
-		this.useBaseType = withSapAnnotations;
-		
+	public void setUseBaseType(boolean useBaseType) {
+		this.useBaseType = useBaseType;	
 	}
 }
