@@ -20,17 +20,18 @@ import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.SimpleValueFactory;
 
-
 public class RdfConstants {
 	private final static Log log = LogFactory.getLog(RdfConstants.class);
+
 	public enum Cardinality {
 		// Cardinality corresponding to
 		// 0..1, 1..1, 0..*, 1..*
 		ZERO_TO_ONE, ONE, MANY, MULTIPLE
 	}
-	public static final String RESET ="$reset";
-	public static final String RELOAD ="$reload";
-	public static final String WILDCARD ="*";
+
+	public static final String RESET = "$reset";
+	public static final String RELOAD = "$reload";
+	public static final String WILDCARD = "*";
 	private final static ValueFactory valueFactoryImpl = SimpleValueFactory.getInstance();
 	static private final Hashtable<Value, String> metaQueries = new Hashtable<Value, String>();
 
@@ -38,31 +39,32 @@ public class RdfConstants {
 	public final static String systemId = "ODATA2SPARQL";
 	public final static String bootStrapQuery = "SELECT   ?Query  ?QueryString WHERE { ?Metadata ?Query  ?querys . ?querys <http://spinrdf.org/sp#text> ?QueryString . ?Query  <http://www.w3.org/2000/01/rdf-schema#subPropertyOf>* <http://inova8.com/odata4sparql#metadataQuery> .}";
 
-	private  static  String repositoryManagerDirPath; // NO_UCD (use final)
-	public  static File repositoryManagerDir; // NO_UCD (use final)
-	public  static String odata4sparqlFile ; // NO_UCD (use final)
-	public  static String rdfFile ; // NO_UCD (use final)
-	public  static String rdfsFile ; // NO_UCD (use final)
-	public  static String modelFile; // NO_UCD (use final)
-	public  static String sailFile; // NO_UCD (use final)
-	public  static String spFile; // NO_UCD (use final)
-	
+	private static String repositoryManagerDirPath; // NO_UCD (use final)
+	public static File repositoryManagerDir; // NO_UCD (use final)
+	public static String odata4sparqlFile; // NO_UCD (use final)
+	public static String rdfFile; // NO_UCD (use final)
+	public static String rdfsFile; // NO_UCD (use final)
+	public static String modelFile; // NO_UCD (use final)
+	public static String sailFile; // NO_UCD (use final)
+	public static String spFile; // NO_UCD (use final)
+
 	public final static Value RDFSModel = valueFactoryImpl.createIRI("http://inova8.com/odata4sparql#RDFSModel");
 	@Deprecated
-	public final static Value repositoryQuery = valueFactoryImpl.createIRI("http://inova8.com/odata4sparql#repositoryQuery");
+	public final static Value repositoryQuery = valueFactoryImpl
+			.createIRI("http://inova8.com/odata4sparql#repositoryQuery");
 	@Deprecated
 	public final static Value prefixQuery = valueFactoryImpl.createIRI("http://inova8.com/odata4sparql#prefixQuery");
-	
+
 	public static final String TARGETENTITY = "http://targetEntity";
 	public static final String PREFIX = "j";
 	public static final String PROPERTY_POSTFIX = "_value";
-	
+
 	public static final String SAP_ANNOTATION_SCHEMA = "http://www.sap.com/Protocols/SAPData";
 	public static final String SAP_ANNOTATION_NS = "sap";
 	public static final String SAP_LABEL = "label";
 	public static final String SAP_HEADING = "heading";
 	public static final String SAP_QUICKINFO = "quickinfo";
-	
+
 	public static final String RDF_SCHEMA = "http://www.w3.org/1999/02/22-rdf-syntax-ns";
 	public static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	public static final String RDF = "rdf";
@@ -81,7 +83,7 @@ public class RdfConstants {
 
 	public static final String XSD_STRING = "http://www.w3.org/2001/XMLSchema#string";
 	public static final String RDF_PLAIN_LITERAL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral";
-	public static final String  RDF_LITERAL= "http://www.w3.org/2000/01/rdf-schema#Literal";
+	public static final String RDF_LITERAL = "http://www.w3.org/2000/01/rdf-schema#Literal";
 
 	public static final String RDFS_RESOURCE = "http://www.w3.org/2000/01/rdf-schema#Resource";
 	public static final String RDFS_RESOURCE_LABEL = "Resource";
@@ -100,17 +102,16 @@ public class RdfConstants {
 	public static final String OWL_ONTOLOGY = "http://www.w3.org/2002/07/owl#Ontology";
 	public static final String OWL_ONTOLOGY_LABEL = "Ontology";
 
-	
 	public static final String RDF_STATEMENT = "http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement";
 	public static final String RDF_STATEMENT_LABEL = "Statement";
-	public static final String SUBJECT ="subjectId";
+	public static final String SUBJECT = "subjectId";
 	public static final String RDF_SUBJECT = "http://www.w3.org/1999/02/22-rdf-syntax-ns#subjectId";
 	public static final String RDF_SUBJECT_LABEL = "subject";
 	public static final String RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 	public static final String RDF_TYPE_LABEL = "has Type";
 	public static final String RDF_INVERSE_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#hasInstance";
 	public static final String RDF_INVERSE_TYPE_LABEL = "has Instance";
-//TODO we should rely on the metadata queries to determine which properties even of Resource that should be included
+	//TODO we should rely on the metadata queries to determine which properties even of Resource that should be included
 	@Deprecated
 	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
 	@Deprecated
@@ -204,16 +205,15 @@ public class RdfConstants {
 			.createIRI("http://inova8.com/odata4sparql#propertyQuery");
 	public static final Value URI_PROPERTY_DOMAINS_QUERY = valueFactoryImpl
 			.createIRI("http://inova8.com/odata4sparql#propertyQuery_Domains");
-	public static final Value URI_PROPERTY_RANGES_QUERY =  valueFactoryImpl
+	public static final Value URI_PROPERTY_RANGES_QUERY = valueFactoryImpl
 			.createIRI("http://inova8.com/odata4sparql#propertyQuery_Ranges");
-	public static final Value URI_PROPERTY_CARDINALITY_QUERY =  valueFactoryImpl
+	public static final Value URI_PROPERTY_CARDINALITY_QUERY = valueFactoryImpl
 			.createIRI("http://inova8.com/odata4sparql#propertyQuery_Cardinality");
 	public static final Value URI_REPOSITORYQUERY = valueFactoryImpl
 			.createIRI("http://inova8.com/odata4sparql#repositoryQuery");
-	public static final String  NULLABLE = "Nullable";
-	public static final String  FALSE = "false";
+	public static final String NULLABLE = "Nullable";
+	public static final String FALSE = "false";
 
-	
 	public final static List<String> RDF_DATATYPES = new ArrayList<String>();
 
 	/**
@@ -222,66 +222,96 @@ public class RdfConstants {
 	public static Hashtable<Value, String> getMetaQueries() {
 		return metaQueries;
 	}
-	static{
+
+	static {
 		//Initialize the file dependent constants
-		try{
+
+		try {
+			String workingDirectory = System.getenv("AppData");
+			if (workingDirectory == null) {
+				workingDirectory = System.getProperty("user.home");
+				//if we are on a Mac, we are not done, we look for "Application Support"
+				workingDirectory += "/Library/Application Support";
+			}
+			workingDirectory = workingDirectory + "\\inova8\\odata2sparql\\";
 			repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
-			repositoryManagerDir = new File(repositoryManagerDirPath);
-			odata4sparqlFile = repositoryManagerDirPath + "repositories/odata4sparql.rdf";
-			rdfFile = repositoryManagerDirPath + "repositories/22-rdf-syntax-ns.ttl";
-			rdfsFile = repositoryManagerDirPath + "repositories/rdf-schema.ttl";
-			modelFile = repositoryManagerDirPath + "repositories/models.ttl";
-			sailFile = repositoryManagerDirPath + "repositories/sail.rdf";
-			spFile = repositoryManagerDirPath + "repositories/sp.ttl";
-		}catch(UnsupportedEncodingException e){
-			log.error("Cannot decode file directory to be used for repository: " + e.getMessage());
+
+			//	repositoryManagerDirPath = repositoryManagerDirPath + File.separator + "../../../../inova8/odata2sparql" + File.separator;		
+			repositoryManagerDir = new File(workingDirectory);
+			modelFile = workingDirectory + "models.ttl";
+			log.info("Models.ttl location:" + modelFile);
+
+			odata4sparqlFile = repositoryManagerDirPath + "ontologies/odata4sparql.rdf";
+			rdfFile = repositoryManagerDirPath + "ontologies/22-rdf-syntax-ns.ttl";
+			rdfsFile = repositoryManagerDirPath + "ontologies/rdf-schema.ttl";
+			sailFile = repositoryManagerDirPath + "ontologies/sail.rdf";
+			spFile = repositoryManagerDirPath + "ontologies/sp.ttl";
+			log.info("Support ontologies location:" + repositoryManagerDirPath + "ontologies/");
+
+		} catch (UnsupportedEncodingException e) {
+			try {
+				repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
+				repositoryManagerDir = new File(repositoryManagerDirPath);
+				modelFile = repositoryManagerDirPath + "repositories/models.ttl";
+				log.info("Models.ttl location:" + modelFile);
+
+				odata4sparqlFile = repositoryManagerDirPath + "repositories/odata4sparql.rdf";
+				rdfFile = repositoryManagerDirPath + "repositories/22-rdf-syntax-ns.ttl";
+				rdfsFile = repositoryManagerDirPath + "repositories/rdf-schema.ttl";
+				sailFile = repositoryManagerDirPath + "repositories/sail.rdf";
+				spFile = repositoryManagerDirPath + "repositories/sp.ttl";
+				log.info("Support ontologies location:" + repositoryManagerDirPath + "repositories/");
+			} catch (UnsupportedEncodingException e1) {
+				log.error("Cannot decode file directory to be used for repository: " + e1.getMessage());
+			}
 		}
+
 		//Initialize the RDF datatypes
-		RDF_DATATYPES.add(  (RdfConstants.RDF_PLAIN_LITERAL));
-		RDF_DATATYPES.add(  (RdfConstants.RDF_LITERAL));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#decimal"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#Literal"));
-		RDF_DATATYPES.add(  (RdfConstants.XSD_STRING));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#boolean"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#float"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#double"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#duration"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#dateTime"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#time"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#date"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#gYearMonth"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#gYear"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#gMonthDay"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#gDay"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#gMonth"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#hexBinary"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#base64Binary"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#anyURI"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#QName"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#NOTATION"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#normalizedString"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#token"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#language"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#IDREFS"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#ENTITIES"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#NMTOKEN"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#Name"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#NCName"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#ID"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#IDREF"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#ENTITY"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#integer"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#nonPositiveInteger"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#negativeInteger"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#long"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#int"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#short"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#byte"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#nonNegativeInteger"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#unsignedLong"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#unsignedInt"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#unsignedShort"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#unsignedByte"));
-		RDF_DATATYPES.add(  ("http://www.w3.org/2001/XMLSchema#positiveInteger"));	
+		RDF_DATATYPES.add((RdfConstants.RDF_PLAIN_LITERAL));
+		RDF_DATATYPES.add((RdfConstants.RDF_LITERAL));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#decimal"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#Literal"));
+		RDF_DATATYPES.add((RdfConstants.XSD_STRING));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#boolean"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#float"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#double"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#duration"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#dateTime"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#time"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#date"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#gYearMonth"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#gYear"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#gMonthDay"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#gDay"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#gMonth"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#hexBinary"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#base64Binary"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#anyURI"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#QName"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#NOTATION"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#normalizedString"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#token"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#language"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#IDREFS"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#ENTITIES"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#NMTOKEN"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#Name"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#NCName"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#ID"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#IDREF"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#ENTITY"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#integer"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#nonPositiveInteger"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#negativeInteger"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#long"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#int"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#short"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#byte"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#nonNegativeInteger"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#unsignedLong"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#unsignedInt"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#unsignedShort"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#unsignedByte"));
+		RDF_DATATYPES.add(("http://www.w3.org/2001/XMLSchema#positiveInteger"));
 	}
 }
