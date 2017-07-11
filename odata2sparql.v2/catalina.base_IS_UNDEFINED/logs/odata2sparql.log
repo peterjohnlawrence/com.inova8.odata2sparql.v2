@@ -1,0 +1,26 @@
+10:32:20.897 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Repository loaded from C:\Users\Peter\git\com.inova8.odata2sparql.v2\odata2sparql.v2\target\classes
+10:32:21.598 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LF
+10:32:21.673 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLL
+10:32:21.694 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLO
+10:32:21.718 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLV
+10:32:21.769 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLV1
+10:32:21.787 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#NW
+10:32:21.831 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#NWL
+10:32:21.851 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#NWV
+10:32:21.858 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#RDF
+10:32:21.877 [qtp2028371466-30] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql#ODATA2SPARQL
+10:32:21.908 [qtp2028371466-30] ERROR c.i.o.RdfODataErrorCallback - java.lang.IllegalArgumentException:odata2sparqltest
+10:32:41.171 [qtp2028371466-29] ERROR c.i.o.RdfODataErrorCallback - java.lang.IllegalArgumentException:odata2sparql.v2
+10:33:31.311 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Repository loaded from C:\Users\Peter\git\com.inova8.odata2sparql.v2\odata2sparql.v2\target\classes
+10:33:31.329 [qtp2028371466-29] WARN  o.o.s.helpers.DirectoryLockManager - Removing invalid lock 17048@Peter-PC
+10:33:31.925 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LF
+10:33:31.939 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLL
+10:33:31.945 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLO
+10:33:31.952 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLV
+10:33:31.959 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#LLV1
+10:33:31.965 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#NW
+10:33:31.971 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#NWL
+10:33:31.977 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#NWV
+10:33:31.982 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql/models#RDF
+10:33:31.986 [qtp2028371466-29] INFO  c.i.o.RdfRepository.RdfRepositories - Dataset loaded: http://inova8.com/odata4sparql#ODATA2SPARQL
+10:33:32.015 [qtp2028371466-29] ERROR c.i.o.RdfODataErrorCallback - java.lang.IllegalArgumentException:odata2sparql.v2
