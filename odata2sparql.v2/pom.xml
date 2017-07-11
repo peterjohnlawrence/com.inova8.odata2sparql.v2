@@ -119,4 +119,13 @@
 	<url>http://www.inova8.com</url>
 	<version>0.1.1-SNAPSHOT</version>
 	<groupId>com.inova8.odata2sparql</groupId>
+	<description>Part of the overall odata2sparql solution, this odata2sparql.v2 module containing the olingo2 dependencies. In other words specfically for odata v2.
+You can download details of how to deploy OData2SPARQL here: http://inova8.com/bg_inova8.com/offerings/odata2sparql/</description>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>
