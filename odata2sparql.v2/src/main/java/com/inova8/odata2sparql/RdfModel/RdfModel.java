@@ -236,6 +236,40 @@ public class RdfModel {
 		private boolean functionImport = false;
 		private String description;
 		private Set<RdfEntityType> subTypes = new HashSet<RdfEntityType>();
+		private final HashMap<String, RdfModel.RdfAssociation> incomingAssociations = new HashMap<String, RdfModel.RdfAssociation>();
+		private final HashMap<String, FunctionImportParameter> functionImportParameters = new HashMap<String, FunctionImportParameter>();
+		final HashMap<String, RdfModel.RdfPrimaryKey> primaryKeys = new HashMap<String, RdfModel.RdfPrimaryKey>();
+		public String deleteText;
+		public String insertText;
+		public String updateText;
+		public String updatePropertyText;
+		
+		public String getDeleteText() {
+			return deleteText;
+		}
+		public void setDeleteText(String deleteText) {
+			this.deleteText = deleteText;
+		}
+		public String getInsertText() {
+			return insertText;
+		}
+		public void setInsertText(String insertText) {
+			this.insertText = insertText;
+		}
+		public String getUpdateText() {
+			return updateText;
+		}
+		public void setUpdateText(String updateText) {
+			this.updateText = updateText;
+		}
+		public String getUpdatePropertyText() {
+			return updatePropertyText;
+		}
+		public void setUpdatePropertyText(String updatePropertyText) {
+			this.updatePropertyText = updatePropertyText;
+		}
+
+		
 		public String getEntityTypeName() {
 			return entityTypeName;
 		}
@@ -303,8 +337,6 @@ public class RdfModel {
 		}
 
 
-		private final HashMap<String, FunctionImportParameter> functionImportParameters = new HashMap<String, FunctionImportParameter>();
-
 		public HashMap<String, FunctionImportParameter> getFunctionImportParameters() {
 			return functionImportParameters;
 		}
@@ -344,9 +376,7 @@ public class RdfModel {
 			return properties.values();
 		}
 
-		private final HashMap<String, RdfModel.RdfAssociation> incomingAssociations = new HashMap<String, RdfModel.RdfAssociation>();
 
-		final HashMap<String, RdfModel.RdfPrimaryKey> primaryKeys = new HashMap<String, RdfModel.RdfPrimaryKey>();
 
 		public RdfAssociation findNavigationProperty(String navigationPropertyName) {
 			return navigationProperties.get(navigationPropertyName);
@@ -454,7 +484,7 @@ public class RdfModel {
 		public String propertyName;
 		private String propertyLabel;
 		public String propertyTypeName;
-		public String varName;
+		private String varName;
 		//public EdmSimpleTypeKind propertyType;
 		public RdfNode propertyNode;
 		private Boolean isKey = false;
@@ -519,6 +549,14 @@ public class RdfModel {
 
 		public void setIsKey(Boolean isKey) {
 			this.isKey = isKey;
+		}
+
+		public String getVarName() {
+			return varName;
+		}
+
+		public void setVarName(String varName) {
+			this.varName = varName;
 		}
 
 	}
@@ -768,20 +806,32 @@ public class RdfModel {
 		}
 		return datatype;
 	}
-
-	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode, RdfNode queryLabel, RdfNode queryText)
+	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode) throws OData2SparqlException
+	{
+		return getOrCreateOperationEntityType(queryNode, null,null,null,null,null,null);
+	}
+	
+	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode, RdfNode queryLabel, RdfNode queryText,RdfNode deleteText,RdfNode insertText,RdfNode updateText,RdfNode updatePropertyText)
 			throws OData2SparqlException {
 		RdfEntityType operationEntityType = getOrCreateEntityType(queryNode, queryLabel);
 		if (queryText != null) {
 			operationEntityType.queryText = queryText.getLiteral().getLexicalForm();
 		}
-		//if (!operationEntityType.isEntity()) {
+		if (deleteText != null) {
+			operationEntityType.deleteText = deleteText.getLiteral().getLexicalForm();
+		}
+		if (insertText != null) {
+			operationEntityType.insertText = insertText.getLiteral().getLexicalForm();
+		}
+		if (updateText != null) {
+			operationEntityType.updateText = updateText.getLiteral().getLexicalForm();
+		}
+		if (updatePropertyText != null) {
+			operationEntityType.updatePropertyText = updatePropertyText.getLiteral().getLexicalForm();
+		}
 		operationEntityType.setOperation(true);
 		operationEntityType.setBaseType(null);
-		//} else {
-		//	log.info("Operation declared which is already an entityType: " + queryNode.getURI().toString());
-		//	return null;
-		//}
+
 		return operationEntityType;
 	}
 
@@ -792,7 +842,7 @@ public class RdfModel {
 
 	void getOrCreateOperationArguments(RdfNode queryNode, RdfNode queryPropertyNode, RdfNode varName, RdfNode rangeNode)
 			throws OData2SparqlException {
-		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode, null, null);
+		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode);
 		if (operationEntityType.isOperation()) {
 			operationEntityType.setFunctionImport(true);
 //			List<AnnotationAttribute> nullableAnnotations = new ArrayList<AnnotationAttribute>();
@@ -825,7 +875,7 @@ public class RdfModel {
 
 		String propertyTypeName = rangeNode.getIRI().toString();
 
-		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode, null, null);
+		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode);
 		if (!operationEntityType.isEntity()) {
 			RdfProperty property = Enumerable.create(operationEntityType.getProperties()).firstOrNull(
 					propertyNameEquals(propertyURI.localName));
@@ -850,7 +900,7 @@ public class RdfModel {
 				}
 				property.propertyNode = propertyNode;
 			}
-			property.varName = varName.getLiteralValue().getLabel();
+			property.setVarName(varName.getLiteralValue().getLabel());
 			operationEntityType.properties.put(property.propertyName, property);
 			return property;
 		} else {
@@ -865,7 +915,7 @@ public class RdfModel {
 		RdfURI operationURI = new RdfURI(queryNode);
 		RdfURI rangeURI = new RdfURI(rangeNode);
 
-		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode, null, null);
+		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode);
 		if (!operationEntityType.isEntity()) {
 			//String associationName = rdfToOdata(operationURI.localName) + RdfConstants.PREDICATE_SEPARATOR	+ rdfToOdata(propertyURI.localName);
 			String associationName = rdfToOdata(propertyURI.localName);

@@ -54,6 +54,7 @@ import org.apache.olingo.odata2.api.processor.ODataRequest;
 import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
+import org.apache.olingo.odata2.api.uri.KeyPredicate;
 import org.apache.olingo.odata2.api.uri.NavigationPropertySegment;
 import org.apache.olingo.odata2.api.uri.NavigationSegment;
 import org.apache.olingo.odata2.api.uri.PathInfo;
@@ -535,7 +536,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 				.getNamespace(), entitySet.getEntityType().getName()));
 		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
 		try {
-			sparqlStatement = prepareUpdateQuery(entitySet, entityType, entityKey, entry);
+			sparqlStatement = prepareUpdateQuery(entitySet, entityType, uriInfo.getKeyPredicates(), entry);
 		} catch (Exception e) {
 			throw new ODataException(e.getMessage());
 		}
@@ -549,9 +550,9 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
 	}
 
-	private SparqlStatement prepareUpdateQuery(EdmEntitySet entitySet, RdfEntityType entityType, String entityKey,
+	private SparqlStatement prepareUpdateQuery(EdmEntitySet entitySet, RdfEntityType entityType, List<KeyPredicate> entityKeys,
 			ODataEntry entry) throws Exception {
-		return sparqlUpdateInsertBuilder.generateUpdateQuery(entityType, entityKey, entry);
+		return sparqlUpdateInsertBuilder.generateUpdateQuery(entityType, entityKeys, entry);
 	}
 
 	private void executeUpdate(SparqlStatement sparqlStatement) throws EntityProviderException,
@@ -583,9 +584,10 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
 		RdfEntityType entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet
 				.getEntityType().getNamespace(), entitySet.getEntityType().getName()));
-		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
+		//TODO allow for multiple keys
+		List<KeyPredicate> entityKeys = uriInfo.getKeyPredicates();//.get(0).getLiteral();
 		try {
-			sparqlStatement = prepareDeleteQuery(entitySet, entityType, entityKey);
+			sparqlStatement = prepareDeleteQuery(entitySet, entityType, entityKeys);
 		} catch (Exception e) {
 			throw new ODataException(e.getMessage());
 		}
@@ -598,9 +600,9 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
 	}
 
-	private SparqlStatement prepareDeleteQuery(EdmEntitySet entitySet, RdfEntityType entityType, String entityKey)
+	private SparqlStatement prepareDeleteQuery(EdmEntitySet entitySet, RdfEntityType entityType, List<KeyPredicate> entityKeys)
 			throws Exception {
-		return sparqlUpdateInsertBuilder.generateDeleteQuery(entityType, entityKey);
+		return sparqlUpdateInsertBuilder.generateDeleteQuery(entityType, entityKeys);
 	}
 
 	private void executeDelete(SparqlStatement sparqlStatement) throws EntityProviderException,
@@ -720,10 +722,9 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
 		RdfEntityType entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet
 				.getEntityType().getNamespace(), entitySet.getEntityType().getName()));
-		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
 		String property = uriInfo.getPropertyPath().get(0).getName();
 		try {
-			sparqlStatement = prepareEntitySimplePropertyValueQuery(entitySet, entityType, entityKey, property);
+			sparqlStatement = prepareEntitySimplePropertyValueQuery(entitySet, entityType,  uriInfo.getKeyPredicates(), property);
 		} catch (Exception e) {
 			throw new ODataException(e.getMessage());
 		}
@@ -737,8 +738,8 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 	}
 
 	private SparqlStatement prepareEntitySimplePropertyValueQuery(EdmEntitySet entitySet, RdfEntityType entityType,
-			String entityKey, String property) throws Exception {
-		return sparqlUpdateInsertBuilder.generateEntitySimplePropertyValueQuery(entityType, entityKey, property);
+			List<KeyPredicate> entityKeys, String property) throws Exception {
+		return sparqlUpdateInsertBuilder.generateEntitySimplePropertyValueQuery(entityType, entityKeys, property);
 	}
 
 	@Override
@@ -771,7 +772,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		String property = uriInfo.getPropertyPath().get(0).getName();
 		log.info("Content: " + entry.toString()); 
 		try {
-			sparqlStatement = prepareUpdateEntitySimplePropertyValueQuery(entitySet, entityType, entityKey, property,
+			sparqlStatement = prepareUpdateEntitySimplePropertyValueQuery(entitySet, entityType, uriInfo.getKeyPredicates(), property,
 					entry);
 		} catch (Exception e) {
 			log.error(e.getMessage());
@@ -786,8 +787,8 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 	}
 
 	private SparqlStatement prepareUpdateEntitySimplePropertyValueQuery(EdmEntitySet entitySet,
-			RdfEntityType entityType, String entityKey, String property, Object entry) throws ODataApplicationException {
-		return sparqlUpdateInsertBuilder.generateUpdateEntitySimplePropertyValueQuery(entityType, entityKey, property, entry);
+			RdfEntityType entityType, List<KeyPredicate>  entityKeys, String property, Object entry) throws ODataApplicationException {
+		return sparqlUpdateInsertBuilder.generateUpdateEntitySimplePropertyValueQuery(entityType, entityKeys, property, entry);
 	}
 
 	@Override

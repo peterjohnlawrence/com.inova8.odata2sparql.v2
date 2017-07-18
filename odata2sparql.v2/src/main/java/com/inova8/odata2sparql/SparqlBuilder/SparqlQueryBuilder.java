@@ -548,7 +548,7 @@ public class SparqlQueryBuilder {
 		constructOperation.append(indent + "\t").append("[ a <" + type + "> ;\n");
 		for (RdfProperty property : rdfOperationType.getProperties()) {
 			constructOperation.append(indent + "\t\t").append(
-					" <" + property.getPropertyURI() + "> ?" + property.varName + " ;\n");
+					" <" + property.getPropertyURI() + "> ?" + property.getVarName() + " ;\n");
 		}
 		constructOperation.replace(constructOperation.length() - 2, constructOperation.length() - 1, "] .");
 		return constructOperation;
@@ -1036,7 +1036,7 @@ public class SparqlQueryBuilder {
 				for (RdfProperty property : navProperty.getDomainClass().getProperties()) {
 					if (property.getPropertyTypeName().equals(navProperty.getRangeClass().getIRI()))
 						expandSelectTreeNodeWhere.append(indent).append(
-								"BIND(?" + property.varName + " AS ?" + nextTargetKey + "_s)\n");
+								"BIND(?" + property.getVarName() + " AS ?" + nextTargetKey + "_s)\n");
 				}
 			}
 			expandSelectTreeNodeWhere.append(indent);
@@ -1050,7 +1050,7 @@ public class SparqlQueryBuilder {
 				//				BIND(?prod	as ?Orderorder_orderSummaryorderSummary_product_s )							
 				for (RdfProperty property : navProperty.getRangeClass().getProperties()) {
 					if (property.getPropertyTypeName().equals(navProperty.getDomainClass().getIRI()))
-						expandSelectTreeNodeWhere.append("BIND(?" + property.varName + " AS ?" + targetKey + "_s)\n");
+						expandSelectTreeNodeWhere.append("BIND(?" + property.getVarName() + " AS ?" + targetKey + "_s)\n");
 				}
 			} else {
 				if (navProperty.getDomainClass().isOperation()) {
