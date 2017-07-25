@@ -45,6 +45,7 @@ odata4sparql:OUEXT
   odata4sparql:namespace <http://northwind.com/> ;
   odata4sparql:prefix "NWD"^^xsd:string ;
 .
+
 :NW
   rdf:type odata4sparql:Dataset ;
   rdf:type odata4sparql:Prefix ;
@@ -139,4 +140,50 @@ odata4sparql:OUEXT
   sparql:query-endpoint <http://localhost:8890/sparql?using-graph-uri=http://www.w3.org/2000/01/rdf-schema%23&using-graph-uri=http://www.w3.org/1999/02/22-rdf-syntax-ns%23&using-graph-uri=http://inova8.com/odata4sparql/virtuoso&timeout=0> ;
   sparql:update-endpoint <http://localhost:8890/sparql> ;
   rdfs:label "RDF Vocabulary Impl"^^xsd:string ;
+.
+:ANN
+  rdf:type odata4sparql:Dataset ;
+  rdf:type odata4sparql:Prefix ;
+  odata4sparql:dataRepository :ANN_Data ;
+  odata4sparql:datasetPrefix odata4sparql:OWL ;
+  odata4sparql:datasetPrefix odata4sparql:RDFS ;
+  odata4sparql:datasetPrefix :ANN ;
+  odata4sparql:defaultPrefix :ANN ;
+  odata4sparql:namespace <http://inova8.com/annotations/> ;
+  odata4sparql:prefix "annotation"^^xsd:string ;
+  odata4sparql:vocabularyRepository :ANN_Vocabulary ;
+  odata4sparql:withRdfAnnotations "false"^^xsd:boolean ;
+  odata4sparql:withSapAnnotations "true"^^xsd:boolean ;
+  odata4sparql:useBaseType "false"^^xsd:boolean ;
+  rdfs:label "annotation"^^xsd:string ;
+.
+
+:ANN_Data
+  rdf:type rep:Repository ;
+  rep:repositoryID "ANN_Data"^^xsd:string ;
+  rep:repositoryImpl :ANN_Data_Impl ;
+  rdfs:label "ANN Data"^^xsd:string ;
+.
+:ANN_Data_Impl
+  rdf:type openrdf:SPARQLRepository ;
+  odata4sparql:defaultQueryLimit 10000 ;
+  odata4sparql:sparqlProfile odata4sparql:TOPQUADRANT ;
+  rep:repositoryType openrdf:SPARQLRepository ;
+  sparql:query-endpoint <http://localhost:8890/sparql?using-graph-uri=http://inova8.com/annotations/>;
+  sparql:update-endpoint <http://localhost:8890/sparql?using-graph-uri=http://inova8.com/annotations/> ;
+  rdfs:label "ANN Data Impl"^^xsd:string ;
+.
+:ANN_Vocabulary
+  rdf:type rep:Repository ;
+  rep:repositoryID "ANN_Vocabulary"^^xsd:string ;
+  rep:repositoryImpl :ANN_Vocabulary_Impl ;
+  rdfs:label "ANN Vocabulary"^^xsd:string ;
+.
+:ANN_Vocabulary_Impl
+  rdf:type openrdf:SPARQLRepository ;
+  odata4sparql:sparqlProfile odata4sparql:TOPQUADRANT ;
+  rep:repositoryType openrdf:SPARQLRepository ;
+  sparql:query-endpoint <http://localhost:8890/sparql?using-graph-uri=http://inova8.com/annotations/&using-graph-uri=http://www.w3.org/2000/01/rdf-schema%23&using-graph-uri=http://www.w3.org/1999/02/22-rdf-syntax-ns%23&using-graph-uri=http://inova8.com/odata4sparql/virtuoso>;
+  sparql:update-endpoint <http://localhost:8890/sparql?using-graph-uri=http://inova8.com/annotations/> ;
+  rdfs:label "ANN Vocabulary Impl"^^xsd:string ;
 .
