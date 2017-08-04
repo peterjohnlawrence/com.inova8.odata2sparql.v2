@@ -576,6 +576,10 @@ public class RdfModel {
 		private RdfNode inversePropertyOf;
 		private String description;
 
+		private RdfEntityType rangeClass;
+		private Cardinality fromCardinality = RdfConstants.Cardinality.ONE;
+		private Cardinality toCardinality = RdfConstants.Cardinality.MANY;
+		
 		public String getAssociationName() {
 			return associationName;
 		}
@@ -639,9 +643,6 @@ public class RdfModel {
 			return domainClass;
 		}
 
-		private RdfEntityType rangeClass;
-		private Cardinality fromCardinality = RdfConstants.Cardinality.ONE;
-		private Cardinality toCardinality = RdfConstants.Cardinality.MANY;
 
 //		public Association getEdmAssociation() {
 //			return edmAssociation;

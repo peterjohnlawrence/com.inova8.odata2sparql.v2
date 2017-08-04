@@ -604,10 +604,18 @@ public class SparqlQueryBuilder {
 		StringBuilder clausesOperationProperties = new StringBuilder();
 		if (DEBUG)
 			clausesOperationProperties.append("\t#clausesOperationProperties\n");
+		clausesOperationProperties.append("\t").append(filterOperationQuery(rdfOperationType)).append("\n");
 		clausesOperationProperties.append("\t{\n").append(preprocessOperationQuery(rdfOperationType)).append("\t}\n");
 		return clausesOperationProperties;
 	}
-
+	private StringBuilder filterOperationQuery(RdfEntityType rdfOperationType) throws EdmException, OData2SparqlException {
+		StringBuilder filter = new StringBuilder();
+		if (DEBUG)
+			filter.append("#operationFilter\n");
+		if (!filterClause.getFilterClause().isEmpty())
+			filter.append(filterClause.getFilterClause()).append("\n");
+		return filter;
+	}
 	private String preprocessOperationQuery(RdfEntityType rdfOperationType) throws EdmException, OData2SparqlException {
 		Map<String, String> queryOptions = uriInfo.getCustomQueryOptions();
 		String queryText = rdfOperationType.queryText;
@@ -615,27 +623,6 @@ public class SparqlQueryBuilder {
 			com.inova8.odata2sparql.RdfModel.RdfModel.FunctionImportParameter functionImportParameter = functionImportParameterEntry.getValue();
 			if (queryOptions.containsKey(functionImportParameter.getName())) {
 				String parameterValue = queryOptions.get(functionImportParameter.getName());
-				//				switch (functionImportParameter.getValue().getType()) {
-				//				correctly format for non-strings such as dates
-				//				case Binary:
-				//				case Boolean:
-				//				case Byte:
-				//				case DateTime:
-				//				case DateTimeOffset:
-				//				case Decimal:
-				//				case Double:
-				//				case Guid:
-				//				case Int16:
-				//				case Int32:
-				//				case Int64:
-				//				case SByte:
-				//				case Single:
-				//				case String:
-				//				case Time:
-				//				case Null:
-				//				default:
-				//					break;
-				//				}
 				queryText = queryText.replaceAll("\\?" + functionImportParameter.getName(), parameterValue);
 			} else {
 				if (!functionImportParameter.isNullable())

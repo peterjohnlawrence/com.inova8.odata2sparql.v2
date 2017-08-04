@@ -192,7 +192,10 @@ class SparqlResults {
 			case "Double":
 				if (value instanceof java.math.BigDecimal) {
 					return ((BigDecimal) value).doubleValue();
-				} else {
+				} else if (value instanceof Integer) {
+					return ((Integer) value).doubleValue();
+				}else
+				{
 					return (Double) value;
 				}
 			case "Guid":
