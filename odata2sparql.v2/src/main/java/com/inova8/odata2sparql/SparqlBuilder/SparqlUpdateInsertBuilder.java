@@ -170,8 +170,13 @@ public class SparqlUpdateInsertBuilder {
 			}
 		}
 		properties.append(" .\n");
-		if (entityKey == null)
-			throw new ODataApplicationException("Key not found ", null);
+		if (entityKey == null){
+			//This means that the keys are not in the property list so it must be part of the entity identity
+			//Assume we are dealing with only pure RDF with a single key
+			entityKey=entityKeys.get(0).getLiteral();
+			//throw new ODataApplicationException("Key not found ", null);			
+		}
+
 		String expandedKey = rdfModel.getRdfPrefixes().expandPrefix(entityKey);
 		if (urlValidator.isValid(expandedKey)) {
 			insertProperties.append("<" + expandedKey + ">");
@@ -235,7 +240,7 @@ public class SparqlUpdateInsertBuilder {
 			StringBuilder sparql = new StringBuilder("DELETE {?" + key + "_s ?" + key + "_p ?" + key + "_o .}");
 			sparql.append(generateInsertProperties(entityType, entityKeys, entry));
 
-			sparql.append("WHERE { ?" + key + "_s ?" + key + "_p ?" + key + "_o .");
+			sparql.append("WHERE { OPTIONAL{ ?" + key + "_s ?" + key + "_p ?" + key + "_o .");
 			//Only need one key for an RDF entity
 			String entityKey = entityKeys.get(0).getLiteral();
 			sparql.append(generateUpdatePropertyValues(entityType, entityKey, entry));
@@ -243,7 +248,7 @@ public class SparqlUpdateInsertBuilder {
 			String expandedKey = rdfModel.getRdfPrefixes().expandPrefix(RdfEntity.URLDecodeEntityKey(entityKey));
 			if (urlValidator.isValid(expandedKey)) {
 				sparql.append("VALUES(?" + key + "_s ){(<" + expandedKey + ">)}");
-				sparql.append("}");
+				sparql.append("} }");
 				return new SparqlStatement(sparql.toString());
 			} else {
 				throw new ODataApplicationException("Invalid key: " + entityKey, null);
