@@ -153,7 +153,7 @@ odata4sparql:OUEXT
   odata4sparql:prefix "annotation"^^xsd:string ;
   odata4sparql:vocabularyRepository :ANN_Vocabulary ;
   odata4sparql:withRdfAnnotations "false"^^xsd:boolean ;
-  odata4sparql:withSapAnnotations "true"^^xsd:boolean ;
+  odata4sparql:withSapAnnotations "false"^^xsd:boolean ;
   odata4sparql:useBaseType "false"^^xsd:boolean ;
   rdfs:label "annotation"^^xsd:string ;
 .
