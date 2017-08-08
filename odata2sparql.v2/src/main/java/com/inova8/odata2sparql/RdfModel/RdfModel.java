@@ -577,8 +577,8 @@ public class RdfModel {
 		private String description;
 
 		private RdfEntityType rangeClass;
-		private Cardinality fromCardinality = RdfConstants.Cardinality.ONE;
-		private Cardinality toCardinality = RdfConstants.Cardinality.MANY;
+		private Cardinality rangeCardinality;// = RdfConstants.Cardinality.ONE; formerly fromCardinality
+		private Cardinality domainCardinality;// = RdfConstants.Cardinality.MANY; formerly toCardinality
 		
 		public String getAssociationName() {
 			return associationName;
@@ -659,20 +659,20 @@ public class RdfModel {
 			this.domainNode = domainNode;
 		}
 
-		public Cardinality getFromCardinality() {
-			return fromCardinality;
+		public Cardinality getRangeCardinality() {
+			return rangeCardinality;
 		}
 
-		public void setFromCardinality(Cardinality fromCardinality) {
-			this.fromCardinality = fromCardinality;
+		public void setRangeCardinality(Cardinality rangeCardinality) {
+			this.rangeCardinality = rangeCardinality;
 		}
 
-		public Cardinality getToCardinality() {
-			return toCardinality;
+		public Cardinality getDomainCardinality() {
+			return domainCardinality;
 		}
 
-		public void setToCardinality(Cardinality toCardinality) {
-			this.toCardinality = toCardinality;
+		public void setDomainCardinality(Cardinality domainCardinality) {
+			this.domainCardinality = domainCardinality;
 		}
 
 		public String getAssociationIRI() {
@@ -938,8 +938,8 @@ public class RdfModel {
 
 			//Since this is not a primary entity we need to add the keys of the navigation properties are properties, as well as adding them as primarykeys.
 
-			association.fromCardinality = RdfConstants.Cardinality.MANY;
-			association.toCardinality = RdfConstants.Cardinality.ONE;
+			association.rangeCardinality = RdfConstants.Cardinality.MANY;
+			association.domainCardinality = RdfConstants.Cardinality.ONE;
 			RdfProperty property = getOrCreateOperationProperty(queryNode, propertyNode, propertyLabelNode, rangeNode,
 					varName);
 			property.isKey = true;
@@ -1065,8 +1065,8 @@ public class RdfModel {
 			association.associationLabel = propertyLabelNode.getLiteralObject().toString();
 		}
 		association.setIsInverse(false);
-		association.toCardinality = domainCardinality;
-		association.fromCardinality = rangeCardinality;
+		association.domainCardinality = domainCardinality;
+		association.rangeCardinality = rangeCardinality;
 
 		return association;
 	}
@@ -1097,7 +1097,7 @@ public class RdfModel {
 		RdfAssociation association = getOrCreateAssociation(propertyNode, null, domainNode, rangeNode,
 				multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality);
 		RdfAssociation inverseAssociation = getOrCreateAssociation(inversePropertyNode, inversePropertyLabelNode,
-				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, rangeCardinality, domainCardinality);
+				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, rangeCardinality, domainCardinality); // Note cardinality only is reversed
 		inverseAssociation.setIsInverse(true);
 		inverseAssociation.inversePropertyOf = propertyNode;
 		association.setIsInverse(false);

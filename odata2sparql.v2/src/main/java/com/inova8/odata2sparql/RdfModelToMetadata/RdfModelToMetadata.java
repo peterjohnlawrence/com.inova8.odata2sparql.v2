@@ -323,43 +323,43 @@ public class RdfModelToMetadata {
 					if (rdfAssociation.getDomainName().equals(rdfAssociation.getRangeName()))
 						duplicate = RdfConstants.DUPLICATEROLE;
 
-					AssociationEnd fromRole = new AssociationEnd()
+					AssociationEnd domainRole = new AssociationEnd() //used to be fromRole
 							.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE)
 							.setType(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.domainClass));
 
-					AssociationEnd toRole = new AssociationEnd()
+					AssociationEnd rangeRole = new AssociationEnd() //used to be toRole
 							.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate)
 							.setType(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.getRangeClass()));
-					switch (rdfAssociation.getFromCardinality()) {
+					switch (rdfAssociation.getDomainCardinality()) { //used to be range
 					case ZERO_TO_ONE:
-						fromRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
+						domainRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
 						break;
 					case ONE:
-						fromRole.setMultiplicity(EdmMultiplicity.ONE);
+						domainRole.setMultiplicity(EdmMultiplicity.ONE);
 						break;
 					case MANY:
-						fromRole.setMultiplicity(EdmMultiplicity.MANY);
+						domainRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					case MULTIPLE:
-						fromRole.setMultiplicity(EdmMultiplicity.MANY);
+						domainRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					}
-					switch (rdfAssociation.getToCardinality()) {
+					switch (rdfAssociation.getRangeCardinality()) { //used to be doamin
 					case ZERO_TO_ONE:
-						toRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
+						rangeRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
 						break;
 					case ONE:
-						toRole.setMultiplicity(EdmMultiplicity.ONE);
+						rangeRole.setMultiplicity(EdmMultiplicity.ONE);
 						break;
 					case MANY:
-						toRole.setMultiplicity(EdmMultiplicity.MANY);
+						rangeRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					case MULTIPLE:
-						toRole.setMultiplicity(EdmMultiplicity.MANY);
+						rangeRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					}
-					Association association = new Association().setName(associationName).setEnd1(fromRole)
-							.setEnd2(toRole)
+					Association association = new Association().setName(associationName).setEnd1(domainRole)
+							.setEnd2(rangeRole)
 					//TODO .setNamespace(modelNamespace)
 					;
 					if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
@@ -384,9 +384,9 @@ public class RdfModelToMetadata {
 					//TODO Do we need a new navigation property or extend an existing one?
 					NavigationProperty navigationProperty = new NavigationProperty().setName(associationName)
 							.setRelationship(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation))
-							.setFromRole(fromRole.getRole())
+							.setFromRole(domainRole.getRole())
 							//.setRelationship(rdfAssociation.getFullQualifiedName()).setFromRole(fromRole.getRole())
-							.setToRole(toRole.getRole());
+							.setToRole(rangeRole.getRole());
 
 					List<AnnotationAttribute> navigationPropertyAnnotations = new ArrayList<AnnotationAttribute>();
 					if (withRdfAnnotations)
