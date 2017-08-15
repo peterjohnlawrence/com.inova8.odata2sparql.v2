@@ -231,9 +231,10 @@ public class RdfConstants {
 			if (workingDirectory == null) {
 				workingDirectory = System.getProperty("user.home");
 				//if we are on a Mac, we are not done, we look for "Application Support"
-				workingDirectory += "/Library/Application Support";
-			}
-			workingDirectory = workingDirectory + "\\inova8\\odata2sparql\\";
+				workingDirectory += "/Library/Application Support/inova8/odata2sparql/";
+			}else{
+				workingDirectory = workingDirectory + "\\inova8\\odata2sparql\\";
+			}	
 			repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
 
 			//	repositoryManagerDirPath = repositoryManagerDirPath + File.separator + "../../../../inova8/odata2sparql" + File.separator;		
