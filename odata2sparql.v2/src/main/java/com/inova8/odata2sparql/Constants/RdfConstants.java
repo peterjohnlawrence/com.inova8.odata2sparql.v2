@@ -10,6 +10,7 @@ package com.inova8.odata2sparql.Constants;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -231,9 +232,10 @@ public class RdfConstants {
 			if (workingDirectory == null) {
 				workingDirectory = System.getProperty("user.home");
 				//if we are on a Mac, we are not done, we look for "Application Support"
-				workingDirectory += "/Library/Application Support/inova8/odata2sparql/";
+				workingDirectory = Paths.get(System.getProperty("user.home"),"Library", "Application Support", "inova8", "odata2sparql").toString();
+				//workingDirectory += "/Library/Application Support/inova8/odata2sparql/";
 			}else{
-				workingDirectory = workingDirectory + "\\inova8\\odata2sparql\\";
+				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();// workingDirectory + "\\inova8\\odata2sparql\\";
 			}	
 			repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
 

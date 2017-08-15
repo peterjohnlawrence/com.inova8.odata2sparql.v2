@@ -411,7 +411,7 @@ public class RdfRepositories {
 				System.exit(1);
 				//throw new Olingo2SparqlException();
 			} catch (IOException e) {
-				log.fatal("Cannot access " + RdfConstants.modelFile + " Check it is located in WEBINF/classes/", e);
+				log.fatal("Cannot access " + RdfConstants.modelFile + " Check it is located in correct directory and is visible", e);
 				System.exit(1);
 				//throw new Olingo2SparqlException();
 			} finally {
