@@ -19,6 +19,7 @@ import com.inova8.odata2sparql.Constants.RdfConstants;
 import com.inova8.odata2sparql.Constants.RdfConstants.Cardinality;
 import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNode;
+import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNodeFactory;
 import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 
 public class RdfModel {
@@ -95,6 +96,16 @@ public class RdfModel {
 			else {
 				String uri = get(decodedEntityKey.substring(0, colon));
 				return uri == null ? null : "<"+uri + decodedEntityKey.substring(colon + 1)+">";
+			}
+		}
+		public String convertToUriString(String decodedEntityKey) {
+
+			int colon = decodedEntityKey.indexOf(':');
+			if (colon < 0)
+				return null;
+			else {
+				String uri = get(decodedEntityKey.substring(0, colon));
+				return uri == null ? null : uri + decodedEntityKey.substring(colon + 1);
 			}
 		}
 		private void checkLegal(String prefix) throws OData2SparqlException {
@@ -183,6 +194,10 @@ public class RdfModel {
 			return qname;
 		}
 
+		public String entitykeyToQName(String decodedEntityKey){
+			String urlEntityKey = rdfPrefixes.convertToUriString(decodedEntityKey);
+			return this.toQName(RdfNodeFactory.createURI(urlEntityKey));
+		}
 		@Deprecated
 		public String qName(String uri) {
 			return uri;

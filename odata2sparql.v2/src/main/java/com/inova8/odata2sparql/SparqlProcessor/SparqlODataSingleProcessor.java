@@ -90,6 +90,7 @@ import com.inova8.odata2sparql.RdfConnector.openrdf.RdfUpdate;
 import com.inova8.odata2sparql.RdfEdmProvider.RdfEdmProvider;
 import com.inova8.odata2sparql.RdfModel.RdfEntity;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfEntityType;
+import com.inova8.odata2sparql.RdfModel.RdfModel.RdfPrefixes;
 import com.inova8.odata2sparql.SparqlBuilder.SparqlQueryBuilder;
 import com.inova8.odata2sparql.SparqlBuilder.SparqlUpdateInsertBuilder;
 import com.inova8.odata2sparql.SparqlStatement.SparqlStatement;
@@ -102,7 +103,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 
 	SparqlODataSingleProcessor(RdfEdmProvider rdfEdmProvider) {
 		this.rdfEdmProvider = rdfEdmProvider;
-		this.sparqlUpdateInsertBuilder = new SparqlUpdateInsertBuilder(rdfEdmProvider.getRdfModel());
+		this.sparqlUpdateInsertBuilder = new SparqlUpdateInsertBuilder(rdfEdmProvider);
 	}
 	@Override
 	public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo, final String contentType)
@@ -316,23 +317,6 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 
 		return rdfBaseCommand.toOLinks(rdfEdmProvider, entityType, results, navigationSegments);
 	}
-//	@Deprecated
-//	private SparqlStatement prepareStartEntityQuery(EdmEntitySet entitySet, RdfEntityType entityType,
-//			GetEntityUriInfo uriInfo) throws EdmException, ExceptionVisitExpression, ODataApplicationException {
-//		FilterExpression filter = uriInfo.getFilter();
-//		List<SelectItem> select = uriInfo.getSelect();
-//		List<KeyPredicate> keys = uriInfo.getKeyPredicates();
-//		List<ArrayList<NavigationPropertySegment>> expand = uriInfo.getExpand();
-//
-//		Integer top;
-//		Integer skip;
-//
-//		top = sparqlODataProvider.getRdfRepository().getDefaultQueryLimit();
-//		skip = 0;
-//
-//		return sparqlQueryProvider.generateEntitiesQuery(entityType, keys, filter, select, top, skip, expand);
-//
-//	}
 
 	@Override
 	public ODataResponse countEntitySet(GetEntitySetCountUriInfo uriInfo, String contentType) throws ODataException {
@@ -346,15 +330,6 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 			throw new ODataApplicationException(e.getMessage(), null);
 		}
 	}
-//@Deprecated
-//	private SparqlStatement prepareCountEntitySetQuery(EdmEntitySet entitySet, RdfEntityType entityType,
-//			GetEntitySetCountUriInfo uriInfo) throws ExceptionVisitExpression, ODataApplicationException, EdmException {
-//
-//		FilterExpression filter = uriInfo.getFilter();
-//		List<KeyPredicate> keys = uriInfo.getKeyPredicates();
-//
-//		return sparqlQueryProvider.generateEntityCountQuery(entityType, keys, filter);
-//	}
 
 	private ODataResponse executeCountQuery(SparqlStatement sparqlStatement, final String contentType)
 			throws EntityProviderException, ODataException, OData2SparqlException {
@@ -436,7 +411,10 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 			throws Exception {
 		return sparqlUpdateInsertBuilder.generateInsertQuery(entityType, entry);
 	}
-
+	private SparqlStatement prepareInsertLinkQuery(EdmEntitySet entitySet, EdmEntitySet targetEntitySet, RdfEntityType entityType, String entityKey, NavigationSegment navigationSegment, List<String> entry)
+			throws Exception {
+		return sparqlUpdateInsertBuilder.generateInsertLinkQuery(entitySet, targetEntitySet, entityType, entityKey,navigationSegment,entry);
+	}
 	private void executeInsert(SparqlStatement sparqlStatement) throws EntityProviderException,
 			ODataException, SQLException {
 		
@@ -454,13 +432,6 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 
 	@Override
 	public ODataResponse existsEntity(GetEntityCountUriInfo uriInfo, String contentType) throws ODataException {
-//		SparqlStatement sparqlStatement;
-//		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
-//		RdfEntityType entityType = sparqlODataProvider.getMappedEntityType(new FullQualifiedName(entitySet
-//				.getEntityType().getNamespace(), entitySet.getEntityType().getName()));
-//		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
-//
-//		sparqlStatement = prepareExistsEntityQuery(entitySet, entityType, entityKey);
 		
 		RdfEntityType rdfEntityType = null;
 		EdmEntitySet edmEntitySet = null;
@@ -478,12 +449,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 			throw new ODataException();
 		}
 	}
-//	@Deprecated
-//	private SparqlStatement prepareExistsEntityQuery(EdmEntitySet entitySet, RdfEntityType entityType, String entityKey)
-//			throws ODataApplicationException {
-//		return sparqlQueryProvider.generateEntityExistsQuery(entityType, entityKey);
-//	}
-//
+
 	private ODataResponse executeEntityExistsQuery(EdmEntitySet entitySet, RdfEntityType entityType,
 			SparqlStatement sparqlStatement, final String contentType) throws EntityProviderException, ODataException,
 			OData2SparqlException {
@@ -554,7 +520,12 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 			ODataEntry entry) throws Exception {
 		return sparqlUpdateInsertBuilder.generateUpdateQuery(entityType, entityKeys, entry);
 	}
-
+	private SparqlStatement prepareUpdateLinkQuery(EdmEntitySet entitySet, EdmEntitySet targetEntitySet, RdfEntityType entityType, String entityKey, String targetEntityKey, NavigationSegment navigationSegment, List<String> entry) throws Exception {
+		return sparqlUpdateInsertBuilder.generateUpdateLinkQuery(entitySet, targetEntitySet, entityType, entityKey,  targetEntityKey,navigationSegment, entry);
+	}
+	private SparqlStatement prepareDeleteLinkQuery(EdmEntitySet entitySet, EdmEntitySet targetEntitySet, RdfEntityType entityType, String entityKey, String targetEntityKey, NavigationSegment navigationSegment) throws Exception {
+		return sparqlUpdateInsertBuilder.generateDeleteLinkQuery(entitySet, targetEntitySet, entityType, entityKey,  targetEntityKey,navigationSegment);
+	}
 	private void executeUpdate(SparqlStatement sparqlStatement) throws EntityProviderException,
 			ODataException, SQLException {
 		
@@ -798,7 +769,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		EdmEntitySet targetEntitySet = null;
 		NavigationSegment navigationProperty = null;
 		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
-		String expandedEntityKey = RdfEntity.URLDecodeEntityKey(entityKey);
+		String decodedEntityKey = RdfEntity.URLDecodeEntityKey(entityKey);
 		SparqlStatement sparqlStatement = null;
 		List<Map<String, Object>> data = null;
 		SparqlResults rdfResults;
@@ -818,8 +789,8 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		} catch (OData2SparqlException e) {
 			throw new ODataException("Navigation query failed");
 		}
-		//String qnameEntityKey = RdfNodeFactory.createURI(expandedEntityKey).toQName(sparqlODataProvider.getRdfModel().getRdfPrefixes());
-		String qnameEntityKey = rdfEdmProvider.getRdfModel().getRdfPrefixes().toQName(RdfNodeFactory.createURI(expandedEntityKey));
+		RdfPrefixes rdfPrefixes = rdfEdmProvider.getRdfModel().getRdfPrefixes();
+		String qnameEntityKey = rdfPrefixes.entitykeyToQName(decodedEntityKey);
 		data = rdfResults.getLinks(qnameEntityKey, navigationProperty.getNavigationProperty().getName());
 		if (data == null) {
 			throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
@@ -836,7 +807,11 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 			GetEntitySetLinksUriInfo uriInfo) throws EdmException, ODataApplicationException {
 		return sparqlUpdateInsertBuilder.generateEntityLinksQuery(entityType, navigationProperty, targetEntitySet, entityKey);
 	}
-
+	private SparqlStatement prepareEntityLinkQuery(EdmEntitySet entitySet, RdfEntityType entityType,
+			NavigationSegment navigationProperty, EdmEntitySet targetEntitySet, String entityKey,
+			GetEntityLinkUriInfo  uriInfo) throws EdmException, ODataApplicationException {
+		return sparqlUpdateInsertBuilder.generateEntityLinksQuery(entityType, navigationProperty, targetEntitySet, entityKey);
+	}
 	@Override
 	public ODataResponse countEntityLinks(GetEntitySetLinksCountUriInfo uriInfo, String contentType)
 			throws ODataException {
@@ -872,7 +847,12 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		return sparqlUpdateInsertBuilder.generateEntityLinksCountQuery(entityType, navigationProperty, targetEntitySet,
 				entityKey);
 	}
-
+	private SparqlStatement prepareEntityLinkCountQuery(EdmEntitySet entitySet, RdfEntityType entityType,
+			NavigationSegment navigationProperty, EdmEntitySet targetEntitySet, String entityKey,
+			GetEntityLinkCountUriInfo uriInfo) throws EdmException, ODataApplicationException {
+		return sparqlUpdateInsertBuilder.generateEntityLinksCountQuery(entityType, navigationProperty, targetEntitySet,
+				entityKey);
+	}
 	@Override
 	public ODataResponse executeFunctionImport(GetFunctionImportUriInfo uriInfo, String contentType)
 			throws ODataException {
@@ -890,33 +870,191 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 	@Override
 	public ODataResponse createEntityLink(PostUriInfo uriInfo, InputStream content, String requestContentType,
 			String contentType) throws ODataException {
-		// TODO Auto-generated method stub
-		throw new ODataNotImplementedException();
+		if (uriInfo.getNavigationSegments().size() > 1) {
+			throw new ODataNotImplementedException();
+		}
+
+		//No support for media resources
+		if (uriInfo.getStartEntitySet().getEntityType().hasStream()) {
+			throw new ODataNotImplementedException();
+		}
+
+		EntityProviderReadProperties properties = EntityProviderReadProperties.init().mergeSemantic(false).build();
+
+		List<String> entry;
+		try {
+			entry = EntityProvider.readLinks(requestContentType, uriInfo.getStartEntitySet(), content);
+			log.info("Content: " + entry.toString()); 
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new ODataException(e.getMessage());
+		}
+
+		//Map<String, Object> data = entry.getProperties();
+		//now one can use the data to create the entry in the backend ...
+
+		SparqlStatement sparqlStatement = null;
+		RdfEntityType entityType = null;
+		EdmEntitySet entitySet = null;
+		entitySet = uriInfo.getStartEntitySet();
+		EdmEntitySet targetEntitySet = uriInfo.getTargetEntitySet();
+		KeyPredicate keyPredicate = uriInfo.getKeyPredicates().get(0);
+		String entityKey = keyPredicate.getLiteral();
+		entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
+				.getNamespace(), entitySet.getEntityType().getName()));
+		try {
+			sparqlStatement = prepareInsertLinkQuery(entitySet, targetEntitySet, entityType, entityKey, uriInfo.getNavigationSegments().get(0), entry);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new ODataException(e.getMessage());
+		}
+		try {
+			executeInsert(sparqlStatement);
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+			throw new ODataException(e.getMessage());
+		}
+
+		return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
 	}
 
 	@Override
 	public ODataResponse readEntityLink(GetEntityLinkUriInfo uriInfo, String contentType) throws ODataException {
-		// TODO Auto-generated method stub
-		throw new ODataNotImplementedException();
+		RdfEntityType entityType = null;
+		EdmEntitySet entitySet = null;
+		EdmEntitySet targetEntitySet = null;
+		NavigationSegment navigationProperty = null;
+		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
+		String decodedEntityKey = RdfEntity.URLDecodeEntityKey(entityKey);
+		SparqlStatement sparqlStatement = null;
+		List<Map<String, Object>> data = null;
+		SparqlResults rdfResults;
+		if (uriInfo.getNavigationSegments().size() == 0) {
+			throw new ODataException("No navigation segments defined");
+		} else if (uriInfo.getNavigationSegments().size() == 1) {
+			entitySet = uriInfo.getStartEntitySet();
+			entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
+					.getNamespace(), entitySet.getEntityType().getName()));
+			navigationProperty = uriInfo.getNavigationSegments().get(0);
+			targetEntitySet = uriInfo.getTargetEntitySet();
+			sparqlStatement = prepareEntityLinkQuery(entitySet, entityType, navigationProperty, targetEntitySet,
+					entityKey, uriInfo);
+		}
+		try {
+			rdfResults = executeLinksQuery(entitySet, entityType, sparqlStatement, uriInfo.getNavigationSegments());
+		} catch (OData2SparqlException e) {
+			throw new ODataException("Navigation query failed");
+		}
+		RdfPrefixes rdfPrefixes = rdfEdmProvider.getRdfModel().getRdfPrefixes();
+		String qnameEntityKey = rdfPrefixes.entitykeyToQName(decodedEntityKey);
+		data = rdfResults.getLinks(qnameEntityKey, navigationProperty.getNavigationProperty().getName());
+		if (data == null) {
+			throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
+		}
+		ODataEntityProviderPropertiesBuilder propertiesBuilder = EntityProviderWriteProperties.serviceRoot(getContext()
+				.getPathInfo().getServiceRoot());
+
+		return EntityProvider.writeLinks(contentType, targetEntitySet, data, propertiesBuilder.build());
 	}
 
 	@Override
 	public ODataResponse existsEntityLink(GetEntityLinkCountUriInfo uriInfo, String contentType) throws ODataException {
-		// TODO Auto-generated method stub
-		throw new ODataNotImplementedException();
+		RdfEntityType entityType = null;
+		EdmEntitySet entitySet = null;
+		EdmEntitySet targetEntitySet = null;
+		NavigationSegment navigationProperty = null;
+		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
+		SparqlStatement sparqlStatement = null;
+		if (uriInfo.getNavigationSegments().size() == 0) {
+			throw new ODataException("No navigation segments defined");
+		} else if (uriInfo.getNavigationSegments().size() == 1) {
+			entitySet = uriInfo.getStartEntitySet();
+			entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
+					.getNamespace(), entitySet.getEntityType().getName()));
+			navigationProperty = uriInfo.getNavigationSegments().get(0);
+			targetEntitySet = uriInfo.getTargetEntitySet();
+			sparqlStatement = prepareEntityLinkCountQuery(entitySet, entityType, navigationProperty, targetEntitySet,
+					entityKey, uriInfo);
+		}
+
+		try {
+			return executeCountQuery(sparqlStatement, contentType);
+		} catch (OData2SparqlException e) {
+			log.error(e.getMessage());
+			throw new ODataException();
+		}
 	}
 
 	@Override
 	public ODataResponse updateEntityLink(PutMergePatchUriInfo uriInfo, InputStream content, String requestContentType,
 			String contentType) throws ODataException {
-		// TODO Auto-generated method stub
-		throw new ODataNotImplementedException();
+		//No support for media resources
+		if (uriInfo.getStartEntitySet().getEntityType().hasStream()) {
+			throw new ODataNotImplementedException();
+		}
+		
+		List<String> entry;
+		try {
+			entry = EntityProvider.readLinks(requestContentType, uriInfo.getStartEntitySet(), content);
+			log.info("Content: " + entry.toString()); 
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new ODataException(e.getMessage());
+		}
+		SparqlStatement sparqlStatement = null;
+		RdfEntityType entityType = null;
+		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
+		EdmEntitySet targetEntitySet = uriInfo.getTargetEntitySet();
+		KeyPredicate keyPredicate = uriInfo.getKeyPredicates().get(0);
+		String entityKey = keyPredicate.getLiteral();
+		KeyPredicate targetKeyPredicate = uriInfo.getTargetKeyPredicates().get(0);
+		String targetEntityKey = targetKeyPredicate.getLiteral();
+		entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
+				.getNamespace(), entitySet.getEntityType().getName()));
+		try {
+			sparqlStatement = prepareUpdateLinkQuery(entitySet, targetEntitySet, entityType, entityKey, targetEntityKey, uriInfo.getNavigationSegments().get(0), entry);
+		} catch (Exception e) {
+			throw new ODataException(e.getMessage());
+		}
+		try {
+			executeUpdate(sparqlStatement);
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+			throw new ODataException(e.getMessage());
+		}
+
+		return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
 	}
 
 	@Override
 	public ODataResponse deleteEntityLink(DeleteUriInfo uriInfo, String contentType) throws ODataException {
-		// TODO Auto-generated method stub
-		throw new ODataNotImplementedException();
+		//No support for media resources
+		if (uriInfo.getStartEntitySet().getEntityType().hasStream()) {
+			throw new ODataNotImplementedException();
+		}
+		
+		SparqlStatement sparqlStatement = null;
+		RdfEntityType entityType = null;
+		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
+		EdmEntitySet targetEntitySet = uriInfo.getTargetEntitySet();
+		KeyPredicate keyPredicate = uriInfo.getKeyPredicates().get(0);
+		String entityKey = keyPredicate.getLiteral();
+		KeyPredicate targetKeyPredicate = uriInfo.getTargetKeyPredicates().get(0);
+		String targetEntityKey = targetKeyPredicate.getLiteral();
+		entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
+				.getNamespace(), entitySet.getEntityType().getName()));
+		try {
+			sparqlStatement = prepareDeleteLinkQuery(entitySet, targetEntitySet, entityType, entityKey, targetEntityKey, uriInfo.getNavigationSegments().get(0));
+		} catch (Exception e) {
+			throw new ODataException(e.getMessage());
+		}
+		try {
+			executeUpdate(sparqlStatement);
+		} catch (SQLException e) {
+			log.error(e.getMessage());
+			throw new ODataException(e.getMessage());
+		}
+		return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
 	}
 
 	@Override

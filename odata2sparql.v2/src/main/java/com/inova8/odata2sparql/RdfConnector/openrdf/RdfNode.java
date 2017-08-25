@@ -11,7 +11,6 @@ import org.openrdf.model.Value;
 
 import com.inova8.odata2sparql.Exception.OData2SparqlException;
 
-
 public class RdfNode {
 	private final Log log = LogFactory.getLog(RdfNode.class);
 	private final Value node;
@@ -56,20 +55,20 @@ public class RdfNode {
 		}
 	}
 
-//	public String toQName(RdfPrefixes rdfPrefixes) {
-//		String qname = null;
-//		if (this.isBlank()) {
-//			return ((BNode) node).toString();
-//		} else {
-//			try {
-//				qname = rdfPrefixes.getOrCreatePrefix(null, ((URI) node).getNamespace()) + ":"
-//						+ ((URI) node).getLocalName();
-//			} catch (OData2SparqlException e) {
-//				log.error("RdfNode toQName failure. Node:" + this.node.toString() + " with exception " + e.toString());
-//			}
-//		}
-//		return qname;
-//	}
+	//	public String toQName(RdfPrefixes rdfPrefixes) {
+	//		String qname = null;
+	//		if (this.isBlank()) {
+	//			return ((BNode) node).toString();
+	//		} else {
+	//			try {
+	//				qname = rdfPrefixes.getOrCreatePrefix(null, ((URI) node).getNamespace()) + ":"
+	//						+ ((URI) node).getLocalName();
+	//			} catch (OData2SparqlException e) {
+	//				log.error("RdfNode toQName failure. Node:" + this.node.toString() + " with exception " + e.toString());
+	//			}
+	//		}
+	//		return qname;
+	//	}
 
 	public IRI getLiteralDatatype() {
 		return ((Literal) node).getDatatype();
@@ -197,7 +196,14 @@ public class RdfNode {
 	}
 
 	public String getNamespace() {
-		return ((IRI) node).getNamespace();
+		String nameSpace = ((IRI) node).getNamespace();
+		if(this.isIRI()) return ((IRI) node).getNamespace();
+		//String nameSpace =   node.getNamespace();
+		String lastCharacter = nameSpace.substring(nameSpace.length() - 1);
+		if (lastCharacter.equals(":"))
+			return nameSpace.substring(0, nameSpace.length() - 1);
+		else
+			return nameSpace;
 	}
 
 	public RdfLiteral getLiteral() {

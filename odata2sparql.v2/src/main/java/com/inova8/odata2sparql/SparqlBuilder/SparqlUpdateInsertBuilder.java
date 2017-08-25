@@ -1,5 +1,7 @@
 package com.inova8.odata2sparql.SparqlBuilder;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,10 +16,15 @@ import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
 import org.apache.olingo.odata2.api.exception.ODataApplicationException;
+import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
 import org.apache.olingo.odata2.api.uri.NavigationSegment;
+import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.expression.ExceptionVisitExpression;
+import org.apache.olingo.odata2.core.edm.provider.EdmImplProv;
+import org.apache.olingo.odata2.core.uri.UriParserImpl;
 
+import com.inova8.odata2sparql.RdfEdmProvider.RdfEdmProvider;
 import com.inova8.odata2sparql.RdfModel.RdfEntity;
 import com.inova8.odata2sparql.RdfModel.RdfModel;
 import com.inova8.odata2sparql.RdfModel.RdfModel.RdfAssociation;
@@ -29,18 +36,19 @@ public class SparqlUpdateInsertBuilder {
 	@SuppressWarnings("unused")
 	private final Log log = LogFactory.getLog(SparqlStatement.class);
 	private final RdfModel rdfModel;
+	private final RdfEdmProvider rdfEdmProvider;
 
-	public SparqlUpdateInsertBuilder(RdfModel rdfModel) {
+	public SparqlUpdateInsertBuilder(RdfEdmProvider rdfEdmProvider) {
 		super();
-		this.rdfModel = rdfModel;
+		this.rdfModel = rdfEdmProvider.getRdfModel();
+		this.rdfEdmProvider = rdfEdmProvider;
 	}
 
 	public SparqlStatement generateInsertQuery(RdfEntityType entityType, ODataEntry entry) throws Exception {
-		if (entityType.isOperation()) {		
+		if (entityType.isOperation()) {
 			String insertText = entityType.getInsertText();
 			if (insertText != null) {
-				StringBuilder insertQuery = generateOperationFromTemplate(insertText, entityType, null,
-						entry);
+				StringBuilder insertQuery = generateOperationFromTemplate(insertText, entityType, null, entry);
 				return new SparqlStatement(insertQuery.toString());
 			} else {
 				throw new ODataApplicationException("No insertBody for insertQuery of " + entityType.entityTypeName,
@@ -50,6 +58,14 @@ public class SparqlUpdateInsertBuilder {
 			StringBuilder insertQuery = generateInsertProperties(entityType, null, entry);
 			return new SparqlStatement(insertQuery.toString() + "WHERE {}");
 		}
+	}
+
+	public SparqlStatement generateInsertLinkQuery(EdmEntitySet entitySet, EdmEntitySet targetEntitySet,
+			RdfEntityType entityType, String entityKey, NavigationSegment navigationSegment, List<String> entry)
+			throws Exception {
+		StringBuilder insertLinkQuery = generateInsertLinks(entitySet, targetEntitySet, entityType, entityKey,
+				navigationSegment, entry);
+		return new SparqlStatement(insertLinkQuery.toString() + "WHERE {}");
 	}
 
 	private StringBuilder generateOperationFromTemplate(String template, RdfEntityType entityType,
@@ -170,10 +186,10 @@ public class SparqlUpdateInsertBuilder {
 			}
 		}
 		properties.append(" .\n");
-		if (entityKey == null){
+		if (entityKey == null) {
 			//This means that the keys are not in the property list so it must be part of the entity identity
 			//Assume we are dealing with only pure RDF with a single key
-			entityKey=entityKeys.get(0).getLiteral();
+			entityKey = entityKeys.get(0).getLiteral();
 			//throw new ODataApplicationException("Key not found ", null);			
 		}
 
@@ -186,6 +202,42 @@ public class SparqlUpdateInsertBuilder {
 		} else {
 			throw new ODataApplicationException("Invalid key: " + entityKeys, null);
 		}
+	}
+
+	private StringBuilder generateInsertLinks(EdmEntitySet entitySet, EdmEntitySet targetEntitySet,
+			RdfEntityType entityType, String entityKey, NavigationSegment navigationSegment, List<String> entry)
+			throws ODataException, URISyntaxException {
+		StringBuilder links = new StringBuilder("INSERT { ");
+		UrlValidator urlValidator = new UrlValidator();
+		UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
+
+		RdfAssociation navigationProperty = entityType
+				.findNavigationProperty(navigationSegment.getNavigationProperty().getName());
+		String navigationPropertyUri=null;
+		if(navigationProperty.IsInverse()){
+			navigationPropertyUri= "<" + navigationProperty.getInversePropertyOf().getIRI()+ ">";
+		}else{
+			navigationPropertyUri= "<" + navigationProperty.getAssociationIRI() + ">";
+		} 
+		String expandedKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(entityKey) + ">";
+		for (String link : entry) {
+			if (link != null) {
+				List<KeyPredicate> linkUri = uriParser.getKeyFromEntityLink(targetEntitySet, link,
+						new URI("http://localhost:8080/odata2sparql/2.0/NW/"));
+				if (navigationProperty.IsInverse()) {
+					links.append("<" + rdfModel.getRdfPrefixes().expandPrefix(linkUri.get(0).getLiteral()) + ">")
+							.append(navigationPropertyUri).append(expandedKeyUri).append(".");
+				} else {
+					links.append(expandedKeyUri).append(navigationPropertyUri)
+							.append("<" + rdfModel.getRdfPrefixes().expandPrefix(linkUri.get(0).getLiteral()) + ">")
+							.append(".");
+				}
+
+			}
+		}
+
+		links.append("}");
+		return links;
 	}
 
 	public SparqlStatement generateDeleteQuery(RdfEntityType entityType, List<KeyPredicate> entityKeys)
@@ -228,8 +280,7 @@ public class SparqlUpdateInsertBuilder {
 			String updateText = entityType.getUpdateText();
 			if (updateText != null) {
 				return new SparqlStatement(
-						generateOperationFromTemplate(updateText, entityType, entityKeys, entry)
-								.toString());
+						generateOperationFromTemplate(updateText, entityType, entityKeys, entry).toString());
 			} else {
 				throw new ODataApplicationException("No updateBody for updateQuery of " + entityType.entityTypeName,
 						null);
@@ -255,7 +306,69 @@ public class SparqlUpdateInsertBuilder {
 			}
 		}
 	}
+	public SparqlStatement generateUpdateLinkQuery(EdmEntitySet entitySet, EdmEntitySet targetEntitySet,
+			RdfEntityType entityType, String entityKey, String targetEntityKey, NavigationSegment navigationSegment, List<String> entry) throws Exception {
+		
+			StringBuilder links = new StringBuilder("DELETE ");
+			UrlValidator urlValidator = new UrlValidator();
+			UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
 
+			String expandedKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(entityKey) + ">";
+			String expandedTargetKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(targetEntityKey) + ">";
+			
+			RdfAssociation navigationProperty = entityType
+					.findNavigationProperty(navigationSegment.getNavigationProperty().getName());
+			String navigationPropertyUri=null;
+			if(navigationProperty.IsInverse()){
+				navigationPropertyUri= "<" + navigationProperty.getInversePropertyOf().getIRI()+ ">";
+				links.append("{").append(expandedTargetKeyUri).append(navigationPropertyUri).append(expandedKeyUri).append(".}");
+			}else{
+				navigationPropertyUri= "<" + navigationProperty.getAssociationIRI() + ">";
+				links.append("{").append(expandedKeyUri).append(navigationPropertyUri).append(expandedTargetKeyUri).append(".}");
+			} 
+			links.append("INSERT{ ");
+			for (String link : entry) {
+				if (link != null) {
+					List<KeyPredicate> linkUri = uriParser.getKeyFromEntityLink(targetEntitySet, link,
+							new URI("http://localhost:8080/odata2sparql/2.0/NW/"));
+					if (navigationProperty.IsInverse()) {
+						links.append("<" + rdfModel.getRdfPrefixes().expandPrefix(linkUri.get(0).getLiteral()) + ">")
+								.append(navigationPropertyUri).append(expandedKeyUri).append(".");
+					} else {
+						links.append(expandedKeyUri).append(navigationPropertyUri)
+								.append("<" + rdfModel.getRdfPrefixes().expandPrefix(linkUri.get(0).getLiteral()) + ">")
+								.append(".");
+					}
+
+				}
+			}
+
+			links.append("}");
+			return new SparqlStatement(links.toString());
+			
+	}
+	public SparqlStatement generateDeleteLinkQuery(EdmEntitySet entitySet, EdmEntitySet targetEntitySet,
+			RdfEntityType entityType, String entityKey, String targetEntityKey, NavigationSegment navigationSegment) throws Exception {
+		
+			StringBuilder links = new StringBuilder("DELETE ");
+			UrlValidator urlValidator = new UrlValidator();
+			UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
+
+			String expandedKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(entityKey) + ">";
+			String expandedTargetKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(targetEntityKey) + ">";
+			
+			RdfAssociation navigationProperty = entityType
+					.findNavigationProperty(navigationSegment.getNavigationProperty().getName());
+			String navigationPropertyUri=null;
+			if(navigationProperty.IsInverse()){
+				navigationPropertyUri= "<" + navigationProperty.getInversePropertyOf().getIRI()+ ">";
+				links.append("{").append(expandedTargetKeyUri).append(navigationPropertyUri).append(expandedKeyUri).append(".}");
+			}else{
+				navigationPropertyUri= "<" + navigationProperty.getAssociationIRI() + ">";
+				links.append("{").append(expandedKeyUri).append(navigationPropertyUri).append(expandedTargetKeyUri).append(".}");
+			} 
+			return new SparqlStatement(links.toString());		
+	}
 	private StringBuilder generateUpdatePropertyValues(RdfEntityType entityType, String entityKey, ODataEntry entry)
 			throws ODataApplicationException {
 		StringBuilder updatePropertyValues = new StringBuilder("VALUES( ?" + entityType.entityTypeName + "_p){");
@@ -270,8 +383,6 @@ public class SparqlUpdateInsertBuilder {
 				}
 				RdfProperty property = entityType.findProperty(prop.getKey());
 				if (property.getIsKey()) {
-					//updatePropertyValues
-					//		.append("<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <" + entityType.getIRI() + ">");
 					entityKey = prop.getValue().toString();
 				} else {
 					updatePropertyValues.append("(<" + property.propertyNode.getIRI() + ">) ");
@@ -302,14 +413,14 @@ public class SparqlUpdateInsertBuilder {
 
 	public SparqlStatement generateEntitySimplePropertyValueQuery(RdfEntityType entityType,
 			List<KeyPredicate> entityKeys, String property) throws ODataApplicationException {
-		if (entityType.isOperation()) {		
+		if (entityType.isOperation()) {
 			String updatePropertyText = entityType.getUpdatePropertyText();
 			if (updatePropertyText != null) {
-				return generateOperationUpdateEntitySimplePropertyValueQuery(updatePropertyText, entityType,
-						entityKeys, property, null);
+				return generateOperationUpdateEntitySimplePropertyValueQuery(updatePropertyText, entityType, entityKeys,
+						property, null);
 			} else {
-				throw new ODataApplicationException("No updatePropertyBody for updatePropertyQuery of " + entityType.entityTypeName,
-						null);
+				throw new ODataApplicationException(
+						"No updatePropertyBody for updatePropertyQuery of " + entityType.entityTypeName, null);
 			}
 		} else {
 			UrlValidator urlValidator = new UrlValidator();
@@ -338,11 +449,11 @@ public class SparqlUpdateInsertBuilder {
 		if (entityType.isOperation()) {
 			String updatePropertyText = entityType.getDeleteText();
 			if (updatePropertyText != null) {
-				return generateOperationUpdateEntitySimplePropertyValueQuery(updatePropertyText, entityType,
-						entityKeys, property, entry);
+				return generateOperationUpdateEntitySimplePropertyValueQuery(updatePropertyText, entityType, entityKeys,
+						property, entry);
 			} else {
-				throw new ODataApplicationException("No updatePropertyBody for updatePropertyQuery of " + entityType.entityTypeName,
-						null);
+				throw new ODataApplicationException(
+						"No updatePropertyBody for updatePropertyQuery of " + entityType.entityTypeName, null);
 			}
 		} else {
 			UrlValidator urlValidator = new UrlValidator();
