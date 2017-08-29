@@ -500,7 +500,6 @@ public class RdfModel {
 		private String propertyLabel;
 		public String propertyTypeName;
 		private String varName;
-		//public EdmSimpleTypeKind propertyType;
 		public RdfNode propertyNode;
 		private Boolean isKey = false;
 		private RdfConstants.Cardinality cardinality = RdfConstants.Cardinality.MANY;
@@ -589,6 +588,7 @@ public class RdfModel {
 		private RdfNode associationNode;
 		private Boolean isInverse = false;
 		private RdfNode inversePropertyOf;
+		private RdfAssociation inverseAssociation;
 		private String description;
 
 		private RdfEntityType rangeClass;
@@ -650,22 +650,13 @@ public class RdfModel {
 		public String getInversePropertyOfURI() {
 			return inversePropertyOf.getIRI().toString();
 		}
-//		private @Deprecated
-//		Association edmAssociation;
+
 		public RdfEntityType domainClass;
 
 		public RdfEntityType getDomainClass() {
 			return domainClass;
 		}
 
-
-//		public Association getEdmAssociation() {
-//			return edmAssociation;
-//		}
-//
-//		public void setEdmAssociation(Association edmAssociation) {
-//			this.edmAssociation = edmAssociation;
-//		}
 
 		public String getDomainNodeURI() {
 			return this.domainNode.getIRI().toString();
@@ -744,6 +735,12 @@ public class RdfModel {
 
 		public void setIsInverse(Boolean isInverse) {
 			this.isInverse = isInverse;
+		}
+		public RdfAssociation getInverseAssociation() {
+			return inverseAssociation;
+		}
+		public void setInverseAssociation(RdfAssociation inverseAssociation) {
+			this.inverseAssociation = inverseAssociation;
 		}
 	}
 
@@ -851,36 +848,19 @@ public class RdfModel {
 		return operationEntityType;
 	}
 
-//	@Deprecated
-//	public RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode) throws OData2SparqlException {
-//		return getOrCreateOperationEntityType(queryNode, null, null);
-//	}
-
 	void getOrCreateOperationArguments(RdfNode queryNode, RdfNode queryPropertyNode, RdfNode varName, RdfNode rangeNode)
 			throws OData2SparqlException {
 		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode);
 		if (operationEntityType.isOperation()) {
 			operationEntityType.setFunctionImport(true);
-//			List<AnnotationAttribute> nullableAnnotations = new ArrayList<AnnotationAttribute>();
 			String propertyTypeName = rangeNode.getIRI().toString();
-//			nullableAnnotations.add((new AnnotationAttribute()).setName(RdfConstants.NULLABLE).setText(
-//					RdfConstants.FALSE));
-//			FunctionImportParameter functionImportParameter = new FunctionImportParameter();
-//			functionImportParameter.setName(varName.getLiteralValue().getLabel())
-//					.setType(SIMPLE_TYPE_MAPPING.get(propertyTypeName))
-//					.setAnnotationAttributes(nullableAnnotations);
-//			operationEntityType.getFunctionImportParameters().put(varName.getLiteralValue().getLabel(),
-//					functionImportParameter);
-//			
-//			nullableAnnotations.add((new AnnotationAttribute()).setName(RdfConstants.NULLABLE).setText(
-//					RdfConstants.FALSE));
+
 			FunctionImportParameter functionImportParameter = new FunctionImportParameter(varName.getLiteralValue().getLabel(), propertyTypeName, false);
 			operationEntityType.getFunctionImportParameters().put(varName.getLiteralValue().getLabel(),
 					functionImportParameter);
 		} else {
 
 		}
-
 	}
 
 	RdfProperty getOrCreateOperationProperty(RdfNode queryNode, RdfNode propertyNode, RdfNode propertyLabelNode,
@@ -897,18 +877,8 @@ public class RdfModel {
 					propertyNameEquals(propertyURI.localName));
 			if (property == null) {
 				property = new RdfProperty();
-
 				property.propertyTypeName = propertyTypeName;
-				
-				//property.propertyType = SIMPLE_TYPE_MAPPING.get(propertyTypeName);
-				// Workaround for non XMLSchema or XMLSchema2 property types.
-				// TODO iterate through datatype structure to determine base type
-//				if (property.propertyType == null) {
-//					property.propertyType = EdmSimpleTypeKind.String;
-					property.propertyName = varName.getLiteralValue().getLabel();
-//				} else {
-//					property.propertyName = rdfToOdata(propertyURI.localName);
-//				}
+				property.propertyName = varName.getLiteralValue().getLabel();
 				if (propertyLabelNode == null) {
 					property.propertyLabel = RdfConstants.PROPERTY_LABEL_PREFIX + property.propertyName;
 				} else {
@@ -948,13 +918,22 @@ public class RdfModel {
 			} else {
 				association.associationLabel = propertyLabelNode.getLiteralValue().getLabel();
 			}
-			association.setIsInverse(false);
+
 			association.setVarName(varName.getLiteralValue().getLabel());
 
-			//Since this is not a primary entity we need to add the keys of the navigation properties are properties, as well as adding them as primarykeys.
-
+			if(association.IsInverse()){  // is it the inverse of something?
+				RdfAssociation inverseAssociation = association.getInverseAssociation();
+				inverseAssociation.rangeCardinality = RdfConstants.Cardinality.ONE;
+				inverseAssociation.domainCardinality = RdfConstants.Cardinality.MANY;				
+				
+			}else{
+				association.setIsInverse(false);	
+			}
+	
 			association.rangeCardinality = RdfConstants.Cardinality.MANY;
 			association.domainCardinality = RdfConstants.Cardinality.ONE;
+			
+			//Since this is not a primary entity we need to add the keys of the navigation properties are properties, as well as adding them as primarykeys.			
 			RdfProperty property = getOrCreateOperationProperty(queryNode, propertyNode, propertyLabelNode, rangeNode,
 					varName);
 			property.isKey = true;
@@ -1112,10 +1091,11 @@ public class RdfModel {
 		RdfAssociation association = getOrCreateAssociation(propertyNode, null, domainNode, rangeNode,
 				multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality);
 		RdfAssociation inverseAssociation = getOrCreateAssociation(inversePropertyNode, inversePropertyLabelNode,
-				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, rangeCardinality, domainCardinality); // Note cardinality only is reversed
+				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality); 
 		inverseAssociation.setIsInverse(true);
 		inverseAssociation.inversePropertyOf = propertyNode;
-		association.setIsInverse(false);
+		association.setIsInverse(true);
+		association.setInverseAssociation(inverseAssociation);
 		return inverseAssociation;
 	}
 

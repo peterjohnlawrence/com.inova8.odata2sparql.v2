@@ -429,7 +429,7 @@ public class RdfModelProvider {
 						if (soln.getRdfNode("rangeCardinality") != null)
 							rangeCardinalityNode = soln.getRdfNode("rangeCardinality");
 						Cardinality rangeCardinality = interpretCardinality(maxRangeCardinalityNode,
-								minRangeCardinalityNode, rangeCardinalityNode, RdfConstants.Cardinality.ZERO_TO_ONE);
+								minRangeCardinalityNode, rangeCardinalityNode, RdfConstants.Cardinality.MANY);//, RdfConstants.Cardinality.ZERO_TO_ONE);
 
 						RdfNode maxDomainCardinalityNode = null;
 						RdfNode minDomainCardinalityNode = null;
@@ -441,7 +441,7 @@ public class RdfModelProvider {
 						if (soln.getRdfNode("domainCardinality") != null)
 							domainCardinalityNode = soln.getRdfNode("domainCardinality");
 						Cardinality domainCardinality = interpretCardinality(maxDomainCardinalityNode,
-								minDomainCardinalityNode, domainCardinalityNode, RdfConstants.Cardinality.MANY);
+								minDomainCardinalityNode, domainCardinalityNode, RdfConstants.Cardinality.MANY);// RdfConstants.Cardinality.ZERO_TO_ONE);
 
 						RdfAssociation association = model.getOrCreateAssociation(propertyNode, propertyLabelNode,
 								domainNode, rangeNode, multipleDomainNode, multipleRangeNode, domainCardinality,
@@ -503,7 +503,7 @@ public class RdfModelProvider {
 						if (soln.getRdfNode("rangeCardinality") != null)
 							rangeCardinalityNode = soln.getRdfNode("rangeCardinality");
 						Cardinality rangeCardinality = interpretCardinality(maxRangeCardinalityNode,
-								minRangeCardinalityNode, rangeCardinalityNode, RdfConstants.Cardinality.ZERO_TO_ONE);
+								minRangeCardinalityNode, rangeCardinalityNode, RdfConstants.Cardinality.MANY);//, RdfConstants.Cardinality.ZERO_TO_ONE);
 
 						RdfNode maxDomainCardinalityNode = null;
 						RdfNode minDomainCardinalityNode = null;
@@ -515,7 +515,7 @@ public class RdfModelProvider {
 						if (soln.getRdfNode("domainCardinality") != null)
 							domainCardinalityNode = soln.getRdfNode("domainCardinality");
 						Cardinality domainCardinality = interpretCardinality(maxDomainCardinalityNode,
-								minDomainCardinalityNode, domainCardinalityNode, RdfConstants.Cardinality.MANY);
+								minDomainCardinalityNode, domainCardinalityNode, RdfConstants.Cardinality.MANY);// RdfConstants.Cardinality.ZERO_TO_ONE);
 
 						RdfAssociation inverseAssociation = model.getOrCreateInverseAssociation(inversePropertyNode,
 								inversePropertyLabelNode, propertyNode, rangeNode, domainNode, multipleDomainNode,
@@ -589,7 +589,6 @@ public class RdfModelProvider {
 			int count = 0;
 			StringBuilder debug = new StringBuilder();
 			RdfResultSet operationAssociationResults = rdfMetamodelProvider.getOperationAssociationResults();
-			//?query ?varName ?property ?propertyLabel ?range
 			try {
 				while (operationAssociationResults.hasNext()) {
 					RdfNode query = null;
@@ -634,7 +633,6 @@ public class RdfModelProvider {
 			int count = 0;
 			StringBuilder debug = new StringBuilder();
 			RdfResultSet operationPropertyResults = rdfMetamodelProvider.getOperationPropertyResults();
-			//?query ?varName ?property ?propertyLabel ?range
 			try {
 				while (operationPropertyResults.hasNext()) {
 					RdfNode query = null;

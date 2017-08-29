@@ -409,11 +409,9 @@ public class RdfRepositories {
 			} catch (RDFParseException e) {
 				log.fatal("Cannot parse  " + RdfConstants.modelFile + " Check to ensure valid RDF/XML or TTL", e);
 				System.exit(1);
-				//throw new Olingo2SparqlException();
 			} catch (IOException e) {
 				log.fatal("Cannot access " + RdfConstants.modelFile + " Check it is located in correct directory and is visible", e);
 				System.exit(1);
-				//throw new Olingo2SparqlException();
 			} finally {
 
 			}

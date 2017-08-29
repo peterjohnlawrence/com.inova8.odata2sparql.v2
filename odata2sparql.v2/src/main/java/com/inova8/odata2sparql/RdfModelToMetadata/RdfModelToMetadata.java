@@ -321,53 +321,50 @@ public class RdfModelToMetadata {
 					if (rdfAssociation.getDomainName().equals(rdfAssociation.getRangeName()))
 						duplicate = RdfConstants.DUPLICATEROLE;
 
-					AssociationEnd domainRole = new AssociationEnd() //used to be fromRole
+					AssociationEnd fromRole = new AssociationEnd() 
 							.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE)
 							.setType(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.domainClass));
 
-					AssociationEnd rangeRole = new AssociationEnd() //used to be toRole
+					AssociationEnd toRole = new AssociationEnd() 
 							.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate)
 							.setType(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation.getRangeClass()));
-					switch (rdfAssociation.getDomainCardinality()) { //used to be range
+					switch (rdfAssociation.getRangeCardinality()) { 
 					case ZERO_TO_ONE:
-						domainRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
+						fromRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
 						break;
 					case ONE:
-						domainRole.setMultiplicity(EdmMultiplicity.ONE);
+						fromRole.setMultiplicity(EdmMultiplicity.ONE);
 						break;
 					case MANY:
-						domainRole.setMultiplicity(EdmMultiplicity.MANY);
+						fromRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					case MULTIPLE:
-						domainRole.setMultiplicity(EdmMultiplicity.MANY);
+						fromRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					}
-					switch (rdfAssociation.getRangeCardinality()) { //used to be doamin
+					switch (rdfAssociation.getDomainCardinality()) { 
 					case ZERO_TO_ONE:
-						rangeRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
+						toRole.setMultiplicity(EdmMultiplicity.ZERO_TO_ONE);
 						break;
 					case ONE:
-						rangeRole.setMultiplicity(EdmMultiplicity.ONE);
+						toRole.setMultiplicity(EdmMultiplicity.ONE);
 						break;
 					case MANY:
-						rangeRole.setMultiplicity(EdmMultiplicity.MANY);
+						toRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					case MULTIPLE:
-						rangeRole.setMultiplicity(EdmMultiplicity.MANY);
+						toRole.setMultiplicity(EdmMultiplicity.MANY);
 						break;
 					}
-					Association association = new Association().setName(associationName).setEnd1(domainRole)
-							.setEnd2(rangeRole)
-					//TODO .setNamespace(modelNamespace)
+					Association association = new Association().setName(associationName).setEnd1(fromRole)
+							.setEnd2(toRole)
 					;
 					if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
 						ReferentialConstraintRole principalConstraintRole = new ReferentialConstraintRole();
 						ReferentialConstraintRole dependentConstraintRole = new ReferentialConstraintRole();
 						principalConstraintRole.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE);
-						//TODO principalConstraintRole.setPropertyRefs(RdfConstants.ID);
 						dependentConstraintRole
-								.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate);
-						//TODO dependentConstraintRole.setPropertyRefs(RdfConstants.ID);						
+								.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate);					
 
 						ReferentialConstraint referentialConstraint = new ReferentialConstraint()
 								.setPrincipal(principalConstraintRole).setDependent(dependentConstraintRole);
@@ -376,15 +373,12 @@ public class RdfModelToMetadata {
 
 					associations.put(association.getName(), association);
 
-					//TODO if (!rdfAssociation.isInverse)
 					associationLookup.put(association.getName(), rdfAssociation);
 
-					//TODO Do we need a new navigation property or extend an existing one?
 					NavigationProperty navigationProperty = new NavigationProperty().setName(associationName)
 							.setRelationship(RdfFullQualifiedName.getFullQualifiedName(rdfAssociation))
-							.setFromRole(domainRole.getRole())
-							//.setRelationship(rdfAssociation.getFullQualifiedName()).setFromRole(fromRole.getRole())
-							.setToRole(rangeRole.getRole());
+							.setFromRole(fromRole.getRole())
+							.setToRole(toRole.getRole());
 
 					List<AnnotationAttribute> navigationPropertyAnnotations = new ArrayList<AnnotationAttribute>();
 					if (withRdfAnnotations)
@@ -416,14 +410,12 @@ public class RdfModelToMetadata {
 
 					}
 					navigationProperty.setAnnotationAttributes(navigationPropertyAnnotations);
-					//TODO should not add duplicates to the same entity, even though Olingo accepts them	
 					EntityType globalEntityType = globalEntityTypes.get(rdfAssociation.getDomainNodeURI());
 					if (globalEntityType != null) {
 						globalEntityType.getNavigationProperties().add(navigationProperty);
 					}
 					navigationPropertyLookup.put(navigationProperty.getName(), rdfAssociation);
 					navigationPropertyMapping.put(navigationProperty.getRelationship(), rdfAssociation);
-					//rdfAssociation.setEdmAssociation(association);
 				}
 			}
 
@@ -489,22 +481,6 @@ public class RdfModelToMetadata {
 					associationSets.put(associationSet.getName(), associationSet);
 				}
 			}
-			//Inherit navigationproperties if baseType false
-//			if (!useBaseType) {
-//				for (RdfEntityType rdfClass : rdfGraph.classes) {
-//					EntityType currentEntityType=null;
-//					RdfEntityType currentRdfClass = rdfClass;
-//					HashSet<NavigationProperty> currentNavigationProperties = new HashSet<NavigationProperty>();
-//					do {
-//						currentEntityType = globalEntityTypes.get(currentRdfClass.getIRI());
-//						currentNavigationProperties.addAll(currentEntityType.getNavigationProperties());
-//						currentRdfClass = currentRdfClass.getBaseType();
-//					} while (currentRdfClass != null);
-//					currentEntityType = globalEntityTypes.get(rdfClass.getIRI());
-//					currentEntityType.setNavigationProperties(new ArrayList<NavigationProperty>(currentNavigationProperties));
-//				}
-//			}
-
 		}
 
 		List<FunctionImport> functionImports = new ArrayList<FunctionImport>();

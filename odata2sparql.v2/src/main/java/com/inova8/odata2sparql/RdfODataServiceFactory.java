@@ -28,13 +28,13 @@ public class RdfODataServiceFactory extends ODataServiceFactory {
 		String odataVersion = ctx.getPathInfo().getPrecedingSegments().get(0).getPath();
 		if (odataVersion.equals(RdfConstants.RESET)) {
 			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
-			//RdfEdmProviders.getRdfRepositories().reset(rdfRepositoryID);
 			sparqlODataSingleProcessors.reset(rdfRepositoryID);
+			log.info(RdfConstants.RESET + " requested: " + rdfRepositoryID);
 			return null;
 		} else if (odataVersion.equals(RdfConstants.RELOAD)) {
 			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
-			//RdfEdmProviders.getRdfRepositories().reload(rdfRepositoryID);
 			sparqlODataSingleProcessors.reload(rdfRepositoryID);
+			log.info(RdfConstants.RELOAD + " requested");
 			return null;
 		} else {
 			if (!ODataServiceVersion.validateDataServiceVersion(odataVersion)) {
