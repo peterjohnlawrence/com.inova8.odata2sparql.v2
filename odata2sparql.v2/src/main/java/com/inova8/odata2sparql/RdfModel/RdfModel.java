@@ -587,6 +587,7 @@ public class RdfModel {
 		private String rangeName;
 		private RdfNode associationNode;
 		private Boolean isInverse = false;
+		private Boolean hasInverse = false;
 		private RdfNode inversePropertyOf;
 		private RdfAssociation inverseAssociation;
 		private String description;
@@ -732,7 +733,9 @@ public class RdfModel {
 		public Boolean IsInverse() {
 			return isInverse;
 		}
-
+		public Boolean hasInverse() {
+			return hasInverse;
+		}
 		public void setIsInverse(Boolean isInverse) {
 			this.isInverse = isInverse;
 		}
@@ -741,6 +744,10 @@ public class RdfModel {
 		}
 		public void setInverseAssociation(RdfAssociation inverseAssociation) {
 			this.inverseAssociation = inverseAssociation;
+		}
+		public void setHasInverse(boolean hasInverse) {
+			this.hasInverse = hasInverse;
+			
 		}
 	}
 
@@ -921,7 +928,7 @@ public class RdfModel {
 
 			association.setVarName(varName.getLiteralValue().getLabel());
 
-			if(association.IsInverse()){  // is it the inverse of something?
+			if(association.hasInverse()){  // is it the inverse of something?
 				RdfAssociation inverseAssociation = association.getInverseAssociation();
 				inverseAssociation.rangeCardinality = RdfConstants.Cardinality.ONE;
 				inverseAssociation.domainCardinality = RdfConstants.Cardinality.MANY;				
@@ -968,11 +975,6 @@ public class RdfModel {
 				property.propertyLabel = propertyLabelNode.getLiteralObject().toString();
 			}
 			property.propertyTypeName = propertyTypeName;
-			//property.propertyType = SIMPLE_TYPE_MAPPING.get(propertyTypeName);
-			// Workaround for non XMLSchema or XMLSchema2 property types.
-			// TODO iterate through datatype structure to determine base type
-//			if (property.propertyType == null)
-//				property.propertyType = EdmSimpleTypeKind.String;
 			property.propertyNode = propertyNode;
 			property.cardinality = cardinality;
 
@@ -1013,11 +1015,6 @@ public class RdfModel {
 					propertyNameEquals(propertyURI.localName));
 			String propertyTypeName = rangeNode.getIRI().toString();
 			property.propertyTypeName = propertyTypeName;
-			//property.propertyType = SIMPLE_TYPE_MAPPING.get(propertyTypeName);
-			// Workaround for non XMLSchema or XMLSchema2 property types.
-			// TODO iterate through datatype structure to determine base type
-//			if (property.propertyType == null)
-//				property.propertyType = EdmSimpleTypeKind.String;
 		}
 	}
 
@@ -1094,7 +1091,7 @@ public class RdfModel {
 				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality); 
 		inverseAssociation.setIsInverse(true);
 		inverseAssociation.inversePropertyOf = propertyNode;
-		association.setIsInverse(true);
+		association.setHasInverse(true);
 		association.setInverseAssociation(inverseAssociation);
 		return inverseAssociation;
 	}

@@ -630,6 +630,9 @@ public class SparqlQueryBuilder {
 							"FunctionImport cannot be called without values for non-nullable parameters");
 			}
 		}
+		if ((uriType != UriType.URI15) && (uriType != UriType.URI6B)) {
+			queryText += limitClause();
+		}
 		return queryText;
 	}
 
