@@ -355,17 +355,29 @@ public class SparqlUpdateInsertBuilder {
 			UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
 
 			String expandedKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(entityKey) + ">";
-			String expandedTargetKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(targetEntityKey) + ">";
-			
 			RdfAssociation navigationProperty = entityType
 					.findNavigationProperty(navigationSegment.getNavigationProperty().getName());
+			
+			String expandedTargetKeyUri="";
+			if(targetEntityKey==null){
+				expandedTargetKeyUri ="?targetEntityKey";
+			}else{
+				expandedTargetKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(targetEntityKey) + ">";			
+			}
+
 			String navigationPropertyUri=null;
 			if(navigationProperty.IsInverse()){
 				navigationPropertyUri= "<" + navigationProperty.getInversePropertyOf().getIRI()+ ">";
 				links.append("{").append(expandedTargetKeyUri).append(navigationPropertyUri).append(expandedKeyUri).append(".}");
+				if(targetEntityKey==null){
+					links.append("where{").append(expandedTargetKeyUri).append(navigationPropertyUri).append(expandedKeyUri).append(".}");
+				}
 			}else{
 				navigationPropertyUri= "<" + navigationProperty.getAssociationIRI() + ">";
 				links.append("{").append(expandedKeyUri).append(navigationPropertyUri).append(expandedTargetKeyUri).append(".}");
+				if(targetEntityKey==null){
+					links.append("where{").append(expandedKeyUri).append(navigationPropertyUri).append(expandedTargetKeyUri).append(".}");
+				}
 			} 
 			return new SparqlStatement(links.toString());		
 	}

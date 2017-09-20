@@ -1039,8 +1039,13 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		EdmEntitySet targetEntitySet = uriInfo.getTargetEntitySet();
 		KeyPredicate keyPredicate = uriInfo.getKeyPredicates().get(0);
 		String entityKey = keyPredicate.getLiteral();
-		KeyPredicate targetKeyPredicate = uriInfo.getTargetKeyPredicates().get(0);
-		String targetEntityKey = targetKeyPredicate.getLiteral();
+		KeyPredicate targetKeyPredicate=null;
+		String targetEntityKey=null;	
+		if(uriInfo.getTargetKeyPredicates().size()!=0){
+			targetKeyPredicate = uriInfo.getTargetKeyPredicates().get(0);
+			targetEntityKey = targetKeyPredicate.getLiteral();			
+		}
+
 		entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
 				.getNamespace(), entitySet.getEntityType().getName()));
 		try {
@@ -1086,8 +1091,8 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 	    return BatchResponsePart.responses(responses).changeSet(true).build();
 	}
 	
-	//TODO +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-	//TODO The following are nice to have services
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	//The following are nice to have services
 
 	@Override
 	public void setContext(ODataContext context) {
@@ -1100,9 +1105,6 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		// TODO Auto-generated method stub
 		return super.getContext();
 	}
-
-
-
 	@Override
 	public ODataResponse readEntityComplexProperty(GetComplexPropertyUriInfo uriInfo, String contentType)
 			throws ODataException {

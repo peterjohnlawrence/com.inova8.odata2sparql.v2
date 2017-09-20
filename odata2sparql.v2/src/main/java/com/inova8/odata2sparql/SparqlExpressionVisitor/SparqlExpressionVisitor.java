@@ -7,13 +7,10 @@
  */
 package com.inova8.odata2sparql.SparqlExpressionVisitor;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmException;
