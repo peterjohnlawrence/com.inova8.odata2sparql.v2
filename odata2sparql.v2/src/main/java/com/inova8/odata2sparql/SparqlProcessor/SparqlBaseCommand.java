@@ -69,7 +69,7 @@ class SparqlBaseCommand {
 									rdfSubjectEntity.getEntityType()
 											.findNavigationProperty(propertyNode.getLocalName()).getRelatedKey(), RdfEntity
 											//.URLEncodeEntityKey(objectNode.toQName(sparqlEdmProvider.getRdfModel().getRdfPrefixes())));
-											.URLEncodeEntityKey(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(objectNode)));						}
+											.URLEncodeEntityKey(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(objectNode,RdfConstants.QNAME_SEPARATOR)));						}
 					}
 				} else if (objectNode.isBlank()) {
 					//Must be a navigation property pointing to an expanded entity, but they should really be eliminated from the query in the first place
@@ -175,11 +175,11 @@ class SparqlBaseCommand {
 			RdfNode subjectNode, RdfEntityType rdfEntityType) {
 		RdfEntity rdfEntity;
 		//rdfEntity = rdfEntitiesMap.get(subjectNode.toQName(sparqlEdmProvider.getRdfModel().getRdfPrefixes()));
-		rdfEntity = rdfEntitiesMap.get(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(subjectNode));
+		rdfEntity = rdfEntitiesMap.get(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(subjectNode,RdfConstants.QNAME_SEPARATOR));
 		if (rdfEntity == null) {
 			rdfEntity = new RdfEntity(subjectNode,sparqlEdmProvider.getRdfModel().getRdfPrefixes());
 			//rdfEntitiesMap.put(subjectNode.toQName(sparqlEdmProvider.getRdfModel().getRdfPrefixes()), rdfEntity);
-			rdfEntitiesMap.put(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(subjectNode), rdfEntity);
+			rdfEntitiesMap.put(sparqlEdmProvider.getRdfModel().getRdfPrefixes().toQName(subjectNode,RdfConstants.QNAME_SEPARATOR), rdfEntity);
 			// Add PK of data if this is not an operation, which has a specific key
 			//TODO encode to avoid '/'
 			//if (rdfEntityType != null) {

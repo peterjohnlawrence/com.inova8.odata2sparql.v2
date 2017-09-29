@@ -29,7 +29,29 @@ public class RdfConstants {
 		// 0..1, 1..1, 0..*, 1..*
 		ZERO_TO_ONE, ONE, MANY, MULTIPLE
 	}
+	/*	
+ 	The following from http://www.ietf.org/ defining what is allowed in a URI
+    Needed to match ':' of qname with embeded key in odata.
+     
+     2.3. Unreserved Characters
 
+	   Data characters that are allowed in a URI but do not have a reserved
+	   purpose are called unreserved.  These include upper and lower case
+	   letters, decimal digits, and a limited set of punctuation marks and
+	   symbols.
+
+	      unreserved  = alphanum | mark
+
+	      mark        = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+
+	   Unreserved characters can be escaped without changing the semantics
+	   of the URI, but this should not be done unless the URI is being used
+	   in a context that does not allow the unescaped character to appear.
+	*/
+	
+	public static final String QNAME_SEPARATOR = "~";// ":";
+	public static final String QNAME_SEPARATOR_ENCODED = "~";// "%3A";
+	
 	public static final String RESET = "$reset";
 	public static final String RELOAD = "$reload";
 	public static final String WILDCARD = "*";

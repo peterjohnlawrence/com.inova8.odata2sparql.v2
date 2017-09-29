@@ -20,7 +20,7 @@ public class RdfEntity extends HashMap<String, Object>{
 	public RdfEntity(RdfNode subjectNode, RdfPrefixes rdfPrefixes) {
 		super();
 		this.rdfPrefixes=rdfPrefixes;
-		this.subject =  this.rdfPrefixes.toQName(subjectNode); //subjectNode.toQName(this.rdfPrefixes);
+		this.subject =  this.rdfPrefixes.toQName(subjectNode,RdfConstants.QNAME_SEPARATOR); //subjectNode.toQName(this.rdfPrefixes);
 		this.put(RdfConstants.SUBJECT, RdfEntity.URLEncodeEntityKey(this.subject));	
 	}
     
