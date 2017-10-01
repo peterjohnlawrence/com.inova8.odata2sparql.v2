@@ -174,7 +174,7 @@ public class SparqlUpdateInsertBuilder {
 			return "<" + entityUrl + ">";
 		case "Edm.DateTimeOffset":
 		case "java.lang.String":
-			return "\"" + object.toString() + "\"";
+			return "'''" + object.toString() + "'''";
 		case "Edm.Guid":
 			return "guid\"" + object.toString() + "\"";
 		case "Edm.Binary":
@@ -216,7 +216,6 @@ public class SparqlUpdateInsertBuilder {
 						entityKey = prop.getValue().toString();
 					} else {
 						properties.append("<" + property.propertyNode.getIRI() + "> ");
-						//properties.append("\"" + prop.getValue().toString() + "\"");
 						properties.append(castObjectToXsd(prop.getValue()));
 					}
 				} else {
