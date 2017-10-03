@@ -81,7 +81,6 @@ import org.apache.olingo.odata2.api.uri.info.PutMergePatchUriInfo;
 import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfConstructQuery;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfLiteral;
-import com.inova8.odata2sparql.RdfConnector.openrdf.RdfNodeFactory;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfQuerySolution;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfResultSet;
 import com.inova8.odata2sparql.RdfConnector.openrdf.RdfSelectQuery;
@@ -500,7 +499,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		entitySet = uriInfo.getStartEntitySet();
 		entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet.getEntityType()
 				.getNamespace(), entitySet.getEntityType().getName()));
-		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
+		//String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
 		try {
 			sparqlStatement = prepareUpdateQuery(entitySet, entityType, uriInfo.getKeyPredicates(), entry);
 		} catch (Exception e) {
@@ -739,7 +738,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
 		RdfEntityType entityType = rdfEdmProvider.getMappedEntityType(new FullQualifiedName(entitySet
 				.getEntityType().getNamespace(), entitySet.getEntityType().getName()));
-		String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
+		//String entityKey = uriInfo.getKeyPredicates().get(0).getLiteral();
 		String property = uriInfo.getPropertyPath().get(0).getName();
 		log.info("Content: " + entry.toString()); 
 		try {
@@ -879,7 +878,7 @@ public class SparqlODataSingleProcessor extends ODataSingleProcessor {
 			throw new ODataNotImplementedException();
 		}
 
-		EntityProviderReadProperties properties = EntityProviderReadProperties.init().mergeSemantic(false).build();
+		//EntityProviderReadProperties properties = EntityProviderReadProperties.init().mergeSemantic(false).build();
 
 		List<String> entry;
 		try {

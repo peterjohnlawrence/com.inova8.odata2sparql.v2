@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmLiteral;
@@ -45,15 +44,13 @@ public class SparqlExpressionVisitor implements ExpressionVisitor {
 	private final String SUBJECT_POSTFIX = "_s";
 	private String sPath = "";
 	private EdmNavigationProperty currentNavigationProperty;
-	//Container of properties expressed in filter that need to be explicit selected in SPARQL where clause
-	//List<RdfProperty> properties = new ArrayList<RdfProperty>();
+
 	private final HashSet<RdfProperty> properties = new HashSet<RdfProperty>();
 	private final HashMap<String, HashSet<RdfProperty>> navigationProperties = new HashMap<String, HashSet<RdfProperty>>();
 
 	private final HashMap<String, NavPropertyPropertyFilter> navPropertyPropertyFilters = new HashMap<String, NavPropertyPropertyFilter>();
 
-	private final UrlValidator urlValidator = new UrlValidator();
-	//private final RdfEdmProvider rdfEdmProvider;
+
 	private final RdfModel rdfModel;
 	private final RdfModelToMetadata rdfModelToMetadata;
 	private final RdfEntityType entityType;

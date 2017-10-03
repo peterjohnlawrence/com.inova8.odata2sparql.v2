@@ -2,9 +2,7 @@ package com.inova8.odata2sparql.SparqlBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -20,7 +18,6 @@ import org.apache.olingo.odata2.api.exception.ODataApplicationException;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
 import org.apache.olingo.odata2.api.uri.NavigationSegment;
-import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.expression.ExceptionVisitExpression;
 import org.apache.olingo.odata2.core.edm.provider.EdmImplProv;
 import org.apache.olingo.odata2.core.uri.UriParserImpl;
@@ -35,7 +32,6 @@ import com.inova8.odata2sparql.RdfModel.RdfModel.RdfProperty;
 import com.inova8.odata2sparql.SparqlStatement.SparqlStatement;
 
 public class SparqlUpdateInsertBuilder {
-	@SuppressWarnings("unused")
 	private final Log log = LogFactory.getLog(SparqlStatement.class);
 	private final RdfModel rdfModel;
 	private final RdfEdmProvider rdfEdmProvider;
@@ -169,8 +165,8 @@ public class SparqlUpdateInsertBuilder {
 			return "\"" + ((java.util.GregorianCalendar) object).toZonedDateTime().toLocalDateTime().toString()
 					+ "\"^^xsd:dateTime";
 		case "org.apache.olingo.odata2.core.ep.entry.ODataEntryImpl":
-			String odataUrl= ((org.apache.olingo.odata2.core.ep.entry.ODataEntryImpl)object).getMetadata().getUri();
-			String entityUrl= RdfEntity.URLDecodeEntityKey(getExpandedMetadaEntitykey( odataUrl));
+			String odataUrl = ((org.apache.olingo.odata2.core.ep.entry.ODataEntryImpl) object).getMetadata().getUri();
+			String entityUrl = RdfEntity.URLDecodeEntityKey(getExpandedMetadaEntitykey(odataUrl));
 			return "<" + entityUrl + ">";
 		case "Edm.DateTimeOffset":
 		case "java.lang.String":
@@ -183,10 +179,11 @@ public class SparqlUpdateInsertBuilder {
 			return "\"" + object.toString() + "\"";
 		}
 	}
+
 	private String getExpandedMetadaEntitykey(String requestEntityReference) throws OData2SparqlException {
 		String[] parts = requestEntityReference.split("/");
 		String linkEntityUri = parts[parts.length - 1];
-		linkEntityUri= linkEntityUri.replace("&#x27;", "'").replace("%3A", ":");
+		linkEntityUri = linkEntityUri.replace("&#x27;", "'").replace("%3A", ":");
 		String linkEntityKey = linkEntityUri.substring(linkEntityUri.indexOf("('") + 2, linkEntityUri.length() - 2);
 		//linkEntityKey.replace("&#x27;", "'");
 		String expandedLinkEntityKey = rdfModel.getRdfPrefixes().expandPrefix(linkEntityKey);
@@ -229,8 +226,10 @@ public class SparqlUpdateInsertBuilder {
 		if (entityKey == null) {
 			//This means that the keys are not in the property list so it must be part of the entity identity
 			//Assume we are dealing with only pure RDF with a single key
-			if(entityKeys!=null)			entityKey = entityKeys.get(0).getLiteral();
-			else throw new ODataApplicationException("Key not found ", null);			
+			if (entityKeys != null)
+				entityKey = entityKeys.get(0).getLiteral();
+			else
+				throw new ODataApplicationException("Key not found ", null);
 		}
 
 		String expandedKey = rdfModel.getRdfPrefixes().expandPrefix(entityKey);
@@ -248,7 +247,6 @@ public class SparqlUpdateInsertBuilder {
 			RdfEntityType entityType, String entityKey, NavigationSegment navigationSegment, List<String> entry)
 			throws ODataException, URISyntaxException {
 		StringBuilder links = new StringBuilder("INSERT { ");
-		UrlValidator urlValidator = new UrlValidator();
 		UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
 
 		RdfAssociation navigationProperty = entityType
@@ -352,7 +350,6 @@ public class SparqlUpdateInsertBuilder {
 			List<String> entry) throws Exception {
 
 		StringBuilder links = new StringBuilder("DELETE ");
-		UrlValidator urlValidator = new UrlValidator();
 		UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
 
 		String expandedKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(entityKey) + ">";
@@ -397,9 +394,6 @@ public class SparqlUpdateInsertBuilder {
 			throws Exception {
 
 		StringBuilder links = new StringBuilder("DELETE ");
-		UrlValidator urlValidator = new UrlValidator();
-		UriParserImpl uriParser = new UriParserImpl(new EdmImplProv(rdfEdmProvider));
-
 		String expandedKeyUri = "<" + rdfModel.getRdfPrefixes().expandPrefix(entityKey) + ">";
 		RdfAssociation navigationProperty = entityType
 				.findNavigationProperty(navigationSegment.getNavigationProperty().getName());

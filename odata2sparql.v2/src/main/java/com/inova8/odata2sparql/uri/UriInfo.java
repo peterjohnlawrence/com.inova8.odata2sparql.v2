@@ -1,8 +1,5 @@
 package com.inova8.odata2sparql.uri;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 //import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 //import org.apache.olingo.odata2.api.edm.EdmException;
 //import org.apache.olingo.odata2.api.exception.ODataApplicationException;

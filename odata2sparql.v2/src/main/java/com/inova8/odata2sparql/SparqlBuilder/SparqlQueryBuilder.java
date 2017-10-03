@@ -526,7 +526,6 @@ public class SparqlQueryBuilder {
 		StringBuilder targetEntityIdentifier = new StringBuilder();
 		if (DEBUG)
 			targetEntityIdentifier.append(indent).append("#targetEntityIdentifier\n");
-		String type = rdfEntityType.getIRI();
 		targetEntityIdentifier.append(indent).append("?" + key + "_s <" + RdfConstants.TARGETENTITY +"> true .\n");
 		return targetEntityIdentifier;
 	}
