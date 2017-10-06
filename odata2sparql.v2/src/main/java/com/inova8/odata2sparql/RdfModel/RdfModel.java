@@ -28,18 +28,22 @@ public class RdfModel {
 	static String KEY(RdfEntityType clazz) {
 		return RdfConstants.SUBJECT;
 	};
+
 	public final List<RdfModel.RdfSchema> graphs = new ArrayList<RdfModel.RdfSchema>();
 
 	private final RdfPrefixes rdfPrefixes = new RdfPrefixes();
 	private final RdfRepository rdfRepository;
+
 	public RdfModel(RdfRepository rdfRepository) {
 
 		rdfPrefixes.setStandardNsPrefixes();
 		this.rdfRepository = rdfRepository;
 	}
+
 	public RdfRepository getRdfRepository() {
 		return rdfRepository;
 	}
+
 	public RdfPrefixes getRdfPrefixes() {
 		return rdfPrefixes;
 	}
@@ -58,6 +62,16 @@ public class RdfModel {
 
 		void log() {
 			log.info("Deduced prefixes: " + prefixToURI.toString());
+		}
+
+		public StringBuilder sparqlPrefixes() {
+			StringBuilder sparqlPrefixes = new StringBuilder();
+			for (Map.Entry<String, String> prefixEntry : prefixToURI.entrySet()) {
+				String prefix = prefixEntry.getKey();
+				String url = prefixEntry.getValue();
+				sparqlPrefixes.append("PREFIX ").append(prefix).append(": <").append(url).append("> ");
+			}
+			return sparqlPrefixes;
 		}
 
 		private void setNsPrefix(String graphPrefix, String graphName) throws OData2SparqlException {
@@ -95,9 +109,10 @@ public class RdfModel {
 				return null;
 			else {
 				String uri = get(decodedEntityKey.substring(0, colon));
-				return uri == null ? null : "<"+uri + decodedEntityKey.substring(colon + 1)+">";
+				return uri == null ? null : "<" + uri + decodedEntityKey.substring(colon + 1) + ">";
 			}
 		}
+
 		public String convertToUriString(String decodedEntityKey) {
 
 			int colon = decodedEntityKey.indexOf(RdfConstants.QNAME_SEPARATOR);
@@ -108,6 +123,7 @@ public class RdfModel {
 				return uri == null ? null : uri + decodedEntityKey.substring(colon + 1);
 			}
 		}
+
 		private void checkLegal(String prefix) throws OData2SparqlException {
 			if (prefix.length() > 0 && !XMLChar.isValidNCName(prefix))
 				throw new OData2SparqlException("RdfPrefixes checkLegal failure");
@@ -180,13 +196,14 @@ public class RdfModel {
 			}
 		}
 
-		public String toQName(RdfNode node,String qNameSeparator) {
+		public String toQName(RdfNode node, String qNameSeparator) {
 			String qname = null;
 			if (node.isBlank()) {
 				return ((BNode) node.getNode()).toString();
 			} else {
 				try {
-					qname = rdfPrefixes.getOrCreatePrefix(null, node.getNamespace()) + qNameSeparator + node.getLocalName();
+					qname = rdfPrefixes.getOrCreatePrefix(null, node.getNamespace()) + qNameSeparator
+							+ node.getLocalName();
 				} catch (OData2SparqlException e) {
 					log.error("RdfNode toQName failure. Node:" + node.toString() + " with exception " + e.toString());
 				}
@@ -194,10 +211,11 @@ public class RdfModel {
 			return qname;
 		}
 
-		public String entitykeyToQName(String decodedEntityKey){
+		public String entitykeyToQName(String decodedEntityKey) {
 			String urlEntityKey = rdfPrefixes.convertToUriString(decodedEntityKey);
-			return this.toQName(RdfNodeFactory.createURI(urlEntityKey),RdfConstants.QNAME_SEPARATOR);
+			return this.toQName(RdfNodeFactory.createURI(urlEntityKey), RdfConstants.QNAME_SEPARATOR);
 		}
+
 		@Deprecated
 		public String qName(String uri) {
 			return uri;
@@ -208,15 +226,18 @@ public class RdfModel {
 		private String schemaName;
 		private String schemaPrefix;
 		boolean isDefault = false;
+
 		public RdfSchema() {
 			super();
 			initialiseDatatypes();
 		}
-		private void initialiseDatatypes() {		
-			for (String datatype:  RdfConstants.RDF_DATATYPES){
+
+		private void initialiseDatatypes() {
+			for (String datatype : RdfConstants.RDF_DATATYPES) {
 				datatypes.add(new RdfDatatype(datatype));
 			}
 		}
+
 		public String getSchemaName() {
 			return schemaName;
 		}
@@ -258,65 +279,80 @@ public class RdfModel {
 		public String insertText;
 		public String updateText;
 		public String updatePropertyText;
-		
+
 		public String getDeleteText() {
 			return deleteText;
 		}
+
 		public void setDeleteText(String deleteText) {
 			this.deleteText = deleteText;
 		}
+
 		public String getInsertText() {
 			return insertText;
 		}
+
 		public void setInsertText(String insertText) {
 			this.insertText = insertText;
 		}
+
 		public String getUpdateText() {
 			return updateText;
 		}
+
 		public void setUpdateText(String updateText) {
 			this.updateText = updateText;
 		}
+
 		public String getUpdatePropertyText() {
 			return updatePropertyText;
 		}
+
 		public void setUpdatePropertyText(String updatePropertyText) {
 			this.updatePropertyText = updatePropertyText;
 		}
 
-		
 		public String getEntityTypeName() {
 			return entityTypeName;
 		}
+
 		public void setEntityTypeName(String entityTypeName) {
 			this.entityTypeName = entityTypeName;
 		}
+
 		public RdfNode getEntityTypeNode() {
 			return entityTypeNode;
 		}
+
 		public void setEntityTypeNode(RdfNode entityTypeNode) {
 			this.entityTypeNode = entityTypeNode;
 		}
+
 		public RdfEntityType getBaseType() {
 			return baseType;
 		}
-		protected void addSubType(RdfEntityType subType){
+
+		protected void addSubType(RdfEntityType subType) {
 			subTypes.add(subType);
 		}
-		public Set<RdfEntityType> getSubTypes(){
+
+		public Set<RdfEntityType> getSubTypes() {
 			return subTypes;
 		}
-		public Set<RdfEntityType> getAllSubTypes(){
+
+		public Set<RdfEntityType> getAllSubTypes() {
 			Set<RdfEntityType> allSubTypes = new HashSet<RdfEntityType>();
 			allSubTypes.addAll(subTypes);
-			for(RdfEntityType subType: subTypes){
+			for (RdfEntityType subType : subTypes) {
 				allSubTypes.addAll(subType.getAllSubTypes());
 			}
 			return allSubTypes;
 		}
+
 		public void setBaseType(RdfEntityType baseType) {
 			this.baseType = baseType;
-			if(baseType != null) baseType.addSubType(this);
+			if (baseType != null)
+				baseType.addSubType(this);
 		}
 
 		public RdfSchema getSchema() {
@@ -350,7 +386,6 @@ public class RdfModel {
 		public boolean isFunctionImport() {
 			return functionImport;
 		}
-
 
 		public HashMap<String, FunctionImportParameter> getFunctionImportParameters() {
 			return functionImportParameters;
@@ -391,8 +426,6 @@ public class RdfModel {
 			return properties.values();
 		}
 
-
-
 		public RdfAssociation findNavigationProperty(String navigationPropertyName) {
 			return navigationProperties.get(navigationPropertyName);
 		}
@@ -418,17 +451,21 @@ public class RdfModel {
 				return this.schema.schemaPrefix + RdfConstants.CLASS_SEPARATOR + this.entityTypeName;
 			}
 		}
+
 		public Collection<RdfPrimaryKey> getPrimaryKeys() {
 			return getPrimaryKeys(true);
 		}
+
 		public Collection<RdfPrimaryKey> getPrimaryKeys(boolean withBaseType) {
-			Collection<RdfPrimaryKey> primaryKeyValues = new ArrayList<RdfPrimaryKey>();;
+			Collection<RdfPrimaryKey> primaryKeyValues = new ArrayList<RdfPrimaryKey>();
+			;
 			RdfEntityType currentEntityType = this;
-			do{
+			do {
 				primaryKeyValues.addAll(currentEntityType.primaryKeys.values());
-				currentEntityType=currentEntityType.getBaseType();
-				if(withBaseType ) currentEntityType=null;
-			}while(currentEntityType!=null);
+				currentEntityType = currentEntityType.getBaseType();
+				if (withBaseType)
+					currentEntityType = null;
+			} while (currentEntityType != null);
 			return primaryKeyValues;
 		}
 
@@ -436,35 +473,44 @@ public class RdfModel {
 			this.functionImport = true;
 		}
 	}
-	public class FunctionImportParameter{
+
+	public class FunctionImportParameter {
 		private String name;
 		private String type;
 		private boolean nullable;
+
 		private FunctionImportParameter(String name, String type, boolean nullable) {
 			super();
 			this.name = name;
 			this.type = type;
 			this.nullable = nullable;
 		}
+
 		public String getName() {
 			return name;
 		}
+
 		public void setName(String name) {
 			this.name = name;
 		}
+
 		public String getType() {
 			return type;
 		}
+
 		public void setType(String type) {
 			this.type = type;
 		}
+
 		public boolean isNullable() {
 			return nullable;
 		}
+
 		public void setNullable(boolean nullable) {
 			this.nullable = nullable;
 		}
 	}
+
 	public static class RdfPrimaryKey {
 		RdfPrimaryKey(String propertyName, String primaryKeyName) {
 			super();
@@ -595,16 +641,19 @@ public class RdfModel {
 		private RdfEntityType rangeClass;
 		private Cardinality rangeCardinality;// = RdfConstants.Cardinality.ONE; formerly fromCardinality
 		private Cardinality domainCardinality;// = RdfConstants.Cardinality.MANY; formerly toCardinality
-		
+
 		public String getAssociationName() {
 			return associationName;
 		}
+
 		public RdfNode getAssociationNode() {
 			return associationNode;
 		}
+
 		public String getAssociationNodeIRI() {
 			return associationNode.getIRI().toString();
 		}
+
 		public void setAssociationNode(RdfNode associationNode) {
 			this.associationNode = associationNode;
 		}
@@ -648,6 +697,7 @@ public class RdfModel {
 		public RdfNode getInversePropertyOf() {
 			return inversePropertyOf;
 		}
+
 		public String getInversePropertyOfURI() {
 			return inversePropertyOf.getIRI().toString();
 		}
@@ -658,10 +708,10 @@ public class RdfModel {
 			return domainClass;
 		}
 
-
 		public String getDomainNodeURI() {
 			return this.domainNode.getIRI().toString();
 		}
+
 		public void setDomainNode(RdfNode domainNode) {
 			this.domainNode = domainNode;
 		}
@@ -686,10 +736,10 @@ public class RdfModel {
 			return associationNode.getIRI().toString();
 		}
 
-//		public FullQualifiedName getFullQualifiedName() {
-//			return new FullQualifiedName(domainClass.schema.schemaPrefix, this.getEDMAssociationName());//associationName);
-//
-//		}
+		//		public FullQualifiedName getFullQualifiedName() {
+		//			return new FullQualifiedName(domainClass.schema.schemaPrefix, this.getEDMAssociationName());//associationName);
+		//
+		//		}
 
 		public String getEDMAssociationName() {
 			if (this.domainClass.schema.isDefault) {
@@ -733,21 +783,26 @@ public class RdfModel {
 		public Boolean IsInverse() {
 			return isInverse;
 		}
+
 		public Boolean hasInverse() {
 			return hasInverse;
 		}
+
 		public void setIsInverse(Boolean isInverse) {
 			this.isInverse = isInverse;
 		}
+
 		public RdfAssociation getInverseAssociation() {
 			return inverseAssociation;
 		}
+
 		public void setInverseAssociation(RdfAssociation inverseAssociation) {
 			this.inverseAssociation = inverseAssociation;
 		}
+
 		public void setHasInverse(boolean hasInverse) {
 			this.hasInverse = hasInverse;
-			
+
 		}
 	}
 
@@ -762,7 +817,7 @@ public class RdfModel {
 
 		RdfURI(RdfNode node) throws OData2SparqlException {
 			this.node = node;
-			String[] parts = rdfPrefixes.toQName(node,":").split(":"); //node.toQName(rdfPrefixes).split(":");
+			String[] parts = rdfPrefixes.toQName(node, ":").split(":"); //node.toQName(rdfPrefixes).split(":");
 			if (parts[0].equals("http") || parts[0].equals("null")) {
 				localName = node.getLocalName();
 				graphName = node.getNamespace();
@@ -782,6 +837,7 @@ public class RdfModel {
 			}
 			graph = getOrCreateGraph(graphName, graphPrefix);
 		}
+
 	}
 
 	public RdfEntityType getOrCreateEntityType(RdfNode classNode) throws OData2SparqlException {
@@ -818,20 +874,21 @@ public class RdfModel {
 
 	RdfDatatype getOrCreateDatatype(RdfNode datatypeNode) throws OData2SparqlException {
 		RdfURI datatypeURI = new RdfURI(datatypeNode);
-		RdfDatatype datatype = Enumerable.create(datatypeURI.graph.datatypes).firstOrNull(
-				datatypeNameEquals(datatypeURI.localName));
+		RdfDatatype datatype = Enumerable.create(datatypeURI.graph.datatypes)
+				.firstOrNull(datatypeNameEquals(datatypeURI.localName));
 		if (datatype == null) {
 			datatype = new RdfDatatype(rdfToOdata(datatypeURI.localName));
 			//datatype.datatypeName = rdfToOdata(datatypeURI.localName);
 		}
 		return datatype;
 	}
-	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode) throws OData2SparqlException
-	{
-		return getOrCreateOperationEntityType(queryNode, null,null,null,null,null,null);
+
+	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode) throws OData2SparqlException {
+		return getOrCreateOperationEntityType(queryNode, null, null, null, null, null, null);
 	}
-	
-	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode, RdfNode queryLabel, RdfNode queryText,RdfNode deleteText,RdfNode insertText,RdfNode updateText,RdfNode updatePropertyText)
+
+	RdfEntityType getOrCreateOperationEntityType(RdfNode queryNode, RdfNode queryLabel, RdfNode queryText,
+			RdfNode deleteText, RdfNode insertText, RdfNode updateText, RdfNode updatePropertyText)
 			throws OData2SparqlException {
 		RdfEntityType operationEntityType = getOrCreateEntityType(queryNode, queryLabel);
 		if (queryText != null) {
@@ -862,7 +919,8 @@ public class RdfModel {
 			operationEntityType.setFunctionImport(true);
 			String propertyTypeName = rangeNode.getIRI().toString();
 
-			FunctionImportParameter functionImportParameter = new FunctionImportParameter(varName.getLiteralValue().getLabel(), propertyTypeName, false);
+			FunctionImportParameter functionImportParameter = new FunctionImportParameter(
+					varName.getLiteralValue().getLabel(), propertyTypeName, false);
 			operationEntityType.getFunctionImportParameters().put(varName.getLiteralValue().getLabel(),
 					functionImportParameter);
 		} else {
@@ -880,8 +938,8 @@ public class RdfModel {
 
 		RdfEntityType operationEntityType = this.getOrCreateOperationEntityType(queryNode);
 		if (!operationEntityType.isEntity()) {
-			RdfProperty property = Enumerable.create(operationEntityType.getProperties()).firstOrNull(
-					propertyNameEquals(propertyURI.localName));
+			RdfProperty property = Enumerable.create(operationEntityType.getProperties())
+					.firstOrNull(propertyNameEquals(propertyURI.localName));
 			if (property == null) {
 				property = new RdfProperty();
 				property.propertyTypeName = propertyTypeName;
@@ -913,8 +971,8 @@ public class RdfModel {
 			//String associationName = rdfToOdata(operationURI.localName) + RdfConstants.PREDICATE_SEPARATOR	+ rdfToOdata(propertyURI.localName);
 			String associationName = rdfToOdata(propertyURI.localName);
 			//String associationName createAssociationName(null, null, queryNode, propertyURI,	rangeURI);
-			RdfAssociation association = Enumerable.create(propertyURI.graph.associations).firstOrNull(
-					associationNameEquals(associationName));
+			RdfAssociation association = Enumerable.create(propertyURI.graph.associations)
+					.firstOrNull(associationNameEquals(associationName));
 			if (association == null) {
 				association = buildAssociation(associationName, propertyNode, propertyURI, queryNode, operationURI,
 						rangeNode, rangeURI);
@@ -928,24 +986,24 @@ public class RdfModel {
 
 			association.setVarName(varName.getLiteralValue().getLabel());
 
-			if(association.hasInverse()){  // is it the inverse of something?
+			if (association.hasInverse()) { // is it the inverse of something?
 				RdfAssociation inverseAssociation = association.getInverseAssociation();
 				inverseAssociation.rangeCardinality = RdfConstants.Cardinality.ONE;
-				inverseAssociation.domainCardinality = RdfConstants.Cardinality.MANY;				
-				
-			}else{
-				association.setIsInverse(false);	
+				inverseAssociation.domainCardinality = RdfConstants.Cardinality.MANY;
+
+			} else {
+				association.setIsInverse(false);
 			}
-	
+
 			association.rangeCardinality = RdfConstants.Cardinality.MANY;
 			association.domainCardinality = RdfConstants.Cardinality.ONE;
-			
+
 			//Since this is not a primary entity we need to add the keys of the navigation properties are properties, as well as adding them as primarykeys.			
 			RdfProperty property = getOrCreateOperationProperty(queryNode, propertyNode, propertyLabelNode, rangeNode,
 					varName);
 			property.isKey = true;
-			operationEntityType.primaryKeys.put(property.propertyName, new RdfPrimaryKey(property.propertyName,
-					property.propertyName));
+			operationEntityType.primaryKeys.put(property.propertyName,
+					new RdfPrimaryKey(property.propertyName, property.propertyName));
 			association.setRelatedKey(property.propertyName);
 			return association;
 		} else
@@ -961,8 +1019,8 @@ public class RdfModel {
 
 		RdfEntityType clazz = this.getOrCreateEntityType(domainNode);
 
-		RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(
-				propertyNameEquals(propertyURI.localName));
+		RdfProperty property = Enumerable.create(clazz.getProperties())
+				.firstOrNull(propertyNameEquals(propertyURI.localName));
 		if (property == null) {
 			property = new RdfProperty();
 			if (equivalentPropertyNode != null) {
@@ -990,8 +1048,8 @@ public class RdfModel {
 
 		RdfEntityType clazz = this.getOrCreateEntityType(domainNode);
 
-		RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(
-				propertyNameEquals(propertyURI.localName));
+		RdfProperty property = Enumerable.create(clazz.getProperties())
+				.firstOrNull(propertyNameEquals(propertyURI.localName));
 		if (property == null) {
 			property = new RdfProperty();
 			property.propertyName = rdfToOdata(propertyURI.localName);
@@ -1011,8 +1069,8 @@ public class RdfModel {
 			throws OData2SparqlException {
 		RdfURI propertyURI = new RdfURI(propertyNode);
 		for (RdfEntityType clazz : classes) {
-			RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(
-					propertyNameEquals(propertyURI.localName));
+			RdfProperty property = Enumerable.create(clazz.getProperties())
+					.firstOrNull(propertyNameEquals(propertyURI.localName));
 			String propertyTypeName = rangeNode.getIRI().toString();
 			property.propertyTypeName = propertyTypeName;
 		}
@@ -1022,8 +1080,8 @@ public class RdfModel {
 			throws OData2SparqlException {
 		RdfURI propertyURI = new RdfURI(propertyNode);
 		for (RdfEntityType clazz : classes) {
-			RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(
-					propertyNameEquals(propertyURI.localName));
+			RdfProperty property = Enumerable.create(clazz.getProperties())
+					.firstOrNull(propertyNameEquals(propertyURI.localName));
 			property.cardinality = cardinality;
 		}
 	}
@@ -1041,11 +1099,11 @@ public class RdfModel {
 		// TODO Incorrectly assigning to property graph instead of domain graph
 		//		RdfAssociation association = Enumerable.create(propertyURI.graph.associations).firstOrNull(
 		//				associationNameEquals(associationName));
-		RdfAssociation association = Enumerable.create(domainURI.graph.associations).firstOrNull(
-				associationNameEquals(associationName));
+		RdfAssociation association = Enumerable.create(domainURI.graph.associations)
+				.firstOrNull(associationNameEquals(associationName));
 		if (association == null) {
-			association = buildAssociation(associationName, propertyNode, propertyURI, domainNode, domainURI,
-					rangeNode, rangeURI);
+			association = buildAssociation(associationName, propertyNode, propertyURI, domainNode, domainURI, rangeNode,
+					rangeURI);
 		}
 		if (propertyLabelNode == null) {
 			if (association.associationLabel == null || association.associationLabel == "") {
@@ -1073,7 +1131,8 @@ public class RdfModel {
 				return rdfToOdata(domainURI.localName) + RdfConstants.PREDICATE_SEPARATOR
 						+ rdfToOdata(propertyURI.localName);
 			}
-		} else if (!(multipleRangeNode.getLiteralObject().equals(1) || multipleRangeNode.getLiteralObject().equals("1"))) {
+		} else if (!(multipleRangeNode.getLiteralObject().equals(1)
+				|| multipleRangeNode.getLiteralObject().equals("1"))) {
 			return rdfToOdata(propertyURI.localName) + RdfConstants.PREDICATE_SEPARATOR
 					+ rdfToOdata(rangeURI.localName);
 		}
@@ -1088,7 +1147,7 @@ public class RdfModel {
 		RdfAssociation association = getOrCreateAssociation(propertyNode, null, domainNode, rangeNode,
 				multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality);
 		RdfAssociation inverseAssociation = getOrCreateAssociation(inversePropertyNode, inversePropertyLabelNode,
-				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality); 
+				domainNode, rangeNode, multipleDomainNode, multipleRangeNode, domainCardinality, rangeCardinality);
 		inverseAssociation.setIsInverse(true);
 		inverseAssociation.inversePropertyOf = propertyNode;
 		association.setHasInverse(true);
@@ -1155,21 +1214,21 @@ public class RdfModel {
 		return rdfPrefixes.getOrCreatePrefix(prefix, uri);
 	}
 
-//	@Deprecated
-//	public RdfProperty getOrCreateKeyProperty(RdfEntityType clazz) {
-//
-//		RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(propertyNameEquals(KEY(clazz)));
-//		if (property == null) {
-//			property = new RdfProperty();
-//			property.propertyName = KEY(clazz);
-//			property.propertyTypeName = "http://www.w3.org/2001/XMLSchema#string";
-//			property.propertyType = SIMPLE_TYPE_MAPPING
-//					.get("http://www.w3.org/2001/XMLSchema#string");
-//		}
-//		property.isKey = true;
-//		clazz.properties.put(property.propertyName, property);
-//		return property;
-//	}
+	//	@Deprecated
+	//	public RdfProperty getOrCreateKeyProperty(RdfEntityType clazz) {
+	//
+	//		RdfProperty property = Enumerable.create(clazz.getProperties()).firstOrNull(propertyNameEquals(KEY(clazz)));
+	//		if (property == null) {
+	//			property = new RdfProperty();
+	//			property.propertyName = KEY(clazz);
+	//			property.propertyTypeName = "http://www.w3.org/2001/XMLSchema#string";
+	//			property.propertyType = SIMPLE_TYPE_MAPPING
+	//					.get("http://www.w3.org/2001/XMLSchema#string");
+	//		}
+	//		property.isKey = true;
+	//		clazz.properties.put(property.propertyName, property);
+	//		return property;
+	//	}
 
 	public static String rdfToOdata(String rdfName) {
 		return rdfName.replace("-", "_").replace("/", "_");

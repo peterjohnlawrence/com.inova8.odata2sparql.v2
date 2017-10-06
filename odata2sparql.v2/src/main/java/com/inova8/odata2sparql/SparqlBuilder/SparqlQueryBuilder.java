@@ -466,6 +466,7 @@ public class SparqlQueryBuilder {
 
 
 		StringBuilder prepareConstruct = new StringBuilder("");
+		prepareConstruct.append(this.rdfModel.getRdfPrefixes().sparqlPrefixes());
 		prepareConstruct.append(construct());
 		prepareConstruct.append("WHERE {\n");
 		prepareConstruct.append(where());
@@ -479,6 +480,7 @@ public class SparqlQueryBuilder {
 			EdmException {
 
 		StringBuilder prepareCountEntitySet = new StringBuilder("");
+		prepareCountEntitySet.append(this.rdfModel.getRdfPrefixes().sparqlPrefixes());
 		prepareCountEntitySet.append("\t").append("SELECT ");
 		prepareCountEntitySet.append("(COUNT(DISTINCT ?" + edmTargetEntitySet.getEntityType().getName() + "_s")
 				.append(expandSelectTreeNodeVariables(rdfTargetEntityType.entityTypeName, this.expandSelectTreeNode))
@@ -491,6 +493,7 @@ public class SparqlQueryBuilder {
 			EdmException {
 
 		StringBuilder prepareCountEntitySet = new StringBuilder("");
+		prepareCountEntitySet.append(this.rdfModel.getRdfPrefixes().sparqlPrefixes());
 		prepareCountEntitySet.append("\t").append("SELECT ");
 		prepareCountEntitySet.append("(BOUND(?" + edmTargetEntitySet.getEntityType().getName() + "_s")
 				.append(expandSelectTreeNodeVariables(rdfTargetEntityType.entityTypeName, this.expandSelectTreeNode))
