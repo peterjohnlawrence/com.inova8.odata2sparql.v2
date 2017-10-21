@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.olingo.odata2.api.exception.ODataApplicationException;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.SimpleValueFactory;
@@ -250,15 +252,26 @@ public class RdfConstants {
 		//Initialize the file dependent constants
 
 		try {
-			String workingDirectory = System.getenv("AppData");
-			if (workingDirectory == null) {
-				workingDirectory = System.getProperty("user.home");
-				//if we are on a Mac, we are not done, we look for "Application Support"
-				workingDirectory = Paths.get(System.getProperty("user.home"),"Library", "Application Support", "inova8", "odata2sparql").toString();
-				//workingDirectory += "/Library/Application Support/inova8/odata2sparql/";
+			String workingDirectory = null;
+			if(SystemUtils.IS_OS_WINDOWS){
+				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();
+			}else if(SystemUtils.IS_OS_LINUX){
+				workingDirectory = Paths.get("etc", "inova8", "odata2sparql").toString();
 			}else{
-				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();// workingDirectory + "\\inova8\\odata2sparql\\";
-			}	
+				log.error("Unsupported OS: " + SystemUtils.OS_NAME);
+				throw new RuntimeException("Unsupported OS: " + SystemUtils.OS_NAME,null);
+			}
+			
+			
+//			String workingDirectory = System.getenv("AppData");
+//			if (workingDirectory == null) {
+//				workingDirectory = System.getProperty("user.home");
+//				//if we are on a Mac, we are not done, we look for "Application Support"
+//				workingDirectory = Paths.get(System.getProperty("user.home"),"Library", "Application Support", "inova8", "odata2sparql").toString();
+//				//workingDirectory += "/Library/Application Support/inova8/odata2sparql/";
+//			}else{
+//				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();
+//			}	
 			repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
 
 			//	repositoryManagerDirPath = repositoryManagerDirPath + File.separator + "../../../../inova8/odata2sparql" + File.separator;		
@@ -288,8 +301,9 @@ public class RdfConstants {
 				log.info("Support ontologies location:" + repositoryManagerDirPath + "repositories/");
 			} catch (UnsupportedEncodingException e1) {
 				log.error("Cannot decode file directory to be used for repository: " + e1.getMessage());
+				throw new RuntimeException("Cannot decode file directory to be used for repository: ", e);
 			}
-		}
+		} 
 
 		//Initialize the RDF datatypes
 		RDF_DATATYPES.add((RdfConstants.RDF_PLAIN_LITERAL));
