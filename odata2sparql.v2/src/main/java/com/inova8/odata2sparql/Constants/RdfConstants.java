@@ -256,7 +256,7 @@ public class RdfConstants {
 			if(SystemUtils.IS_OS_WINDOWS){
 				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();
 			}else if(SystemUtils.IS_OS_LINUX){
-				workingDirectory = Paths.get("etc", "inova8", "odata2sparql").toString();
+				workingDirectory = Paths.get("/etc", "inova8", "odata2sparql").toString();
 			}else{
 				log.error("Unsupported OS: " + SystemUtils.OS_NAME);
 				throw new RuntimeException("Unsupported OS: " + SystemUtils.OS_NAME,null);
