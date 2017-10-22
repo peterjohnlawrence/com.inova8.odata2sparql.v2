@@ -20,21 +20,20 @@ public class SparqlODataSingleProcessors {
 		super();
 	}
 
-	public SparqlODataSingleProcessor getSparqlODataSingleProcessor(String odataVersion, String rdfRepositoryID)
+	public SparqlODataSingleProcessor getSparqlODataSingleProcessor( String rdfRepositoryID)
 			throws OData2SparqlException {
-		SparqlODataSingleProcessor sparqlODataSingleProcessor = sparqlODataSingleProcessors.get(odataVersion
-				+ rdfRepositoryID);
+		SparqlODataSingleProcessor sparqlODataSingleProcessor = sparqlODataSingleProcessors.get(rdfRepositoryID);
 		if (sparqlODataSingleProcessor == null) {
 			RdfEdmProvider rdfEdmProvider;
 			try {
-				rdfEdmProvider = rdfEdmProviders.getRdfEdmProvider(odataVersion, rdfRepositoryID);
+				rdfEdmProvider = rdfEdmProviders.getRdfEdmProvider( rdfRepositoryID);
 			} catch (OData2SparqlException e) {
-				log.error("Error getting rdfEdmProvider version: " + odataVersion +" for rdfRepositoryID:"+rdfRepositoryID);
-				throw new OData2SparqlException("Error getting rdfEdmProvider version: " + odataVersion +" for rdfRepositoryID:"+rdfRepositoryID);
+				log.error("Error getting rdfEdmProvider  for rdfRepositoryID:"+rdfRepositoryID);
+				throw new OData2SparqlException("Error getting rdfEdmProvider for rdfRepositoryID:"+rdfRepositoryID);
 			}
 
 			sparqlODataSingleProcessor = new SparqlODataSingleProcessor(rdfEdmProvider);
-			sparqlODataSingleProcessors.put(odataVersion + rdfRepositoryID, sparqlODataSingleProcessor);
+			sparqlODataSingleProcessors.put(rdfRepositoryID, sparqlODataSingleProcessor);
 		}
 		return sparqlODataSingleProcessor;
 	}

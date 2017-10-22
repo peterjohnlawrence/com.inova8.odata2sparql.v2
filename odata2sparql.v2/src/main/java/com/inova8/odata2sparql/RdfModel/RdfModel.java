@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
-import org.openrdf.model.BNode;
+import org.eclipse.rdf4j.model.BNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.util.XMLChar;

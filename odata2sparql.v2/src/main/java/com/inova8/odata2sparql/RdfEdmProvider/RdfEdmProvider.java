@@ -31,8 +31,8 @@ import com.inova8.odata2sparql.RdfRepository.RdfRepository;
 public class RdfEdmProvider extends EdmProvider {
 	private final Log log = LogFactory.getLog(RdfEdmProvider.class);
 	private final RdfEdmModelProvider rdfEdmModelProvider;
-	RdfEdmProvider( String odataVersion,RdfRepository rdfRepository) throws OData2SparqlException {
-		this.rdfEdmModelProvider = new RdfEdmModelProvider(rdfRepository, odataVersion);
+	RdfEdmProvider(RdfRepository rdfRepository) throws OData2SparqlException {
+		this.rdfEdmModelProvider = new RdfEdmModelProvider(rdfRepository);
 	}
 
 	public RdfEntityType getMappedEntityType(FullQualifiedName fullQualifiedName) {
@@ -50,13 +50,6 @@ public class RdfEdmProvider extends EdmProvider {
 
 	public RdfAssociation getMappedNavigationProperty(FullQualifiedName edmNavigationProperty) {
 		return this.rdfEdmModelProvider.getEdmMetadata().getMappedNavigationProperty(edmNavigationProperty);
-	}
-
-	/**
-	 * @return the odataVersion
-	 */
-	public String getOdataVersion() {
-		return this.rdfEdmModelProvider.getOdataVersion();
 	}
 
 	/**

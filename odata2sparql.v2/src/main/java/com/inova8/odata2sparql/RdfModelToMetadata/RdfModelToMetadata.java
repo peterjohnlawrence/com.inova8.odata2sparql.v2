@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.inova8.odata2sparql.Constants.ODataServiceVersion;
 import com.inova8.odata2sparql.Constants.RdfConstants;
 
 import org.apache.olingo.odata2.api.edm.EdmAssociation;
@@ -31,8 +30,6 @@ import org.apache.olingo.odata2.api.edm.provider.Key;
 import org.apache.olingo.odata2.api.edm.provider.NavigationProperty;
 import org.apache.olingo.odata2.api.edm.provider.Property;
 import org.apache.olingo.odata2.api.edm.provider.PropertyRef;
-import org.apache.olingo.odata2.api.edm.provider.ReferentialConstraint;
-import org.apache.olingo.odata2.api.edm.provider.ReferentialConstraintRole;
 import org.apache.olingo.odata2.api.edm.provider.ReturnType;
 import org.apache.olingo.odata2.api.edm.provider.Schema;
 import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
@@ -73,7 +70,7 @@ public class RdfModelToMetadata {
 	private final Map<FullQualifiedName, RdfProperty> propertyMapping = new HashMap<FullQualifiedName, RdfProperty>();
 	private final Map<FullQualifiedName, RdfAssociation> navigationPropertyMapping = new HashMap<FullQualifiedName, RdfAssociation>();
 
-	public RdfModelToMetadata(RdfModel rdfModel, String oDataVersion, boolean withRdfAnnotations,
+	public RdfModelToMetadata(RdfModel rdfModel,  boolean withRdfAnnotations,
 			boolean withSapAnnotations, boolean useBaseType) {
 		Map<String, EntityType> globalEntityTypes = new HashMap<String, EntityType>();
 
@@ -237,24 +234,24 @@ public class RdfModelToMetadata {
 								property.setFacets(notNullableFacets);
 							} else if (rdfProperty.getCardinality() == RdfConstants.Cardinality.ZERO_TO_ONE
 									|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY) {
-								if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
+//								if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
+//									property.setFacets(nullableFacets);
+//								} else {
 									property.setFacets(nullableFacets);
-								} else {
-									property.setFacets(nullableFacets);
-								}
+//								}
 							} else {
 								//TODO need to handle case when data violates nullablility, in the meantime allow all to be nullable
 								//property.setFacets(notNullableFacets);
 								property.setFacets(nullableFacets);
 							}
-							if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
-								if (rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY
-										|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MULTIPLE) {
-									//TODO property.setCollectionKind(CollectionKind.List);
-								} else {
-									//TODO property.setCollectionKind(CollectionKind.NONE);
-								}
-							}
+//							if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
+//								if (rdfProperty.getCardinality() == RdfConstants.Cardinality.MANY
+//										|| rdfProperty.getCardinality() == RdfConstants.Cardinality.MULTIPLE) {
+//									//TODO property.setCollectionKind(CollectionKind.List);
+//								} else {
+//									//TODO property.setCollectionKind(CollectionKind.NONE);
+//								}
+//							}
 						} else {
 
 							property.setFacets(notNullableFacets);
@@ -359,17 +356,17 @@ public class RdfModelToMetadata {
 					Association association = new Association().setName(associationName).setEnd1(fromRole)
 							.setEnd2(toRole)
 					;
-					if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
-						ReferentialConstraintRole principalConstraintRole = new ReferentialConstraintRole();
-						ReferentialConstraintRole dependentConstraintRole = new ReferentialConstraintRole();
-						principalConstraintRole.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE);
-						dependentConstraintRole
-								.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate);					
-
-						ReferentialConstraint referentialConstraint = new ReferentialConstraint()
-								.setPrincipal(principalConstraintRole).setDependent(dependentConstraintRole);
-						association.setReferentialConstraint(referentialConstraint);
-					}
+//					if (ODataServiceVersion.isBiggerThan(oDataVersion, ODataServiceVersion.V20)) {
+//						ReferentialConstraintRole principalConstraintRole = new ReferentialConstraintRole();
+//						ReferentialConstraintRole dependentConstraintRole = new ReferentialConstraintRole();
+//						principalConstraintRole.setRole(rdfAssociation.getDomainName() + RdfConstants.FROMROLE);
+//						dependentConstraintRole
+//								.setRole(rdfAssociation.getRangeName() + RdfConstants.TOROLE + duplicate);					
+//
+//						ReferentialConstraint referentialConstraint = new ReferentialConstraint()
+//								.setPrincipal(principalConstraintRole).setDependent(dependentConstraintRole);
+//						association.setReferentialConstraint(referentialConstraint);
+//					}
 
 					associations.put(association.getName(), association);
 

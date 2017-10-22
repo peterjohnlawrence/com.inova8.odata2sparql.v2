@@ -8,7 +8,6 @@ import org.apache.olingo.odata2.api.ODataServiceFactory;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 
-import com.inova8.odata2sparql.Constants.ODataServiceVersion;
 import com.inova8.odata2sparql.Constants.RdfConstants;
 import com.inova8.odata2sparql.Exception.OData2SparqlException;
 import com.inova8.odata2sparql.SparqlProcessor.SparqlODataSingleProcessor;
@@ -25,30 +24,26 @@ public class RdfODataServiceFactory extends ODataServiceFactory {
 
 	@Override
 	public ODataService createService(final ODataContext ctx) throws ODataException {
-		String odataVersion = ctx.getPathInfo().getPrecedingSegments().get(0).getPath();
-		if (odataVersion.equals(RdfConstants.RESET)) {
+		String odataOperator = ctx.getPathInfo().getPrecedingSegments().get(0).getPath();
+		if (odataOperator.equals(RdfConstants.RESET)) {
 			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
 			sparqlODataSingleProcessors.reset(rdfRepositoryID);
 			log.info(RdfConstants.RESET + " requested: " + rdfRepositoryID);
 			return null;
-		} else if (odataVersion.equals(RdfConstants.RELOAD)) {
+		} else if (odataOperator.equals(RdfConstants.RELOAD)) {
 			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
 			sparqlODataSingleProcessors.reload(rdfRepositoryID);
 			log.info(RdfConstants.RELOAD + " requested");
 			return null;
 		} else {
-			if (!ODataServiceVersion.validateDataServiceVersion(odataVersion)) {
-				log.error("Unsupported Odata version: " + odataVersion);
-				throw new ODataException("Unsupported Odata version: " + odataVersion);
-			}
-			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
+			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(0).getPath();
 			
 			SparqlODataSingleProcessor sparqlODataSingleProcessor;
 			try {
 				log.info(ctx.getHttpMethod() + ": " + ctx.getPathInfo().getRequestUri());
-				sparqlODataSingleProcessor = sparqlODataSingleProcessors.getSparqlODataSingleProcessor(odataVersion,rdfRepositoryID );
+				sparqlODataSingleProcessor = sparqlODataSingleProcessors.getSparqlODataSingleProcessor(rdfRepositoryID );
 			} catch (OData2SparqlException e) {
-				throw new ODataException("Cannot create SparqlODataSingleProcessor for odataVersion:" + odataVersion+" rdfRepositoryId:"+rdfRepositoryID);
+				throw new ODataException("Cannot create SparqlODataSingleProcessor for rdfRepositoryId:"+rdfRepositoryID);
 			}	
 			return createODataSingleProcessorService(sparqlODataSingleProcessor.getRdfEdmProvider(), sparqlODataSingleProcessor);
 		}

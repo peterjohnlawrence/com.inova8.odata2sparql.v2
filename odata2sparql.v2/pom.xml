@@ -6,9 +6,9 @@
 	<name>odata2sparql.v2</name>
 	<dependencies>
 		<dependency>
-			<groupId>org.openrdf.sesame</groupId>
-			<artifactId>sesame-runtime</artifactId>
-			<version>${sesame.version}</version>
+			<groupId>org.eclipse.rdf4j</groupId>
+			<artifactId>rdf4j-runtime</artifactId>
+			<version>${rdf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -102,7 +102,7 @@
 		</plugins>
 	</build>
 	<properties>
-		<sesame.version>4.1.2</sesame.version>
+		<rdf4j.version>2.2.2</rdf4j.version>
 		<olingo.version>2.0.9</olingo.version>
 		<odata2sparql.version>${project.version}</odata2sparql.version>
 	</properties>
