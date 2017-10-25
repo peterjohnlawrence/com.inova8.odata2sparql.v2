@@ -9,26 +9,38 @@
 	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
 	OF ANY KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" id="WebApp_ID" version="2.5">
-  <display-name>com.inova8.odata2sparql.v2</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
-  <servlet>
-    <servlet-name>OData2SparqlServiceServlet</servlet-name>
-    <servlet-class>org.apache.olingo.odata2.core.servlet.ODataServlet</servlet-class>
-    <init-param>
-      <param-name>org.apache.olingo.odata2.service.factory</param-name>
-      <param-value>com.inova8.odata2sparql.RdfODataServiceFactory</param-value>
-    </init-param>
-    <init-param>
-      <param-name>org.apache.olingo.odata2.path.split</param-name>
-      <param-value>1</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>OData2SparqlServiceServlet</servlet-name>
-    <url-pattern>/*</url-pattern>
-  </servlet-mapping>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<display-name>com.inova8.odata2sparql.v2</display-name>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<servlet-name>OData2SparqlServiceServlet</servlet-name>
+		<servlet-class>org.apache.olingo.odata2.core.servlet.ODataServlet</servlet-class>
+		<init-param>
+			<param-name>org.apache.olingo.odata2.service.factory</param-name>
+			<param-value>com.inova8.odata2sparql.RdfODataServiceFactory</param-value>
+		</init-param>
+		<init-param>
+			<param-name>configFolder</param-name>
+			<param-value>/var/opt/inova8/odata2sparql</param-value>
+		</init-param>
+		<init-param>
+			<param-name>repositoryUrl</param-name>
+			<param-value></param-value>
+		</init-param>
+		<init-param>
+			<param-name>org.apache.olingo.odata2.path.split</param-name>
+			<param-value>1</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>OData2SparqlServiceServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
 </web-app>

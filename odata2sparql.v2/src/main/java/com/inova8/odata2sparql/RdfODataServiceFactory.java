@@ -24,7 +24,7 @@ public class RdfODataServiceFactory extends ODataServiceFactory {
 
 	@Override
 	public ODataService createService(final ODataContext ctx) throws ODataException {
-		String odataOperator = ctx.getPathInfo().getPrecedingSegments().get(0).getPath();
+		String odataOperator = ctx.getPathInfo().getPrecedingSegments().get(0).getPath(); 
 		if (odataOperator.equals(RdfConstants.RESET)) {
 			String rdfRepositoryID = ctx.getPathInfo().getPrecedingSegments().get(1).getPath();
 			sparqlODataSingleProcessors.reset(rdfRepositoryID);

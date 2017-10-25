@@ -49,6 +49,7 @@ public class RdfConstants {
 	   of the URI, but this should not be done unless the URI is being used
 	   in a context that does not allow the unescaped character to appear.
 	*/
+	public static final String DEFAULTCONFIG= "/var/opt/inova8/odata2sparql/";
 	
 	public static final String QNAME_SEPARATOR = "~";// ":";
 	public static final String QNAME_SEPARATOR_ENCODED = "~";// "%3A";
@@ -255,25 +256,13 @@ public class RdfConstants {
 			if(SystemUtils.IS_OS_WINDOWS){
 				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();
 			}else if(SystemUtils.IS_OS_LINUX){
-				workingDirectory = Paths.get("/etc", "inova8", "odata2sparql").toString();
+				workingDirectory = Paths.get( DEFAULTCONFIG).toString();
 			}else{
 				log.error("Unsupported OS: " + SystemUtils.OS_NAME);
 				throw new RuntimeException("Unsupported OS: " + SystemUtils.OS_NAME,null);
 			}
 			
-			
-//			String workingDirectory = System.getenv("AppData");
-//			if (workingDirectory == null) {
-//				workingDirectory = System.getProperty("user.home");
-//				//if we are on a Mac, we are not done, we look for "Application Support"
-//				workingDirectory = Paths.get(System.getProperty("user.home"),"Library", "Application Support", "inova8", "odata2sparql").toString();
-//				//workingDirectory += "/Library/Application Support/inova8/odata2sparql/";
-//			}else{
-//				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();
-//			}	
 			repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
-
-			//	repositoryManagerDirPath = repositoryManagerDirPath + File.separator + "../../../../inova8/odata2sparql" + File.separator;		
 			repositoryManagerDir = new File(workingDirectory);
 			modelFile =Paths.get( workingDirectory , "models.ttl").toString();
 			log.info("Models.ttl location:" + modelFile);
