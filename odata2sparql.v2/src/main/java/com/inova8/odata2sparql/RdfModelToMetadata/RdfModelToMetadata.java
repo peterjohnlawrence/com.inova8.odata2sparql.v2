@@ -284,8 +284,11 @@ public class RdfModelToMetadata {
 					}
 					if (useBaseType)
 						currentRdfClass = null;
-					else
+					else if (currentRdfClass.getBaseType() != currentRdfClass) {
 						currentRdfClass = currentRdfClass.getBaseType();
+					} else {
+						currentRdfClass = null;
+					}
 				} while (currentRdfClass != null);
 
 				entityType.setProperties(new ArrayList<Property>(entityTypeProperties.values()));
