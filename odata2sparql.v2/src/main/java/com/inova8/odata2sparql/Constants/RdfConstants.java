@@ -30,30 +30,31 @@ public class RdfConstants {
 		// 0..1, 1..1, 0..*, 1..*
 		ZERO_TO_ONE, ONE, MANY, MULTIPLE
 	}
-	/*	
- 	The following from http://www.ietf.org/ defining what is allowed in a URI
-    Needed to match ':' of qname with embeded key in odata.
-     
-     2.3. Unreserved Characters
 
+	/*	
+	The following from http://www.ietf.org/ defining what is allowed in a URI
+	Needed to match ':' of qname with embeded key in odata.
+	 
+	 2.3. Unreserved Characters
+	
 	   Data characters that are allowed in a URI but do not have a reserved
 	   purpose are called unreserved.  These include upper and lower case
 	   letters, decimal digits, and a limited set of punctuation marks and
 	   symbols.
-
+	
 	      unreserved  = alphanum | mark
-
+	
 	      mark        = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
-
+	
 	   Unreserved characters can be escaped without changing the semantics
 	   of the URI, but this should not be done unless the URI is being used
 	   in a context that does not allow the unescaped character to appear.
 	*/
-	public static final String DEFAULTCONFIG= "/var/opt/inova8/odata2sparql/";
-	
+	public static final String DEFAULTCONFIG = "/var/opt/inova8/odata2sparql/";
+
 	public static final String QNAME_SEPARATOR = "~";// ":";
 	public static final String QNAME_SEPARATOR_ENCODED = "~";// "%3A";
-	
+
 	public static final String RESET = "$reset";
 	public static final String RELOAD = "$reload";
 	public static final String WILDCARD = "*";
@@ -253,18 +254,20 @@ public class RdfConstants {
 
 		try {
 			String workingDirectory = null;
-			if(SystemUtils.IS_OS_WINDOWS){
-				workingDirectory = Paths.get(System.getenv("AppData"),"inova8", "odata2sparql").toString();
-			}else if(SystemUtils.IS_OS_LINUX){
-				workingDirectory = Paths.get( DEFAULTCONFIG).toString();
-			}else{
+			if (SystemUtils.IS_OS_WINDOWS) {
+				workingDirectory = Paths.get(System.getenv("AppData"), "inova8", "odata2sparql").toString();
+			} else if (SystemUtils.IS_OS_LINUX) {
+				workingDirectory = Paths.get(DEFAULTCONFIG).toString();
+			} else if (SystemUtils.IS_OS_MAC) {
+				workingDirectory = Paths.get("~/Library/Preferences", "inova8", "odata2sparql").toString();
+			} else {
 				log.error("Unsupported OS: " + SystemUtils.OS_NAME);
-				throw new RuntimeException("Unsupported OS: " + SystemUtils.OS_NAME,null);
+				throw new RuntimeException("Unsupported OS: " + SystemUtils.OS_NAME, null);
 			}
-			
+
 			repositoryManagerDirPath = URLDecoder.decode(RdfConstants.class.getResource("/").getFile(), "UTF-8");
 			repositoryManagerDir = new File(workingDirectory);
-			modelFile =Paths.get( workingDirectory , "models.ttl").toString();
+			modelFile = Paths.get(workingDirectory, "models.ttl").toString();
 			log.info("Models.ttl location:" + modelFile);
 
 			odata4sparqlFile = repositoryManagerDirPath + "ontologies/odata4sparql.rdf";
@@ -291,7 +294,7 @@ public class RdfConstants {
 				log.error("Cannot decode file directory to be used for repository: " + e1.getMessage());
 				throw new RuntimeException("Cannot decode file directory to be used for repository: ", e);
 			}
-		} 
+		}
 
 		//Initialize the RDF datatypes
 		RDF_DATATYPES.add((RdfConstants.RDF_PLAIN_LITERAL));
